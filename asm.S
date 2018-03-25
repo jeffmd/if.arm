@@ -25,8 +25,8 @@ Forthword_ BXLR_C, 0, "bxlr,"
 @ ( -- lr )
 @ move link register onto top of data stack
 Forthword_ LR_G, INLINE_OPT, "lr>"
-    dup_
-    mov tos, lr
+    push_
+    mov wreg, lr
     bx lr
 
 @ ( -- 0 )
@@ -66,8 +66,8 @@ Forthword_ RA, 0, "a"
     bx lr
 
 @ ( -- 6 )
-@ Top of Data Stack:tos is r6
-Forthword_ TOS, 0, "tos"
+@ Top of Data Stack:wreg is r6
+Forthword_ wreg, 0, "wreg"
     dolit8_ 0x6
     bx lr
 
@@ -112,7 +112,7 @@ MCASI_C:
     swap_
     r_from_
     movs r0, #4
-    orrs tos, r0
+    orrs wreg, r0
     b OPRDVAL_C
 
 @ ( Rd Rs -- )
@@ -191,7 +191,7 @@ Forthword_ RSBS_C, 0, "rsbs,"
 ALU_C:
     movs r1, #64
     lsls r1, #2
-    orrs tos, r1
+    orrs wreg, r1
     b OPRSRD_C
     
 @ ( Rd Rs -- )
@@ -266,8 +266,8 @@ Forthword_ OPVALRSRD_C, 0, "opvalrsrd,"
     ldm dsp!, {r0}
     movs r1, #31
     ands r0, r1
-    lsls tos, #5
-    orrs tos, r0
+    lsls wreg, #5
+    orrs wreg, r0
     b.n OPRSRD_C
 
 @ ( Rd Rs val3 op -- )
@@ -279,8 +279,8 @@ Forthword_ OPVRRSRD_C, 0, "opvrrsrd,"
     ldm dsp!, {r0}
     movs r1, #7
     ands r0, r1
-    lsls tos, #3
-    orrs tos, r0
+    lsls wreg, #3
+    orrs wreg, r0
     b.n OPRSRD_C
 
 @ ( Rd Rs op -- )
@@ -290,17 +290,17 @@ Forthword_ OPVRRSRD_C, 0, "opvrrsrd,"
 @ compile arm thumb assembler instruction   
 Forthword_ OPRSRD_C, 0, "oprsrd,"
     @ shift left Op 6 bits
-    lsls tos, #6
+    lsls wreg, #6
     @ mask Rs with 7
     ldm dsp!, {r0}
     movs r1, #0x7
     ands r0, r1
     lsls r0, #3
-    orrs tos, r0
+    orrs wreg, r0
     ldm dsp!, {r0}
     movs r1, #0x7
     ands r0, r1
-    orrs tos, r0
+    orrs wreg, r0
     b COMMA
 
 @ ( val8 Rd op -- )
@@ -309,18 +309,18 @@ Forthword_ OPRSRD_C, 0, "oprsrd,"
 @ |       op     |  Rd  |  8 bit val    |
 @ compile arm thumb assembler instruction    
 Forthword_ OPRDVAL_C, 0, "oprdval,"
-    lsls tos, #3
+    lsls wreg, #3
     @ mask Rd with 7
     ldm dsp!, {r0}
     movs r1, #0x7
     ands r0, r1
-    orrs tos, r0
+    orrs wreg, r0
     @ mask val with 255
     ldm dsp!, {r0}
     movs r1, #0xFF
     ands r0, r1
-    lsls tos, #8
-    orrs tos, r0
+    lsls wreg, #8
+    orrs wreg, r0
     b COMMA
     
 @ calc relative distance in half word alignment
@@ -342,10 +342,10 @@ Forthword_ BRANCH, 0, "b."
     movs r0, #7
     lsls r0, #8
     adds r0, #0xFF
-    ands tos, r0
+    ands wreg, r0
     movs r0, #0x07
     lsls r0, #13
-    orrs tos, r0
+    orrs wreg, r0
     bx lr
 
 @ compile assembler instruction b - unconditional branch
@@ -375,9 +375,9 @@ Forthword_ COMPILEXT, 0, "cxt"
     push {lr}
     movs r0, #INLINE_OPT
     lsls r0, #8
-    tst tos, r0
+    tst wreg, r0
     @ if bit 0 of high byte flag is 0 then word is to be inlinned
-    drop_           @ ( xt )
+    pop_           @ ( xt )
     beq.n COMPILEXT_INLINE
     b.n DO_COMPILEXT
 
@@ -404,41 +404,41 @@ Forthword_ BLC, 0, "bl,"
     @ split the 23-bit two’s complement half-word offset specifed by the
     @ label into two 11-bit halves, ignoring bit 0 (which must be 0),
     @ and creates two THUMB instructions
-    dup_                    @ ( dist dist )
+    push_                    @ ( dist dist )
     @ get top 11 bits
-    asrs tos, #11           @ ( dist xxxdist )
+    asrs wreg, #11           @ ( dist xxxdist )
     @ make high address bl instruction mask
     movs r0, #0xF0
     lsls r0, #8
-    orrs tos, r0             @ ( dist 0xFxdist )
+    orrs wreg, r0             @ ( dist 0xFxdist )
     movs r0, #0x8
     lsls r0,#8
-    bics tos, r0             @ ( dist 0xF0dist )
+    bics wreg, r0             @ ( dist 0xF0dist )
     bl COMMA                @ ( dist )
     @ make low address bl instruction mask
     movs r0, #0xF8
     lsls r0, #8
-    orrs tos, r0             @ ( 0xF8dist )
+    orrs wreg, r0             @ ( 0xF8dist )
     pop_lr_
     b COMMA
 
 @ branch 1 word if not zero
 @ ( -- )
 Forthword_ BRNZ1_COMPILE, 0, "bne1,"
-    dup_
+    push_
     @compile bne #00 : 0xD100
-    movs tos, #0xD1
-    lsls tos, #8
+    movs wreg, #0xD1
+    lsls wreg, #8
     b COMMA
 
 @ ( -- 32b )
 @ fetch a 32 bit inlinned constant pointed to by lr onto the top of stack
 @ assumes caller was in thumb mode
 Forthword_ ICFETCH, 0, "ic@"
-    dup_
+    push_
     mov r0, lr
     subs r0, #1     @ clear bit 0 which is thumb indicator
-    ldr tos, [r0]
+    ldr wreg, [r0]
     adds r0, #5     @ return after constant and default to thumb mode
     bx r0
 
@@ -450,6 +450,6 @@ Forthword_ LIT, 0, "lit"
     dolit32_ VE_ICFETCH
     bl NFATOXTF
     bl COMPILEXT
-    @ store 32 bit val from tos
+    @ store 32 bit val from wreg
     pop_lr_
     b DCOMMA

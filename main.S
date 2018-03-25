@@ -76,8 +76,8 @@ DPSTART:
 @ initialize asforth further. EXECs turnkey operation and go to quit
 Forthword_ WARM, 0, "warm"
     push {lr}
-    dup_
-    mov tos, sp
+    push_
+    mov wreg, sp
     bl RP0
     bl STORE
     bl ONLY
@@ -92,8 +92,8 @@ Forthword_ WARM, 0, "warm"
 @ ( -- addr)
 @ start address of the data stack
 Forthword_ SP0, 0, "sp0"
-  dup_
-  ldr tos, addr_dstack
+  push_
+  ldr wreg, addr_dstack
   bx lr
 
 .global main
@@ -114,17 +114,17 @@ main:
     bl WIPE
     pop {r0, r1}
     @ save r0 and r1
-    dup_
-    movs tos, r0
-    dup_
-    movs tos, r1
+    push_
+    movs wreg, r0
+    push_
+    movs wreg, r1
     bl ARGVADDR
     bl STORE
     bl ARGCADDR
     bl STORE
     bl WARM
 
-    mov r0, tos
+    mov r0, wreg
     pop {pc}
 
 .balign 4

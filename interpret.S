@@ -66,14 +66,14 @@ Forthword_ ARGVADDR, 0, "argv#"
     douser_ USER_ARGV
 
 @ ( c -- )
-@ fetch the emit vector and EXEC it. Will emit a character from TOS
+@ fetch the emit vector and EXEC it. Will emit a character from wreg
 Forthword_ PUTCHAR, 0, "putchar"
-  mov r0, tos
-  drop_
+  mov r0, wreg
+  pop_
   b putchar
 
 @ ( c -- )
-@ fetch the emit vector and EXEC it. Will emit a character from TOS
+@ fetch the emit vector and EXEC it. Will emit a character from wreg
 Forthword_ EMIT, 0, "emit"
   push {lr}
   bl EMITADDR
@@ -99,40 +99,40 @@ Forthword_ BL, 0, "bl"
     
 
 @ ( -- key )
-@ fetch key from standard input, should leave a single character on TOS
-@ if a key was pressed. If no key pressed then -1 is on TOS.
+@ fetch key from standard input, should leave a single character on wreg
+@ if a key was pressed. If no key pressed then -1 is on wreg.
 Forthword_ STDIN, 0, "stdin"
   push {lr}
   bl getchar
-  dup_
-  mov tos, r0
+  push_
+  mov wreg, r0
   pop {pc}
 
 @ ( -- key )
 @ fetch key from an open file using filedes, should leave
-@ a single character on TOS or -1 if no more to read in file.
+@ a single character on wreg or -1 if no more to read in file.
 Forthword_ KEYFILE, 0, "keyfile"
   push {lr}
   bl KEYFILEADDR
   fetch_
-  movs r0, tos
-  movs tos, #0
-  dup_
+  movs r0, wreg
+  movs wreg, #0
+  push_
   mov r1, dsp
   movs r2, #1
   bl read 
-  drop_
+  pop_
   @ was one key read from the file?
   cmp r0, #1
   beq.n KEYEND
-  subs tos, #1
+  subs wreg, #1
   bl BYE  
  KEYEND:
   pop {pc}
 
 @ ( -- key )
 @ fetch key from deffered routine, should leave a single character
-@ on TOS if a key was pressed. If no key pressed then -1 is on TOS.
+@ on wreg if a key was pressed. If no key pressed then -1 is on wreg.
 Forthword_ KEY, 0, "key"
   push {lr}
   bl KEYADDR
@@ -163,7 +163,7 @@ TYPE2:
    bne.n TYPE1
    
 TYPE_END:
-   drop_
+   pop_
    pop {pc}
 
 @ ( addr1 u1 n -- addr2 u2 )
@@ -187,7 +187,7 @@ Forthword_ MCMP, 0, "mcmp"
     over_                    @ ( r-addr r-len f-addr r-len)
     @getb_                    @ ( r-addr r-len f-addr r-len f-len )
     @ check if strings are same length
-    eors tos, breg            @ ( r-addr r-len f-addr flag )
+    eors wreg, breg            @ ( r-addr r-len f-addr flag )
     @ if
     zerosense_               @ ( r-addr r-len f-addr )
     beq.n MCMP_SAMELEN
@@ -211,24 +211,24 @@ MCMP_LOOP:
     zerosense_               @ ( r-addr )
     beq.n MCMP_DONE
 
-    dup_                     @ ( r-addr r-addr )
+    push_                     @ ( r-addr r-addr )
     hfetch_                  @ ( r-addr r-cc )
     ahfetch_                 @ ( r-addr r-cc f-cc )
     ahplus_
     @ flash strings are zero-padded at the last cell
     @ that means: if the flash cell is less $0100, than mask the
     @ high byte in the ram cell
-    dup_                     @ ( r-addr r-cc f-cc f-cc )
-    dup_
-    movs tos, #80             @ ( r-addr r-cc f-cc f-cc 0x100 )
-    adds tos, tos
+    push_                     @ ( r-addr r-cc f-cc f-cc )
+    push_
+    movs wreg, #80             @ ( r-addr r-cc f-cc f-cc 0x100 )
+    adds wreg, wreg
     bl ULESS                 @ ( r-addr r-cc f-cc flag)
     @ if
     zerosense_
     beq.n MCMP_LASTCELL
     swap_                    @ ( r-addr f-cc r-cc)
     movs r0, #255
-    ands tos, r0              @ ( r-addr f-cc 0:r-cc)
+    ands wreg, r0              @ ( r-addr f-cc 0:r-cc)
     @ then
 MCMP_LASTCELL:
     xor_                     @ ( r-addr flag)
@@ -251,7 +251,7 @@ MCMP_NEXTLOOP:
 
 MCMP_DONE:
     @ strings are the same
-    drop_
+    pop_
     true_
     pop {pc}
 
@@ -259,7 +259,7 @@ MCMP_DONE:
 @ ( addr -- addr+2 n )
 @ get string address and length information out of a counted string
 Forthword_ STRINGLEN, 0, "$l"
-    dup_
+    push_
     twoplus_
     swap_
     hfetch_
@@ -272,14 +272,14 @@ Forthword_ STRINGLEN, 0, "$l"
 Forthword_ CSKIP, 0, "cskip"
     tob_                 @ ( addr1 n1 ) B: c
     niptoa_              @ ( n1 ) A: addr1
-    dup_                 @ ( n1 n1 )
+    push_                 @ ( n1 n1 )
 PFA_CSKIP1:
     dupzerosense_        @ ( n1 n')
     beq.n PFA_CSKIP2
     acfetch_             @ ( n1 n' c' )
     acplus_
-    cmp tos, breg        @ ( n1 n' c' )
-    drop_                @ ( n1 n' )
+    cmp wreg, breg        @ ( n1 n' c' )
+    pop_                @ ( n1 n' )
     bne.n PFA_CSKIP2
     oneminus_
     b.n PFA_CSKIP1
@@ -296,14 +296,14 @@ Forthword_ CSCAN, 0, "cscan"
     tob_                 @ ( addr1 n1 ) B: c
     over_                @ ( addr1 n1 addr1 )
     toa_                 @ ( addr1 n1 ) A: addr1
-    dup_                 @ ( addr1 n1 n1 )
+    push_                 @ ( addr1 n1 n1 )
 PFA_CSCAN1:
     dupzerosense_        @ ( addr1 n1 n')
     beq.n PFA_CSCAN2
     acfetch_             @ ( addr1 n1 n' c' )
     acplus_
-    cmp tos, breg        @ ( addr1 n1 n' c' )
-    drop_                @ ( addr1 n1 n' )
+    cmp wreg, breg        @ ( addr1 n1 n' c' )
+    pop_                @ ( addr1 n1 n' )
     beq.n PFA_CSCAN2
     oneminus_
     b.n PFA_CSCAN1
@@ -343,7 +343,7 @@ Forthword_ PARSE, 0, "parse"
     bl SRCIN         @ ( -- c addr len)
     bl ROT           @ ( -- addr' len' c)
     bl CSCAN         @ ( -- len'')
-    dup_             @ ( -- addr' len'' len'')
+    push_             @ ( -- addr' len'' len'')
     oneplus_         @ ( -- addr' len'' len''+1 )
     bl G_IN          @ ( -- addr' len'' len''+1 >in)
     pop_lr_
@@ -388,7 +388,7 @@ FINDNFA_CHECK:
     r_fetch_                    @ ( c-addr len c-addr len nfa )
     bl STRINGLEN                @ ( c-addr len c-addr len f-addr len )
     movs r0, #31
-    ands tos, r0                 @ ( c-addr len c-addr len f-addr 0:len )
+    ands wreg, r0                 @ ( c-addr len c-addr len f-addr 0:len )
     bl MCMP                     @ ( c-addr len flag )
     @ <if>
     zerosense_
@@ -426,7 +426,7 @@ FINDWI:
       b FINDNFA         @ ( nfa)
 
 FINDLAST:
-      drop_
+      pop_
       pop_lr_
       b FINDROOT
 
@@ -458,7 +458,7 @@ FINDW_BEGIN:
         pop {pc}
 
 FINDW_NEXT:
-      drop_             @ ( addr len idx )
+      pop_             @ ( addr len idx )
       @ decrement index
       oneminus_         @ ( addr len idx-1 )
       b.n FINDW_BEGIN
@@ -472,9 +472,9 @@ FINDW_NEXT:
 Forthword_ DOSLIT, 0, "(slit)"
   @ get return address to get string length, calculate string address start,
   @ and calculate return address
-  dup_
-  mov tos, lr    @ ( raddr )  (R: raddr -- )
-  dup_           @ ( raddr raddr )
+  push_
+  mov wreg, lr    @ ( raddr )  (R: raddr -- )
+  push_           @ ( raddr raddr )
   @ get the string length
   oneminus_      @ account for odd address number because using thumb instructions
   hfetch_        @ ( raddr slength )
@@ -488,8 +488,8 @@ Forthword_ DOSLIT, 0, "(slit)"
   plus_          @ ( straddr slength raddr+k )
   @ also skip string length
   twoplus_       @ ( straddr slength raddr+k+2 )
-  mov lr, tos
-  drop_
+  mov lr, wreg
+  pop_
   bx lr
 
 @ ( addr len -- [n] [addr len] f )
@@ -559,7 +559,7 @@ REC_WORD_FOUND:
   @sbrs tosh, IMMEDIATE_EN_FB @ skip next instruction if bit 7 is set: not immediate word
   movs r0, #IMMEDIATE_EN
   lsls r0, #8
-  tst tos, r0
+  tst wreg, r0
   @ flag is 0: always EXEC
   beq.n REC_WORD_EXECUTE
 
@@ -574,7 +574,7 @@ REC_WORD_CHECKSTATE:
       pop {pc}
 
 REC_WORD_EXECUTE:
-    drop_
+    pop_
     @ state is zero, EXEC xt
     bl EXEC
 REC_WORD_OK:
@@ -657,7 +657,7 @@ Forthword_ PROMPTOK, 0, ".ok"
 @ process the error prompt
 Forthword_ PROMPTERROR, 0, ".??"
     push {lr}
-    drop_
+    pop_
     type_ " ?? "
     pop {pc}
 
@@ -829,25 +829,25 @@ Forthword_ ACCEPT, 0, "accept"
     bl KEY        @ ( k )
     dupzerosense_
     bgt.n ACCEPT_haskey
-    adds tos, #1
+    adds wreg, #1
     pop {pc}
 
 ACCEPT_haskey:
     @ check for EOL
-    cmp tos, #10
+    cmp wreg, #10
     @ <if>
     bne.n ACCEPT_checkreturn
     pop {pc}
 
 ACCEPT_checkreturn:
-    cmp tos, #13     @ ( k k 13 )
+    cmp wreg, #13     @ ( k k 13 )
     @ <if>
     bne.n ACCEPT_checkdelete
     pop {pc}
 
 ACCEPT_checkdelete:
     @ check delete
-    cmp tos, #127      @ ( k k 8 )
+    cmp wreg, #127      @ ( k k 8 )
     @ <if>
     bne.n ACCEPT_checkcontrol
     @ delete previous character
@@ -859,14 +859,14 @@ ACCEPT_checkdelete:
     zerosense_            @ ( k )
     bne.n ACCEPT_dodelete
     @ at the beginning of the line, ignore this character
-    drop_
+    pop_
     pop_lr_
     b ZERO
 
 ACCEPT_dodelete:
     movs r0, #8
-    ands tos, r0
-    dup_              @ ( k k )
+    ands wreg, r0
+    push_              @ ( k k )
     bl EMIT           @ ( k )
     bl_               @ ( k bl )
     bl EMIT           @ ( k )
@@ -880,15 +880,15 @@ ACCEPT_dodelete:
 
 ACCEPT_checkcontrol:
     @ check for remaining control characters, replace them with blank
-    cmp tos, #32         @ ( k k bl )
+    cmp wreg, #32         @ ( k k bl )
     bge.n ACCEPT_echo
-    drop_
+    pop_
     @ replace control key with a space
     bl_
 
 ACCEPT_echo:
     @ emit the key
-    dup_                 @ ( k k)
+    push_                 @ ( k k)
     bl EMIT              @ ( k)
     @ now store the key in the input buffer
     bl STIB              @ ( k tibaddr #tib)

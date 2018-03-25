@@ -1,9 +1,11 @@
 @ macros.S
 
-breg .req r3 @ B register used for general purpose operations
+wr .req r0 @ parameter top of stack [TOS] register
+xr .req r3 @ X register 
+yr .req r4 @ X register
 sysvar .req r4 @ system variables base pointer
-areg .req r5 @ A register used for memory pointer operations
-tos .req r6 @ parameter top of stack [TOS] register
+ar .req r5 @ A register
+br .req r6 @ B register
 dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
 
 @ header flags
@@ -13,18 +15,18 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
 @ enable inlining of word
 @ bit 0 : enable inlinning
 .set INLINE_OPT_FB, 0
-.set INLINE_OPT, 0x01
+.set INLINE_OPT, 1 << INLINE_OPT_FB
 
 @ bit 3 : disable interpret execution ie compile only
 .set COMPILE_ONLY_FB, 3
 @ set immediate word as compile time only execution
 @ disable interpret execution : & with word count flag ie: 0xFF04 & COMPILE_ONLY
-.set COMPILE_ONLY, 0x08
+.set COMPILE_ONLY, 1 << COMPILE_ONLY_FB
 
 @ bit 7 : immediate execution when in compile state
 @ enable immediate execution : & with word count flag ie: 0xFF04 & IMMEDIATE_EN
 .set IMMEDIATE_EN_FB, 7
-.set IMMEDIATE_EN, 0x80
+.set IMMEDIATE_EN, 1 << IMMEDIATE_EN_FB
 
 @ forth flags
 @ bit 0 : rcall was last instruction
@@ -41,12 +43,16 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
 .endm
 
 @ Inline macros
-.macro dup_r_ @ put copy of tos on return stack
-    push {tos}
+.macro rpush_ @ put copy of wr on return stack
+    push {wr}
 .endm
 
-.macro r_drop_ @ drop TOR
-    pop {r0}
+.macro rpush_x_ @ put copy of X on return stack
+    push {xr}
+.endm
+
+.macro rnip_ @ drop TOR
+    pop {r1}
 .endm
 
 .macro pop_lr_ @ pop lr from return stack into lr
@@ -58,17 +64,17 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
 .endif
 .endm
 
-.macro dup_ @ duplicate tos
+.macro push_ @ duplicate wr
 .if rpi2
-  str.w tos, [dsp, #-4]!
+  str.w wr, [dsp, #-4]!
 .else
   subs dsp, #4
-  str tos, [dsp]
+  str wr, [dsp]
 .endif
 .endm
 
-.macro drop_ @ load tos, (drop)
-  ldmia dsp!, {tos}
+.macro pop_ @ pop val from data stack into wr
+  ldmia dsp!, {wr}
 .endm
 
 .macro sysv_ sym
@@ -77,14 +83,14 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
 
 @ test with 8 bit constant
 .macro bittest_ v
-    movs r0, #\v
-    tst tos, r0
-    drop_
+    movs r1, #\v
+    tst wreg, r1
+    pop_
 .endm
 
 .macro pushsysv_ sym
-    dup_
-    ldr tos, 1f
+    push_
+    ldr wreg, 1f
     bx lr
 .balign 4
 1:
@@ -93,25 +99,22 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
 .endm
 
 .macro douser_ sym
-    dup_
-    movs tos, #(\sym-sysvar_base)
-    adds tos, sysvar
+    movs wr, #(\sym-sysvar_base)
+    adds wr, sysvar
     bx lr
 .endm
 
 
 @ Push small 8 bit constant on datastack
 .macro dolit8_ val
-  dup_
-  movs tos, #\val
+  movs wreg, #\val
 .endm
 
 @ Push small 16 bit constant on datastack
 .macro dolit16_ val
-  dup_
-  movs tos, #(\val/256)
-  lsls tos, #8
-  adds tos, #(\val & 255)
+  movs wreg, #(\val/256)
+  lsls wreg, #8
+  adds wreg, #(\val & 255)
 .endm
 
 @ push a 32 bit inline val on datastack
@@ -120,51 +123,74 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
   .word \val
 .endm
 
+.macro d0_
+  ldr wr, [dsp]
+.endm
+
+.macro d1_
+  ldr wr, [dsp, #4]
+.endm
+
+.macro d2_
+  ldr wr, [dsp, #8]
+.endm
+
+.macro str_d0_
+  str wr, [dsp] @ Replace it with wr.
+.endm
+
+.macro str_d1_
+  str wr, [dsp, #4] @ Replace it with wr.
+.endm
+
+.macro str_d2_
+  str wr, [dsp, #8] @ Replace it with wr.
+.endm
 
 .macro swap_
-  ldr r0,  [dsp] @ Load r0 from the stack, no SP change.
-  str tos, [dsp] @ Replace it with TOS.
-  mov tos, r0    @ And vice versa.
+  ldr r1, [dsp] @ Load r1 from the stack, no SP change.
+  str_d0_       @ Replace it with wr.
+  mov wr, r1    @ And vice versa.
 .endm
 
 .macro over_
-  dup_
-  ldr tos, [dsp, #4]
+  push_
+  d1_
 .endm
 
 .macro spfetch_
-  dup_
-  mov tos, dsp
+  push_
+  mov wreg, dsp
 .endm
 
 .macro spstore_
-  mov dsp, tos
-  drop_
+  mov dsp, wreg
+  pop_
 .endm
 
 .macro to_r_
   dup_r_
-  drop_
+  pop_
 .endm
 
 .macro r_from_
-  dup_
-  pop {tos}
+  push_
+  pop {wreg}
 .endm
 
 .macro r_fetch_
-  dup_
-  ldr tos, [sp]
+  push_
+  ldr wreg, [sp]
 .endm
 
 .macro rpfetch_
-  dup_
-  mov tos, sp
+  push_
+  mov wreg, sp
 .endm
 
 .macro rpstore_
-  mov sp, tos
-  drop_
+  mov sp, wreg
+  pop_
 .endm
 
 .macro nip_
@@ -177,107 +203,107 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
 
 .macro ddrop_
   nip_
-  drop_
+  pop_
 .endm
 
 .macro plus_
   ldm dsp!, {r0}
-  adds tos, r0
+  adds wreg, r0
 .endm
 
 .macro minus_
   ldm dsp!, {r0}
-  subs tos, r0, tos
+  subs wreg, r0, wreg
 .endm
 
 .macro and_
   ldm dsp!, {r0}
-  ands tos, r0
+  ands wreg, r0
 .endm
 
 .macro or_
   ldm dsp!, {r0}
-  orrs tos, r0
+  orrs wreg, r0
 .endm
 
 .macro xor_
   ldm dsp!, {r0}
-  eors tos, r0
+  eors wreg, r0
 .endm
 
 .macro not_
-  mvns tos, tos
+  mvns wreg, wreg
 .endm
 
 .macro oneplus_
-  adds tos, #1
+  adds wreg, #1
 .endm
 
 .macro oneminus_
-  subs tos, #1
+  subs wreg, #1
 .endm
 
 .macro twoplus_
-  adds tos, #2
+  adds wreg, #2
 .endm
 
 .macro fourplus_
-  adds tos, #4
+  adds wreg, #4
 .endm
 
 .macro twominus_
-  subs tos, #2
+  subs wreg, #2
 .endm
 
 .macro fourminus_
-  subs tos, #4
+  subs wreg, #4
 .endm
 
 .macro twoslash_
-    asrs tos, #1
+    asrs wreg, #1
 .endm
 
 .macro fourslash_
-    asrs tos, #2
+    asrs wreg, #2
 .endm
 
 .macro twostar_
-    lsls tos, #1
+    lsls wreg, #1
 .endm
 
 .macro fourstar_
-    lsls tos, #2
+    lsls wreg, #2
 .endm
 
 .macro neg_
-    rsbs tos, tos, #0
+    rsbs wreg, wreg, #0
 .endm
 
 .macro dupzerosense_
-    cmp tos, #0
+    cmp wreg, #0
 .endm
 
 .macro zerosense_
     dupzerosense_
-    drop_
+    pop_
 .endm
 
 .macro zeroless_
-  asrs tos, #31    @ Turn MSB into 0xffffffff or 0x00000000
+  asrs wreg, #31    @ Turn MSB into 0xffffffff or 0x00000000
 .endm
 
 .macro zerotos_
-    movs tos, #0
+    movs wreg, #0
 .endm
 
 .macro zero_
-    dup_
+    push_
     zerotos_
 .endm
 
 .macro zeroequal_
-  subs tos, #1
-  sbcs tos, tos
+  subs wreg, #1
+  sbcs wreg, wreg
 .endm
 
 .macro one_
@@ -302,31 +328,31 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
 
 .macro true_
   zero_
-  mvns tos, tos
+  mvns wreg, wreg
 .endm
 
 .macro lshift_
   ldm dsp!, {r0}
-  lsls r0, tos
-  mov tos, r0
+  lsls r0, wreg
+  mov wreg, r0
 .endm
 
 .macro rshift_
   ldm dsp!, {r0}
-  lsrs r0, tos
-  mov tos, r0
+  lsrs r0, wreg
+  mov wreg, r0
 .endm
 
 .macro fetch_
-  ldr tos, [tos]
+  ldr wreg, [wreg]
 .endm
 
 .macro hfetch_
-  ldrh tos, [tos]
+  ldrh wreg, [wreg]
 .endm
 
 .macro cfetch_
-  ldrb tos, [tos]
+  ldrb wreg, [wreg]
 .endm
 
 .macro niptoa_
@@ -338,61 +364,61 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
 .endm
 
 .macro copytoa_
-    mov areg, tos
+    mov areg, wreg
 .endm
 
 .macro copytob_
-    mov breg, tos
+    mov breg, wreg
 .endm
 
 .macro toa_
-    mov areg, tos
-    drop_
+    mov areg, wreg
+    pop_
 .endm
 
 .macro tob_
-    mov breg, tos
-    drop_
+    mov breg, wreg
+    pop_
 .endm
 
 .macro geta_
-    dup_
-    mov tos, areg
+    push_
+    mov wreg, areg
 .endm
 
 .macro getb_
-    dup_
-    mov tos, breg
+    push_
+    mov wreg, breg
 .endm
 
 .macro afetch_
-  dup_
-  ldr tos, [areg]
+  push_
+  ldr wreg, [areg]
 .endm
 
 .macro bfetch_
-  dup_
-  ldr tos, [breg]
+  push_
+  ldr wreg, [breg]
 .endm
 
 .macro ahfetch_
-  dup_
-  ldrh tos, [areg]
+  push_
+  ldrh wreg, [areg]
 .endm
 
 .macro bhfetch_
-  dup_
-  ldrh tos, [breg]
+  push_
+  ldrh wreg, [breg]
 .endm
 
 .macro acfetch_
-  dup_
-  ldrb tos, [areg]
+  push_
+  ldrb wreg, [areg]
 .endm
 
 .macro bcfetch_
-  dup_
-  ldrb tos, [breg]
+  push_
+  ldrb wreg, [breg]
 .endm
 
 .macro aplus_

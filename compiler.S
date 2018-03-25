@@ -32,9 +32,9 @@ Forthword_ SMUDGE, 0, "smudge"
 @ ( -- f-addr )
 @ get address of the dictionary cell
 Forthword_ DPSHARP, 0, "dp#"
-    dup_
-    movs tos, #(ram_dp-sysvar_base)
-    adds tos, sysvar
+    push_
+    movs wreg, #(ram_dp-sysvar_base)
+    adds wreg, sysvar
     bx lr
 
 @ ( -- f-addr )
@@ -83,12 +83,12 @@ Forthword_ CLRCACHE, 0, "clrcache"
     @ r0 = start address: will be current last word defined
     bl CURRENT
     fetch_
-    mov r0, tos
-    drop_
+    mov r0, wreg
+    pop_
     @ r1 = end address
     bl DP
-    mov r1, tos
-    drop_
+    mov r1, wreg
+    pop_
     @ can't tail call optimize here since calling c code in arm not thumb
     bl __clear_cache
     pop {pc}
@@ -123,7 +123,7 @@ Forthword_ LBRACKET, IMMEDIATE_EN, "["
     b ZEROHSTORE
 
 @ ( n -- )
-@ store 16 bit value on TOS into ram at (dictionary pointer) DP
+@ store 16 bit value on wreg into ram at (dictionary pointer) DP
 Forthword_ COMMA, 0, ","
     push {lr}
     bl DP
@@ -132,7 +132,7 @@ Forthword_ COMMA, 0, ","
     b DPPLUSONE
 
 @ ( n -- )
-@ store 32 bit value on TOS into ram at (dictionary pointer) DP
+@ store 32 bit value on wreg into ram at (dictionary pointer) DP
 Forthword_ DCOMMA, 0, "d,"
     push {lr}
     bl DP
@@ -163,7 +163,7 @@ PFA_SCOMMA1:
     b.n PFA_SCOMMA1
 
 PFA_SCOMMA2:
-    drop_              @ (  )
+    pop_              @ (  )
     r_from_            @ ( rem ) (R: )
     @ if
     zerosense_         @ ( )
@@ -206,16 +206,16 @@ Forthword_ INLINE, 0, "inline"
     push {lr}
     @ find the bx lr instruction, want count to bx lr
     @ count will be number of half words to inline
-    dup_
-    movs tos, #0x47
-    lsls tos, #8
-    adds tos, #0x70
+    push_
+    movs wreg, #0x47
+    lsls wreg, #8
+    adds wreg, #0x70
     bl FINDH                 @ ( start count )
 
     @ dp swap dup dp+ itoi
     bl DP                    @ ( start count dp )
     swap_                    @ ( start dp count )
-    dup_                     @ ( start dp count count )
+    push_                     @ ( start dp count count )
     bl DPPLUS                @ ( start dp count )
     pop_lr_
     b MCPY                  @ ( )
@@ -227,7 +227,7 @@ Forthword_ NFA2LFA, 0, "nfa>lfa"
     bl STRINGLEN                @ ( nfa+2 len+flags )
     @ mask out flags in len, allow up to 31 characters
     movs r0, #31
-    ands tos, r0                 @ ( nfa+2 len )
+    ands wreg, r0                 @ ( nfa+2 len )
     bl WALIGN
     plus_
     pop {pc}
@@ -239,7 +239,7 @@ Forthword_ NFATOXTF, 0, "nfa>xtf"
     dupzerosense_               @ ( n )
     beq.n NFATOXTF_EXIT
 
-    dup_                        @ ( nfa nfa )
+    push_                        @ ( nfa nfa )
     hfetch_                     @ ( nfa xtflags )
     to_r_                       @ ( nfa ) (R: xtflags)
     bl NFA2LFA                  @ ( lfa )
@@ -256,7 +256,7 @@ Forthword_ ONLY, IMMEDIATE_EN, "only"
     push {lr}
     @ forth vocab always takes slot 0
     dolit32_ EE_FORTHWORDLIST
-    dup_
+    push_
     bl CONTEXT
     bl STORE
     @ make current also forth vocab

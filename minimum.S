@@ -79,9 +79,9 @@ Forthword_ HEX, 0, "hex"
 @ compare two values leave the smaller one
 Forthword_ MIN, 0, "min"
   ldm dsp!, {r0}
-  cmp r0, tos
+  cmp r0, wreg
   bge.n 1f
-  movs tos, r0
+  movs wreg, r0
 1:
   bx lr
 
@@ -89,9 +89,9 @@ Forthword_ MIN, 0, "min"
 @ compare two values, leave the bigger one
 Forthword_ MAX, 0, "max"
   ldm dsp!, {r0}
-  cmp r0, tos
+  cmp r0, wreg
   blt.n 1f
-  mov tos, r0
+  mov wreg, r0
 1:
   bx lr
 
@@ -100,14 +100,14 @@ Forthword_ MAX, 0, "max"
 @ convert low byte of val to a printable hex character
 Forthword_ NHEX, 0, "#h"
     movs r0, #0x0F
-    ands tos, r0
-    cmp tos, #10
+    ands wreg, r0
+    cmp wreg, #10
     blo.n NHEX_NEXT
-    adds tos, #7
+    adds wreg, #7
 
     @ <then>
 NHEX_NEXT:
-    adds tos, #48
+    adds wreg, #48
     bx lr
 
 
@@ -130,13 +130,13 @@ PHEX_BEGIN:
     bl TWOOVER
     rshift_
     bl PNIB
-    subs tos, #4
+    subs wreg, #4
     bne.n PHEX_BEGIN
 
-    drop_
-    dup_
+    pop_
+    push_
     bl PNIB
-    movs tos, #32
+    movs wreg, #32
     pop_lr_
     b EMIT
 
@@ -153,18 +153,18 @@ Forthword_ ABS, 0, "abs"
 @ ( c -- (number|) flag )
 @ tries to convert a character to a number, set flag accordingly
 Forthword_ DIGITQ, 0, "digit?"
-    subs tos, #0x30
-    cmp tos, #10
+    subs wreg, #0x30
+    cmp wreg, #10
     blo.n DIGITQ0
-    subs tos, #7
-    cmp tos, #10
+    subs wreg, #7
+    cmp wreg, #10
     bge.n DIGITQ0
 
     zerotos_
     bx lr
 
 DIGITQ0:
-    dup_
+    push_
     push {lr}
     bl BASEFETCH
     bl UGREATEREQUAL
@@ -280,8 +280,8 @@ Forthword_ THROW, 0, "throw"
 @ set the BASE value depending on the character
 @forthword_ SETBASE, 0, "setbase"
 SETBASE:        @ ( c -- )
-    mov r0, tos
-    drop_
+    mov r0, wreg
+    pop_
     cmp r0, #'$
     bne.n PFA_SETBASE0
     b.n HEX
@@ -297,8 +297,8 @@ PFA_SETBASE1:
     b.n DECIMAL
 
 PFA_SETBASE2:        @ ( error)
-    dup_
-    mov tos, r0
+    push_
+    mov wreg, r0
     bl EMIT
     $lit_ " Bad Base!"
     bl THROW
@@ -310,10 +310,10 @@ PRAEFIX:        @ ( adr1 len1 -- adr2 len2 )
     push {lr}
     over_
     cfetch_
-    cmp tos, #0x30
+    cmp wreg, #0x30
     blo.n PFA_PRAEFIX0
     @ no praefix
-    drop_
+    pop_
     pop {pc}
 
 PFA_PRAEFIX0:
@@ -328,7 +328,7 @@ PFA_PRAEFIX0:
 NUMBERSIGN:        @ ( addr len -- )
     over_          @ ( addr len addr )
     cfetch_        @ ( addr len char )
-    cmp tos, #'-
+    cmp wreg, #'-
     beq.n NUMBERSIGN_HASSIGN
       zerotos_
       bx lr
@@ -361,9 +361,9 @@ TO_NUMBER_CONV:
         bl ROT               @ ( adr len u)
         bl BASEFETCH         @ ( adr len u base)
         @bl STAR             @ ( adr len u*base)
-        mov r0, tos
-        drop_
-        muls tos, r0
+        mov r0, wreg
+        pop_
+        muls wreg, r0
         getb_                @ ( adr len u' digit)
         plus_                @ ( adr len u')
         bl RROT              @ ( u' adr len )
@@ -403,7 +403,7 @@ PFA_NUMBER2:
   b.n PFA_NUMBER5
 
 PFA_NUMBER1:
-  drop_                   @ ( n )  (R: base flagsign' )
+  pop_                   @ ( n )  (R: base flagsign' )
   @ incorporate sign into number
   r_from_                 @ ( n flagsign' ) (R: base )
   zerosense_
@@ -424,10 +424,10 @@ Forthword_ DSWAP, 0, "2swap"
   ldm dsp!, {r0, r1, r2}
   subs dsp, #4
   str r0, [dsp]
-  dup_
+  push_
   subs dsp, #4
   str r2, [dsp]
-  movs tos, r1
+  movs wreg, r1
   bx lr
 
 @ ( n -- -n )
@@ -436,9 +436,9 @@ Forthword_ DNEG, 0, "dneg"
   ldr r0, [dsp]
   movs r1, #0
   mvns r0, r0
-  mvns tos, tos
+  mvns wreg, wreg
   adds r0, #1
-  adcs tos, r1
+  adcs wreg, r1
   str r0, [dsp]
   bx lr
 
@@ -448,36 +448,36 @@ Forthword_ UMSTAR, 0, "um*"
 .if rpi2
 
     ldr r0, [dsp]
-    umull r0, tos, r0, tos @ Unsigned long multiply 32*32=64
+    umull r0, wreg, r0, wreg @ Unsigned long multiply 32*32=64
     str r0, [dsp]
     bx lr
     
 .else
 
-    ldr r0, [dsp]  @ To be calculated: Tos * r0
+    ldr r0, [dsp]  @ To be calculated: wreg * r0
 
     @ Calculate low part in hardware:
     movs r3, r0    @ Save the low part for later
-    muls r3, tos   @ Gives complete low-part of result
+    muls r3, wreg   @ Gives complete low-part of result
     str r3, [dsp]  @ Store low part
 
     @ Calculate high part:
     lsrs r1, r0,  #16 @ Shifted half
-    lsrs r2, tos, #16 @ Shifted half
+    lsrs r2, wreg, #16 @ Shifted half
 
     movs r3, r1  @ High-High
     muls r3, r2
 
     @ Low-High and High-Low
-    uxth tos, tos
+    uxth wreg, wreg
     uxth r0, r0
 
-    muls tos, r1
+    muls wreg, r1
     muls r0, r2
-    adds tos, r0
+    adds wreg, r0
 
-    lsrs tos, #16 @ Shift accordingly
-    adds tos, r3  @ Add together
+    lsrs wreg, #16 @ Shift accordingly
+    adds wreg, r3  @ Add together
     bx lr
 
 .endif
@@ -491,7 +491,7 @@ Forthword_ MSTAR, 0, "m*"
 .if rpi2
 
     ldr r0, [dsp]
-    smull r0, tos, r0, tos @ Signed long multiply 32*32=64
+    smull r0, wreg, r0, wreg @ Signed long multiply 32*32=64
     str r0, [dsp]
     bx lr
 
@@ -504,18 +504,18 @@ Forthword_ MSTAR, 0, "m*"
       rsbs r0, r0, #0
       str r0, [dsp]
 
-      movs r0, tos, asr #31 @ Turn MSB into 0xffffffff or 0x00000000
+      movs r0, wreg, asr #31 @ Turn MSB into 0xffffffff or 0x00000000
       beq.n 2f @ - * +
 
       @ - * -
-      rsbs tos, tos, #0
+      rsbs wreg, wreg, #0
       b.n UMSTAR
 
 1:  @ + * ?
-    movs r0, tos, asr #31 @ Turn MSB into 0xffffffff or 0x00000000
+    movs r0, wreg, asr #31 @ Turn MSB into 0xffffffff or 0x00000000
     beq.n UMSTAR @ + * +
     @ + * -
-    rsbs tos, tos, #0
+    rsbs wreg, wreg, #0
 
     @ - * + or + * -
 2:  push {lr}
@@ -537,7 +537,7 @@ Forthword_ UM_DIVMOD, 0, "um/mod"
 @  pop {pc}
 
   push {r4}
-                     @ tos : Divisor
+                     @ wreg : Divisor
   ldr  r0, [dsp, #4] @ (LL) Dividend L
   ldr  r1, [dsp, #0] @ (L)  Dividend H
   movs r2, #0        @ (H)  Shift L
@@ -554,9 +554,9 @@ Forthword_ UM_DIVMOD, 0, "um/mod"
   adcs r2, r2 
 
   @ Compare the top two registers to divisor
-  cmp tos, r2  @ Compare low part
+  cmp wreg, r2  @ Compare low part
   bhi.n 2f      @ If lower or same:
-    subs r2, tos  @  Low-part first
+    subs r2, wreg  @  Low-part first
     adds r4, #1  @ Set bit in result
 2:
   subs r3, #1
@@ -575,9 +575,9 @@ Forthword_ UM_DIVMOD, 0, "um/mod"
   adcs r2, r2
 
   @ Compare the top two registers to divisor
-  cmp tos, r2  @ Compare low part
+  cmp wreg, r2  @ Compare low part
   bhi.n 2f      @ If lower or same:
-    subs r2, tos  @  Low-part first
+    subs r2, wreg  @  Low-part first
     adds r4, #1  @ Set bit in result
 2:
   subs r3, #1
@@ -586,7 +586,7 @@ Forthword_ UM_DIVMOD, 0, "um/mod"
 
   adds dsp, #4
   str r2, [dsp] @ Remainder
-  movs tos, r4
+  movs wreg, r4
 
   pop {r4}
   bx lr
@@ -597,7 +597,7 @@ Forthword_ M_DIVMOD, 0, "m/mod"
 @ ( d n -- n n )
 @  push {lr}
 @  pushdatos                 @ s>d
-@  movs tos, tos, asr #31    @ Turn MSB into 0xffffffff or 0x00000000
+@  movs wreg, wreg, asr #31    @ Turn MSB into 0xffffffff or 0x00000000
 @  bl d_slash_mod
 @  drop
 @  nip
@@ -605,12 +605,12 @@ Forthword_ M_DIVMOD, 0, "m/mod"
 
   @ Check Divisor
   push {lr}
-  movs r0, tos, asr #31 @ Turn MSB into 0xffffffff or 0x00000000
+  movs r0, wreg, asr #31 @ Turn MSB into 0xffffffff or 0x00000000
   beq.n 2f
     @ ? / -
-    rsbs tos, tos, #0 @ Negate
+    rsbs wreg, wreg, #0 @ Negate
     bl RROT
-    movs r0, tos, asr #31 @ Turn MSB into 0xffffffff or 0x00000000
+    movs r0, wreg, asr #31 @ Turn MSB into 0xffffffff or 0x00000000
     beq.n 1f
     @ - / -
     bl DNEG
@@ -618,19 +618,19 @@ Forthword_ M_DIVMOD, 0, "m/mod"
     bl UM_DIVMOD
 
     swap_
-    rsbs tos, tos, #0 @ Negate for Negative remainder
+    rsbs wreg, wreg, #0 @ Negate for Negative remainder
     swap_
     pop {pc}
 
 1:  @ + / -
     bl ROT
     bl UM_DIVMOD
-    rsbs tos, tos, #0 @ Negate for Negative result
+    rsbs wreg, wreg, #0 @ Negate for Negative result
     pop {pc}
 
 2:  @ ? / +
     bl RROT
-    movs r0, tos, asr #31 @ Turn MSB into 0xffffffff or 0x00000000
+    movs r0, wreg, asr #31 @ Turn MSB into 0xffffffff or 0x00000000
     beq.n 3f
     @ - / +
     bl DNEG
@@ -638,9 +638,9 @@ Forthword_ M_DIVMOD, 0, "m/mod"
 
     bl UM_DIVMOD
 
-    rsbs tos, tos, #0 @ Negate for Negative result
+    rsbs wreg, wreg, #0 @ Negate for Negative result
     swap_
-    rsbs tos, tos, #0 @ Negate for Negative remainder
+    rsbs wreg, wreg, #0 @ Negate for Negative remainder
     swap_
     pop {pc}
 
@@ -678,11 +678,11 @@ Forthword_ M_DIVMOD, 0, "m/mod"
 Forthword_ UD_SLASHMOD, 0, "ud/mod"
          @ Unsigned divide 64/64 = 64 remainder 64
          @ ( ud1 ud2 -- ud ud)
-         @ ( 1L 1H 2L tos: 2H -- Rem-L Rem-H Quot-L tos: Quot-H )
+         @ ( 1L 1H 2L wreg: 2H -- Rem-L Rem-H Quot-L wreg: Quot-H )
    push {r4, r5}
 
    @ ( DividendL DividendH DivisorL DivisorH -- RemainderL RemainderH ResultL ResultH )
-   @   8         4         0        tos      -- 8          4          0       tos
+   @   8         4         0        wreg      -- 8          4          0       wreg
 
 
    @ Shift-High Shift-Low Dividend-High Dividend-Low
@@ -697,18 +697,18 @@ Forthword_ UD_SLASHMOD, 0, "ud/mod"
    @          r5           r4
 
 ud_slash_mod_internal:
-   movs r5, tos
+   movs r5, wreg
    ldr  r4, [dsp, #0]
 
    @ For this long division, we need 64 individual division steps.
-   movs tos, #64
+   movs wreg, #64
 
 3: division_step
-   subs tos, #1
+   subs wreg, #1
    bne.n 3b
 
    @ Now place all values to their destination.
-   movs tos, r1       @ Result-High
+   movs wreg, r1       @ Result-High
    str  r0, [dsp, #0] @ Result-Low
    str  r3, [dsp, #4] @ Remainder-High
    str  r2, [dsp, #8] @ Remainder-Low
@@ -719,15 +719,15 @@ ud_slash_mod_internal:
 Forthword_ D_SLASHMOD, 0, "d/mod"
 @ Signed symmetric divide 64/64 = 64 remainder 64
 @ ( d1 d2 -- d d )
-@ ( 1L 1H 2L tos: 2H -- Rem-L Rem-H Quot-L tos: Quot-H )
+@ ( 1L 1H 2L wreg: 2H -- Rem-L Rem-H Quot-L wreg: Quot-H )
   @ Check Divisor
   push {lr}
-  movs r0, tos, asr #31 @ Turn MSB into 0xffffffff or 0x00000000
+  movs r0, wreg, asr #31 @ Turn MSB into 0xffffffff or 0x00000000
   beq.n 2f
     @ ? / -
     bl DNEG
     bl DSWAP
-    movs r0, tos, asr #31 @ Turn MSB into 0xffffffff or 0x00000000
+    movs r0, wreg, asr #31 @ Turn MSB into 0xffffffff or 0x00000000
     beq.n 1f
     @ - / -
     bl DNEG
@@ -747,7 +747,7 @@ Forthword_ D_SLASHMOD, 0, "d/mod"
 
 2:  @ ? / +
     bl DSWAP
-    movs r0, tos, asr #31 @ Turn MSB into 0xffffffff or 0x00000000
+    movs r0, wreg, asr #31 @ Turn MSB into 0xffffffff or 0x00000000
     beq.n 3f
     @ - / +
     bl DNEG
@@ -773,9 +773,9 @@ Forthword_ U_DIVMOD, 0, "u/mod"
   .if rpi2
 
   ldm dsp!, {r0}       @ Get u1 into a register
-  movs r1, tos         @ Back up the divisor in X.
-  udiv tos, r0, tos    @ Divide: quotient in TOS.
-  muls r1, tos, r1     @ Un-divide to compute remainder.
+  movs r1, wreg         @ Back up the divisor in X.
+  udiv wreg, r0, wreg    @ Divide: quotient in wreg.
+  muls r1, wreg, r1     @ Un-divide to compute remainder.
   subs r0, r1          @ Compute remainder.
   subs dsp, #4
   str r0, [dsp]
@@ -783,8 +783,8 @@ Forthword_ U_DIVMOD, 0, "u/mod"
     
   .else
 
-  movs r1, tos
-  ldm dsp!, {tos}
+  movs r1, wreg
+  ldm dsp!, {wreg}
 
   @ Catch divide by zero..
   cmp r1, #0
@@ -796,7 +796,7 @@ Forthword_ U_DIVMOD, 0, "u/mod"
   @ Shift left the denominator until it is greater than the numerator
   movs r2, #1
   movs r3, #0
-  cmp tos, r1
+  cmp wreg, r1
   bls.n 3f
   adds r1, #0    @ Don't shift if denominator would overflow
   bmi.n 3f
@@ -804,20 +804,20 @@ Forthword_ U_DIVMOD, 0, "u/mod"
 2:lsls r2, #1
   lsls r1, #1
   bmi.n 3f
-  cmp tos, r1
+  cmp wreg, r1
   bhi.n 2b
 
-3:cmp tos, r1
+3:cmp wreg, r1
   bcc.n 4f         @ if (num>denom)
-  subs tos, r1     @ numerator -= denom
+  subs wreg, r1     @ numerator -= denom
   orrs r3, r2      @ result(r3) |= bitmask(r2)
 
 4:lsrs r1, #1      @ denom(r1) >>= 1
   lsrs r2, #1      @ bitmask(r2) >>= 1
   bne.n 3b
 
-  dup_
-  movs tos, r3
+  push_
+  movs wreg, r3
   bx lr
   .endif
   
@@ -828,9 +828,9 @@ Forthword_ DIVMOD, 0, "/mod"
 .if rpi2
 
   ldm dsp!, {r0}       @ Get u1 into a register
-  movs r1, tos         @ Back up the divisor in X.
-  sdiv tos, r0, tos    @ Divide: quotient in TOS.
-  muls r1, tos, r1     @ Un-divide to compute remainder.
+  movs r1, wreg         @ Back up the divisor in X.
+  sdiv wreg, r0, wreg    @ Divide: quotient in wreg.
+  muls r1, wreg, r1     @ Un-divide to compute remainder.
   subs r0, r1          @ Compute remainder.
   subs dsp, #4
   str r0, [dsp]
@@ -839,13 +839,13 @@ Forthword_ DIVMOD, 0, "/mod"
 .else
 
   push {lr}
-  movs r0, tos
-  ldm dsp!, {tos}
-  @     TOS: Dividend
+  movs r0, wreg
+  ldm dsp!, {wreg}
+  @     wreg: Dividend
 
-  cmp tos, #0
+  cmp wreg, #0
   bge.n divmod_plus
-  rsbs tos, tos, #0
+  rsbs wreg, wreg, #0
 
 divmod_minus:
     cmp r0, #0
@@ -853,26 +853,26 @@ divmod_minus:
 
 divmod_minus_minus:
       rsbs r0, r0, #0
-      dup_
-      movs tos, r0
+      push_
+      movs wreg, r0
       bl U_DIVMOD
-      movs r0, tos
-      ldm dsp!, {tos}
-      rsbs tos, tos, #0
-      dup_
-      movs tos, r0
+      movs r0, wreg
+      ldm dsp!, {wreg}
+      rsbs wreg, wreg, #0
+      push_
+      movs wreg, r0
       pop {pc}
 
 divmod_minus_plus:
-      dup_
-      mov tos, r0
+      push_
+      mov wreg, r0
       bl U_DIVMOD
-      movs r0, tos
-      ldm dsp!, {tos}
+      movs r0, wreg
+      ldm dsp!, {wreg}
       rsbs r0, r0, #0
-      rsbs tos, tos, #0
-      dup_
-      movs tos, r0
+      rsbs wreg, wreg, #0
+      push_
+      movs wreg, r0
       pop {pc}
 
 divmod_plus:
@@ -881,15 +881,15 @@ divmod_plus:
 
 divmod_plus_minus:
       rsbs r0, r0, #0
-      dup_
-      movs tos, r0
+      push_
+      movs wreg, r0
       bl U_DIVMOD
-      rsbs tos, tos, #0
+      rsbs wreg, wreg, #0
       pop {pc}
 
 divmod_plus_plus:
-      dup_
-      mov tos, r0
+      push_
+      mov wreg, r0
       bl U_DIVMOD
       pop {pc}
 .endif
@@ -900,7 +900,7 @@ divmod_plus_plus:
 
 Forthword_ DIV, INLINE_OPT, "/"
   ldm dsp!, {r0}       @ Get n1 into a register
-  sdiv tos, r0, tos    @ Divide !
+  sdiv wreg, r0, wreg    @ Divide !
   bx lr
 
 .else
@@ -916,8 +916,8 @@ Forthword_, DIV, 0, "/"
 @ ( n -- )
 @ sleep for n micro seconds
 Forthword_ USLEEP, 0, "usleep"
-  mov r0, tos
-  drop_
+  mov r0, wreg
+  pop_
   b usleep
 
 
@@ -931,7 +931,7 @@ Forthword_ SLEEP, 0, "sleep"
     pop_lr_
     b USLEEP
 NO_IDLESLEEP:
-  drop_
+  pop_
   pop {pc}
 
 @ ( -- )
@@ -954,10 +954,10 @@ Forthword_ SLEEPON, 0, "sleepon"
 @ .word deferptr
 @ does not return to defer callee
 Forthword_ DODEFER, 0, "(def)"
-  dup_
-  mov tos, lr
-  subs tos, #1 @ doing memory access, do not want thumb bit
-  ldr tos, [tos]
+  push_
+  mov wreg, lr
+  subs wreg, #1 @ doing memory access, do not want thumb bit
+  ldr wreg, [wreg]
   bl EXEC
   pop {pc}
   
@@ -973,7 +973,7 @@ Forthword_ DOINCLUDE, 0, "doinclude"
     swap_
     bl OPENF     @ ( filedes )
     @ if file descriptor > 0 then open is success
-    dup_
+    push_
     bl ZEROGREATER
     zerosense_
     
@@ -1022,7 +1022,7 @@ Forthword_ DOINCLUDE, 0, "doinclude"
 	  	b IDLETIMESTORE
        
 DOINCLUDE_EXIT:
-    drop_
+    pop_
     type_ "File not found!"
     pop {pc}
 
@@ -1064,14 +1064,14 @@ DOCMDARG_EXIT:
 @ gives the number of seconds and microseconds since the Epoch
 Forthword_ TIME, 0, "time"
     push {lr}
-    dup_
-    movs tos, #0
-    dup_
-    dup_
+    push_
+    movs wreg, #0
+    push_
+    push_
     mov r0, dsp
     movs r1, #0
     bl gettimeofday
-    drop_
+    pop_
     pop {pc}
     
 @ must be last word in core
@@ -1079,12 +1079,12 @@ Forthword_ WIPE, 0, "WIPE"
     push {lr}
    
     ldr r0, addr_dpstart
-    movs tos, #(ram_dp-sysvar_base)
-    adds tos, sysvar
-    str r0, [tos]
+    movs wreg, #(ram_dp-sysvar_base)
+    adds wreg, sysvar
+    str r0, [wreg]
     
     dolit32_ EE_FORTHWORDLIST
-    dup_
+    push_
     bl ZEROSTORE
     fourplus_
     bl ZEROSTORE

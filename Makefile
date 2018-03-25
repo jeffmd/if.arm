@@ -1,16 +1,16 @@
 # Makefile
 INCS = *.S
 
-all: rf
+all: if
 
-rf : rf.o input.o
+if : if.o input.o
 	gcc -Os -ldl -lm -o $@ $+
 
-rf.o : main.S $(INCS)
+if.o : main.S $(INCS)
 	as -o $@ $<
 
 lst:
-	objdump -h -x -D -S rf > lst.txt
+	objdump -h -x -D -S if > lst.txt
 
 clean:
-	rm -vf rf *.o
+	rm -vf if *.o

@@ -6,11 +6,11 @@
 @ option flags 
 Forthword_ OPENF, 0, "open"
   push {lr}
-  mov r0, tos @ path
-  drop_
-  mov r1, tos @ flags
+  mov r0, wreg @ path
+  pop_
+  mov r1, wreg @ flags
   bl open
-  mov tos, r0
+  mov wreg, r0
   pop {pc}
 
 @ ( filedes -- )
@@ -18,37 +18,37 @@ Forthword_ OPENF, 0, "open"
 @ filedes - file descriptor
 Forthword_ CLOSEF, 0, "close"
   push {lr}
-  mov r0, tos @ filedes
-  drop_
+  mov r0, wreg @ filedes
+  pop_
   bl close
   pop {pc}
 
 @ (  filedes buffer length -- bytesread )
 @ fetch bytes from an open file using filedes
-@ number of bytes read left on TOS
+@ number of bytes read left on wreg
 Forthword_ READF, 0, "read"
   push {lr}
-  movs r2, tos @ length
-  drop_
-  mov r1, tos @ buffer
-  drop_
-  movs r0, tos @ filedes
+  movs r2, wreg @ length
+  pop_
+  mov r1, wreg @ buffer
+  pop_
+  movs r0, wreg @ filedes
   bl read 
-  mov tos, r0
+  mov wreg, r0
   pop {pc}
 
 @ (  filedes buffer length -- bytesread )
 @ write bytes to an open file using filedes
-@ number of bytes written left on TOS
+@ number of bytes written left on wreg
 Forthword_ WRITEF, 0, "write"
   push {lr}
-  movs r2, tos @ length
-  drop_
-  mov r1, tos @ buffer
-  drop_
-  movs r0, tos @ filedes
+  movs r2, wreg @ length
+  pop_
+  mov r1, wreg @ buffer
+  pop_
+  movs r0, wreg @ filedes
   bl write 
-  mov tos, r0
+  mov wreg, r0
   pop {pc}
 
 @ ( mode path -- handle )
@@ -57,11 +57,11 @@ Forthword_ WRITEF, 0, "write"
 @ mode -  
 Forthword_ DLOPEN, 0, "dlopen"
   push {lr}
-  mov r0, tos @ path
-  drop_
-  mov r1, tos @ mode
+  mov r0, wreg @ path
+  pop_
+  mov r1, wreg @ mode
   bl dlopen
-  mov tos, r0
+  mov wreg, r0
   pop {pc}
 
 @ ( symname handle -- funcptr )
@@ -70,11 +70,11 @@ Forthword_ DLOPEN, 0, "dlopen"
 @ funcptr - address of symbol if found 
 Forthword_ DLSYM, 0, "dlsym"
   push {lr}
-  mov r0, tos @ handle
-  drop_
-  mov r1, tos @ symname
+  mov r0, wreg @ handle
+  pop_
+  mov r1, wreg @ symname
   bl dlsym
-  mov tos, r0
+  mov wreg, r0
   pop {pc}
   
 @ ( handle -- flag )
@@ -82,9 +82,9 @@ Forthword_ DLSYM, 0, "dlsym"
 @ flag - 0 if success  
 Forthword_ DLCLOSE, 0, "dlclose"
   push {lr}
-  mov r0, tos @ handle
+  mov r0, wreg @ handle
   bl dlclose
-  mov tos, r0
+  mov wreg, r0
   pop {pc}
 
 @ ( -- stringptr )
@@ -94,27 +94,27 @@ Forthword_ DLCLOSE, 0, "dlclose"
 Forthword_ DLERROR, 0, "dlerror"
   push {lr}
   bl dlerror
-  dup_
-  mov tos, r0
+  push_
+  mov wreg, r0
   pop {pc}
 
 @ ( calladdr -- [] )
 @ call a dl symbol with no call arguments  
 Forthword_ DLCALL0, 0, "dlcall0"
   push {lr}
-  blx tos
-  mov tos, r0
+  blx wreg
+  mov wreg, r0
   pop {pc}
 
 @ ( arg1 calladdr -- [] )
 @ call a dl symbol with one call arguments  
 Forthword_ DLCALL1, 0, "dlcall1"
   push {lr}
-  mov r1, tos @ call addr
-  drop_
-  mov r0, tos @ arg1
+  mov r1, wreg @ call addr
+  pop_
+  mov r0, wreg @ arg1
   blx r1
-  mov tos, r0
+  mov wreg, r0
   pop {pc}
   
 
