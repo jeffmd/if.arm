@@ -37,12 +37,23 @@ PFA_QDUP1:
 Forthword_ SWAP, INLINE_OPT, "swap"
     swap_
     bx lr
-    
+
 @ ( n1 n2 -- n2)
 @ drop NOS, one before wreg.
-@ same as SWAP DROP
 Forthword_ NIP, INLINE_OPT, "nip"
-    adds dsp, #4 
+    nip_
+    bx lr
+
+@ ( n1 n2 n3 -- n3)
+@ drop NOS, one before wreg.
+Forthword_ NIP2, INLINE_OPT, "nip2"
+    nip2_
+    bx lr
+
+@ ( n1 n2 n3 n4 -- n4)
+@ drop NOS, one before wreg.
+Forthword_ NIP3, INLINE_OPT, "nip3"
+    nip3_
     bx lr
 
 @ ( x1 x2 -- x1 x2 x1 )
@@ -59,65 +70,26 @@ Forthword_ TWOOVER, 0, "2over"
 
 @ ( n -- )
 @ drop wreg
-Forthword_ DROP, INLINE_OPT, "drop"
+Forthword_ DROP, INLINE_OPT, "pop"
     pop_
     bx lr
 
 @ ( n n -- )
 @ drop wreg twice
-Forthword_ DDROP, INLINE_OPT, "2drop"
-    ddrop_
-    bx lr
-
-
-@ ( n1 n2 -- n2 n1 n2)
-@ tuck wreg before NOS, same as SWAP OVER
-Forthword_ TUCK, 0, "tuck"
-    ldm dsp!, {r0}
-    subs dsp, #8
-    str wreg, [dsp, #4]
-    str r0, [dsp]
-    bx lr
-
-@ ( n1 n2 n3 -- n3 n2 n1)
-@ exchange wreg and stack cell before NOS, same as SWAP ROT
-Forthword_ FLIP, 0, "flip"
-    mov r0, wreg
-    ldr wreg, [dsp, #4]
-    str r0, [dsp, #4]
-    bx lr
-
-@ ( n1 n2 n3 -- n2 n3 n1)
-@ rotate the three top level cells
-Forthword_ ROT, 0, "rot"
-    ldm dsp!, {r0, r1}
-    subs dsp, #8
-    str r0, [dsp, #4]
-    str wreg, [dsp]
-    mov wreg, r1
-    bx lr
-
-@ ( n1 n2 n3 -- n3 n1 n2)
-@ reverse rotate the three top level cells
-@ equivalent to rotate twice but faster
-Forthword_ RROT, 0, "-rot"
-    ldm dsp!, {r0, r1}
-    subs dsp, #8
-    str wreg, [dsp, #4]
-    str r1, [dsp]
-    mov wreg, r0
+Forthword_ DDROP, INLINE_OPT, "pop2"
+    pop2_
     bx lr
 
 @ (  -- addr )
 @ current data stack pointer
-Forthword_ SP_FETCH, INLINE_OPT, "sp@"
-    spfetch_
+Forthword_ SP_FETCH, INLINE_OPT, "sp"
+    sp_
     bx lr
 
 @ ( addr -- i*x)
 @ set data stack pointer to addr
-Forthword_ SP_STORE, INLINE_OPT, "sp!"
-    spstore_
+Forthword_ STR_SP, INLINE_OPT, "!sp"
+    str_sp_
     bx lr
 
 
@@ -125,44 +97,38 @@ Forthword_ SP_STORE, INLINE_OPT, "sp!"
 
 @ ( -- n ) (R: n --)
 @ move TOR to wreg
-Forthword_ R_FROM, INLINE_OPT, "r>"
-    r_from_
+Forthword_ RPOP, INLINE_OPT, "rpop"
+    rpop_
     bx lr
 
 @ ( -- ) (R: n -- )
 @ Drop TOR
-Forthword_ R_DROP, INLINE_OPT, "r>drop"
-    r_drop_
-    bx lr
-
-@ ( n -- ) (R: -- n)
-@ move wreg to TOR
-Forthword_ TO_R, INLINE_OPT, ">r"
-    to_r_
+Forthword_ RNIP, INLINE_OPT, "rnip"
+    rnip_
     bx lr
 
 @ ( n -- n ) (R: -- n )
 @ copy wreg to TOR
-Forthword_ DUP_R, INLINE_OPT, "r>r"
-    dup_r_
+Forthword_ DUP_R, INLINE_OPT, "rpush"
+    rpush_
     bx lr
 
 @ ( -- n) (R: n -- n )
 @ put a copy of TOR on wreg
-Forthword_ R_FETCH, INLINE_OPT, "r"
-    r_fetch_
+Forthword_ R_FETCH, INLINE_OPT, "r0"
+    r0_
     bx lr
 
 @ (  -- n)
 @ current return stack pointer address
-Forthword_ RP_FETCH, INLINE_OPT, "rp@"
+Forthword_ RP_FETCH, INLINE_OPT, "rp"
     rpfetch_
     bx lr
 
 @ ( addr  -- ) (R: -- x*y)
 @ set return stack pointer
 @ must be called
-Forthword_ RP_STORE, INLINE_OPT, "rp!"
+Forthword_ RP_STORE, INLINE_OPT, "!rp"
     @ keep the return address
     rpstore_
     bx lr
