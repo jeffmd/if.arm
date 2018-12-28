@@ -1,4 +1,4 @@
-/*  main.S */
+@  if.S 
 .syntax unified
 .thumb
 
@@ -13,7 +13,7 @@
 .balign 4
 
 datastack:
-  .space 800
+  .space 200
 topdatastack:
   .space 8
 
@@ -50,11 +50,11 @@ EE_FORTHWORDLIST:
 
 @ start of user ram area
 HERESTART:
-   .space 64000
+   .space 0xffff
 
 @ start of user program area
 DPSTART:
-   .space 64000
+   .space 0xffff
 
 @ start of hard coded program area that can not be modified at runtime
 .text
@@ -63,13 +63,25 @@ DPSTART:
 
 .set VE_HEAD, 0
 
-.include "core.S"
-.include "defer.S"
-.include "compiler.S"
-.include "interpret.S"
-.include "asm.S"
-.include "file.S"
-.include "minimum.S"
+.include "core-base.S"
+@.include "core.S"
+@.include "core-inline.S"
+.include "cin.S"
+.include "cout.S"
+@.include "string.S"
+@.include "include.S"
+@.include "math.S"
+@.include "mathadv.S"
+.include "kernel-base.S"
+@.include "kernel.S"
+
+@.include "defer.S"
+@.include "dictionary.S"
+@.include "compiler.S"
+@.include "number.S"
+@.include "interpret.S"
+@.include "asm.S"
+@.include "file.S"
 
 
 @ ( nx* -- ) (R: ny* -- )
@@ -82,10 +94,10 @@ Forthword_ WARM, 0, "warm"
     bl STORE
     bl ONLY
     bl RESET
-    bl DECIMAL           @ default to decimal base
-    type_ "rf 0.1\n"
+@    bl DECIMAL           @ default to decimal base
+@    type_ "rf 0.1\n"
     @ check if command line args need to be loaded
-    bl DOCMDARG
+@    bl DOCMDARG
     pop_lr_  
     b QUIT
 
@@ -126,6 +138,9 @@ main:
 
     mov r0, wreg
     pop {pc}
+
+@ minimum.S must be last
+@.include "minimum.S"
 
 .balign 4
 @ ram pointers that need relocation on startup

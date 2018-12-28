@@ -6,7 +6,7 @@ all: if
 if : if.o input.o
 	gcc -Os -ldl -lm -o $@ $+
 
-if.o : main.S $(INCS)
+if.o : $(INCS)
 	as -o $@ $<
 
 lst:

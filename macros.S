@@ -1,12 +1,23 @@
 @ macros.S
+@ if registers and stacks
+@
+@ data stack       registers      return stack
+@ d0               w              r0
+@ d1               a              r1
+@ d2               b              r2
+@                  x
+@                  y
 
-wreg .req r0 @ parameter top of stack [TOS] register
+wreg .req r0 @ working register
+@ r1 is temp/scratch
+@ r2 is temp/scratch
 xreg .req r3 @ X register 
-yreg .req r4 @ X register
-@ sysvar .req r4 @ system variables base pointer
+yreg .req r4 @ Y register
 areg .req r5 @ A register - non-volatile: user must preserve
 breg .req r6 @ B register - non-volatile: user must preserve
-dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
+dsp  .req r7 @ holds the Data stack pointer
+
+@ sysvar .req r? @ system variables base pointer
 
 @ header flags
 .set HFLAGS, 0xFF
@@ -86,6 +97,10 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
 
 .macro rpop_y_
   pop {yreg}
+.endm
+
+.macro rpop_sp_
+  pop {dsp}
 .endm
 
 .macro rnip_ @ drop TOR
@@ -274,20 +289,39 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
 .balign 2
 .endm
 
-.macro douser_ sym
+.macro user_ sym
     movs wreg, #(\sym-sysvar_base)
     adds wreg, sysvar
-    bx lr
 .endm
 
 
-@ Push small 8 bit constant on datastack
-.macro dolit8_ val
+@ load small 8 bit constant into working register
+.macro lit8_ val
   movs wreg, #\val
 .endm
 
+@ load small 8 bit constant into A register
+.macro lit8_a_ val
+  movs areg, #\val
+.endm
+
+@ load small 8 bit constant into B register
+.macro lit8_b_ val
+  movs breg, #\val
+.endm
+
+@ load small 8 bit constant into X register
+.macro lit8_x_ val
+  movs xreg, #\val
+.endm
+
+@ load small 8 bit constant into Y register
+.macro lit8_y_ val
+  movs yreg, #\val
+.endm
+
 @ Push small 16 bit constant on datastack
-.macro dolit16_ val
+.macro lit16_ val
   movs wreg, #(\val/256)
   lsls wreg, #8
   adds wreg, #(\val & 255)
@@ -754,13 +788,24 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
     lsls wreg, #2
 .endm
 
-.macro dupzerosense_
+.macro iszero_
     cmp wreg, #0
 .endm
 
-.macro zerosense_
-    dupzerosense_
-    pop_
+.macro a_iszero_
+    cmp areg, #0
+.endm
+
+.macro b_iszero_
+    cmp breg, #0
+.endm
+
+.macro x_iszero_
+    cmp xreg, #0
+.endm
+
+.macro y_iszero_
+    cmp yreg, #0
 .endm
 
 .macro zeroless_
@@ -771,13 +816,45 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
     movs wreg, #0
 .endm
 
+.macro zero_a_
+    movs areg, #0
+.endm
+
+.macro zero_b_
+    movs breg, #0
+.endm
+
+.macro zero_x_
+    movs xreg, #0
+.endm
+
+.macro zero_y_
+    movs yreg, #0
+.endm
+
 .macro zeroequal_
   subs wreg, #1
   sbcs wreg, wreg
 .endm
 
 .macro bl_
-  dolit8_ 32
+  lit8_ 32
+.endm
+
+.macro one_
+  lit8_ 1
+.endm
+
+.macro two_
+  lit8_ 2
+.endm
+
+.macro four_
+  lit8_ 4
+.endm
+
+.macro ten_
+  lit8_ 10
 .endm
 
 .macro true_
@@ -786,17 +863,18 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
 .endm
 
 .macro lshift_
-  ldm dsp!, {r0}
-  lsls r0, wreg
-  mov wreg, r0
+  ldm dsp!, {r1}
+  lsls r1, wreg
+  mov wreg, r1
 .endm
 
 .macro rshift_
-  ldm dsp!, {r0}
-  lsrs r0, wreg
-  mov wreg, r0
+  ldm dsp!, {r1}
+  lsrs r1, wreg
+  mov wreg, r1
 .endm
 
+@ fetch value from memory pointed to by working register
 .macro fetch_
   ldr wreg, [wreg]
 .endm
@@ -809,6 +887,90 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
   ldrb wreg, [wreg]
 .endm
 
+@ fetch from memory pointed to by working register and store in register
+@ @!a @!b @!x @!y h@!a
+.macro fetch_str_a_
+  ldr areg, [wreg]
+.endm
+
+.macro fetch_str_b_
+  ldr breg, [wreg]
+.endm
+
+.macro fetch_str_x_
+  ldr xreg, [wreg]
+.endm
+
+.macro fetch_str_y_
+  ldr yreg, [wreg]
+.endm
+
+.macro hfetch_str_a_
+  ldrh areg, [wreg]
+.endm
+
+.macro hfetch_str_b_
+  ldrh breg, [wreg]
+.endm
+
+.macro hfetch_str_x_
+  ldrh xreg, [wreg]
+.endm
+
+.macro hfetch_str_y_
+  ldrh yreg, [wreg]
+.endm
+
+.macro cfetch_str_a_
+  ldrb areg, [wreg]
+.endm
+
+.macro cfetch_str_b_
+  ldrb breg, [wreg]
+.endm
+
+.macro cfetch_str_x_
+  ldrb xreg, [wreg]
+.endm
+
+.macro cfetch_str_y_
+  ldrb yreg, [wreg]
+.endm
+
+@ store register into memory pointed to by working register
+.macro aw_str_
+  strh areg, [wreg]     
+.endm
+
+.macro bw_str_
+  strh breg, [wreg]     
+.endm
+
+.macro xw_str_
+  strh xreg, [wreg]     
+.endm
+
+.macro yw_str_
+  strh yreg, [wreg]
+.endm
+
+@ 0 store into memory
+.macro zero_str_
+  movs r1, #0
+  str r1, [wreg]
+.endm
+
+.macro zero_hstr_
+  movs r1, #0
+  strh r1, [wreg]
+.endm
+
+.macro zero_cstr_
+  movs r1, #0
+  strb r1, [wreg]
+.endm
+
+@ load register into working register
 .macro a_
     mov wreg, areg
 .endm
@@ -825,6 +987,7 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
     mov wreg, yreg
 .endm
 
+@ store working register into another register
 .macro str_a_
     mov areg, wreg
 .endm
@@ -841,6 +1004,7 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
     mov yreg, wreg
 .endm
 
+@ fetch value from memory pointed to by register
 .macro a_fetch_
   ldr wreg, [areg]
 .endm
@@ -897,6 +1061,30 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
   adds breg, #4
 .endm
 
+.macro x_plus4_
+  adds xreg, #4
+.endm
+
+.macro y_plus4_
+  adds yreg, #4
+.endm
+
+.macro a_minus4_
+  subs areg, #4
+.endm
+
+.macro b_minus4_
+  subs breg, #4
+.endm
+
+.macro x_minus4_
+  subs xreg, #4
+.endm
+
+.macro y_minus4_
+  subs yreg, #4
+.endm
+
 .macro a_plus2_
   adds areg, #2
 .endm
@@ -911,6 +1099,22 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
 
 .macro y_plus2_
   adds yreg, #2
+.endm
+
+.macro a_minus2_
+  subs areg, #2
+.endm
+
+.macro b_minus2_
+  subs breg, #2
+.endm
+
+.macro x_minus2_
+  subs xreg, #2
+.endm
+
+.macro y_minus2_
+  subs yreg, #2
 .endm
 
 .macro a_plus1_
@@ -929,13 +1133,29 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
   adds yreg, #1
 .endm
 
+.macro a_minus1_
+  subs areg, #1
+.endm
+
+.macro b_minus1_
+  subs breg, #1
+.endm
+
+.macro x_minus1_
+  subs xreg, #1
+.endm
+
+.macro y_minus1_
+  subs yreg, #1
+.endm
+
 .macro ascii_ str, flg=0
-  .p2align 1 @ Align to even locations
+@  .p2align 1 @ Align to even locations
   .byte (8f - 7f)
   .byte \flg
 7:  .ascii "\str"
 8:
-  .p2align 1
+@  .p2align 1
 .endm
 
 .macro $lit_ str
@@ -950,11 +1170,13 @@ dsp .req r7 @ holds the Forth VM Parameter/Data stack pointer
 
 
 .macro Forthword_ lbl, flags, name
-
+.data
 VE_\lbl:
     ascii_ "\name", HFLAGS & ~(\flags)
 
     .word VE_HEAD
+    .word \lbl
     .set VE_HEAD, VE_\lbl
+.text
 \lbl:
 .endm

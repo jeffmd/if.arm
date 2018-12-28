@@ -22,3 +22,18 @@
     @mov tos, #1
     @add tos, sysvar
     @bx lr
+
+@ dodefer - execute a deferred word
+@ defer setup as:
+@ push {lr}
+@ bl DODEFER
+@ .word deferptr
+@ does not return to defer callee
+Forthword_ DODEFER, 0, "(def)"
+  push_
+  mov wreg, lr
+  subs wreg, #1 @ doing memory access, do not want thumb bit
+  ldr wreg, [wreg]
+  bl EXEC
+  pop {pc}
+  

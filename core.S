@@ -1,137 +1,12 @@
 @ core.S
 
-@ ( xt -- )
-@ execute XT
-Forthword_ EXEC, 0, "exec"
-    movs r0, #1
-    @ make sure its a thumb address mode
-    orrs r0, wreg
-    pop_
-    bx r0
-
-@ ( xt -- )
-@ Don't do anything, just chew up a few cycles
-Forthword_ NOOP, INLINE_OPT, "noop"
-    ands wreg, wreg
-    bx lr
 
 @@@@@@@@@@@@@ Parameter Stack  Manipulation @@@@@@@@@@@@@@
 
-@ ( n -- n n )
-@ duplicate wreg
-Forthword_ DUP, INLINE_OPT, "push"
-    push_
-    bx lr
-
-@ ( n1 -- [ n1 n1 ] | 0)
-@ duplicate wreg if non-zero
-Forthword_ QDUP, 0, "?dup"
-    cmp wreg, #0
-    beq.n PFA_QDUP1
-    push_
-PFA_QDUP1:
-    bx lr
-
-@ ( n1 n2 -- n2 n1)
-@ swaps the two top level stack cells
-Forthword_ SWAP, INLINE_OPT, "swap"
-    swap_
-    bx lr
-
-@ ( n1 n2 -- n2)
-@ drop NOS, one before wreg.
-Forthword_ NIP, INLINE_OPT, "nip"
-    nip_
-    bx lr
-
-@ ( n1 n2 n3 -- n3)
-@ drop NOS, one before wreg.
-Forthword_ NIP2, INLINE_OPT, "nip2"
-    nip2_
-    bx lr
-
-@ ( n1 n2 n3 n4 -- n4)
-@ drop NOS, one before wreg.
-Forthword_ NIP3, INLINE_OPT, "nip3"
-    nip3_
-    bx lr
-
-@ ( x1 x2 -- x1 x2 x1 )
-@ Place a copy of x1 on top of the stack
-Forthword_ OVER, INLINE_OPT, "over"
-    over_
-    bx lr
-
-@ ( x1 x2 -- x1 x2 x1 x2)
-@ Place a copy of x1 and x2 on top of the stack
-Forthword_ TWOOVER, 0, "2over"
-    over_
-    b.n OVER
-
-@ ( n -- )
-@ drop wreg
-Forthword_ DROP, INLINE_OPT, "pop"
-    pop_
-    bx lr
-
-@ ( n n -- )
-@ drop wreg twice
-Forthword_ DDROP, INLINE_OPT, "pop2"
-    pop2_
-    bx lr
-
-@ (  -- addr )
-@ current data stack pointer
-Forthword_ SP_FETCH, INLINE_OPT, "sp"
-    sp_
-    bx lr
-
-@ ( addr -- i*x)
-@ set data stack pointer to addr
-Forthword_ STR_SP, INLINE_OPT, "!sp"
-    str_sp_
-    bx lr
 
 
 @@@@@@@@@@@@@ Return Stack @@@@@@@@@@@@@
 
-@ ( -- n ) (R: n --)
-@ move TOR to wreg
-Forthword_ RPOP, INLINE_OPT, "rpop"
-    rpop_
-    bx lr
-
-@ ( -- ) (R: n -- )
-@ Drop TOR
-Forthword_ RNIP, INLINE_OPT, "rnip"
-    rnip_
-    bx lr
-
-@ ( n -- n ) (R: -- n )
-@ copy wreg to TOR
-Forthword_ DUP_R, INLINE_OPT, "rpush"
-    rpush_
-    bx lr
-
-@ ( -- n) (R: n -- n )
-@ put a copy of TOR on wreg
-Forthword_ R_FETCH, INLINE_OPT, "r0"
-    r0_
-    bx lr
-
-@ (  -- n)
-@ current return stack pointer address
-Forthword_ RP_FETCH, INLINE_OPT, "rp"
-    rpfetch_
-    bx lr
-
-@ ( addr  -- ) (R: -- x*y)
-@ set return stack pointer
-@ must be called
-Forthword_ RP_STORE, INLINE_OPT, "!rp"
-    @ keep the return address
-    rpstore_
-    bx lr
 
 @ ( -- retaddr )
 @ pop return onto data stack and exit caller
@@ -377,21 +252,16 @@ Forthword_ FETCH, INLINE_OPT, "@"
   fetch_
   bx lr
 
-@ ( n32 a-addr -- )
-@ store a word (32 bits) to RAM address
-Forthword_ STORE, 0, "!"
-  ldm dsp!, {r0, r1} @ X is the new wreg after the store completes.
-STORE_it:
-  str r0, [wreg]      @ Popping both saves a cycle.
-  movs wreg, r1
+@ ( A:n32 a-addr -- )
+@ store a word (32 bits) in A register to RAM address
+Forthword_ AWSTORE, 0, "a.!"
+  aw_str_
   bx lr
 
 @ ( a-addr -- )
 @ store 0 (32 bits) to RAM address
 Forthword_ ZEROSTORE, 0, "0!"
-  movs r0, #0
-  str r0, [wreg]
-  pop_
+  zero_str_
   bx lr
 
 
@@ -419,20 +289,34 @@ Forthword_ HFETCH, INLINE_OPT, "h@"
   hfetch_
   bx lr
 
-@ ( n16 a-addr -- )
-@ store a half word (16 bits) to RAM address
-Forthword_ HSTORE, 0, "h!"
-  ldm dsp!, {r0, r1} @ X is the new wreg after the store completes.
-  strh r0, [wreg]     @ Popping both saves a cycle.
-  movs wreg, r1
+@ ( a-addr A:n -- )
+@ store a half word (16 bits) in A register to RAM address
+Forthword_ AWHSTORE, 0, "a.h!"
+  aw_str_
+  bx lr
+
+@ ( a-addr B:n -- )
+@ store a half word (16 bits) in B register to RAM address
+Forthword_ BWHSTORE, 0, "b.h!"
+  bw_str_      
+  bx lr
+
+@ ( a-addr X:n -- )
+@ store a half word (16 bits) in X register to RAM address
+Forthword_ XWHSTORE, 0, "x.h!"
+  xw_str_      
+  bx lr
+
+@ ( a-addr Y:n -- )
+@ store a half word (16 bits) in Y register to RAM address
+Forthword_ YWHSTORE, 0, "y.h!"
+  yw_str_      
   bx lr
 
 @ ( a-addr -- )
 @ store 0 (16 bits) to RAM address
 Forthword_ ZEROHSTORE, 0, "0h!"
-  movs r0, #0
-  strh r0, [wreg]
-  pop_
+  zero_hstr_
   bx lr
 
 @ ( n16 a-addr -- )
@@ -598,6 +482,18 @@ Forthword_ AHPLUS, INLINE_OPT, "ah+"
 Forthword_ ACPLUS, INLINE_OPT, "ac+"
     acplus_
     bx lr
+
+Forthword_ DSWAP, 0, "2swap"
+@ ( 4 3 2 1 -- 2 1 4 3 )
+  ldm dsp!, {r0, r1, r2}
+  subs dsp, #4
+  str r0, [dsp]
+  push_
+  subs dsp, #4
+  str r2, [dsp]
+  movs wreg, r1
+  bx lr
+
 
 @ ( len -- len/2 rem)
 @ convert byte length to word length plus remainder

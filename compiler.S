@@ -1,28 +1,5 @@
 @ compiler.S
 
-@ ( -- addr )
-@ system state variable. 0 is interpret mode. Not 0 is compile mode
-@ is half word
-Forthword_ STATE, 0, "state"
-    douser_ state
-
-Forthword_ STATEFETCH, 0, "state@"
-    push {lr}
-    bl STATE
-    hfetch_
-    pop {pc}
-
-@ ( -- addr )
-@ current vocabulary for new words
-Forthword_ CURRENT, 0, "current"
-    douser_ ram_CURRENT
-
-@ ( -- addr )
-@ context vocabulary for searching
-@ array of wordlists
-Forthword_ CONTEXT, 0, "context"
-    douser_ ram_CONTEXT
-
 
 @ ( -- addr )
 @ system SMUDGE. Get flash program address of latest word currently being compiled.
@@ -113,14 +90,6 @@ Forthword_ UWID, 0, "uwid"
 UWID_end:
     pop {pc}
 
-
-@ ( --  )
-@ enter interpreter mode
-Forthword_ LBRACKET, IMMEDIATE_EN, "["
-    push {lr}
-    bl STATE
-    pop_lr_
-    b ZEROHSTORE
 
 @ ( n -- )
 @ store 16 bit value on wreg into ram at (dictionary pointer) DP
@@ -220,55 +189,3 @@ Forthword_ INLINE, 0, "inline"
     pop_lr_
     b MCPY                  @ ( )
 
-@ ( nfa -- lfa )
-@ get the link field address from the name field address
-Forthword_ NFA2LFA, 0, "nfa>lfa"
-    push {lr}                   @ ( nfa )
-    bl STRINGLEN                @ ( nfa+2 len+flags )
-    @ mask out flags in len, allow up to 31 characters
-    movs r0, #31
-    ands wreg, r0                 @ ( nfa+2 len )
-    bl WALIGN
-    plus_
-    pop {pc}
-
-@ ( nfa -- [ 0 ] | [ xt xtflags] )
-@ convert name field address to xt and xtflags
-Forthword_ NFATOXTF, 0, "nfa>xtf"
-    push {lr}
-    dupzerosense_               @ ( n )
-    beq.n NFATOXTF_EXIT
-
-    push_                        @ ( nfa nfa )
-    hfetch_                     @ ( nfa xtflags )
-    to_r_                       @ ( nfa ) (R: xtflags)
-    bl NFA2LFA                  @ ( lfa )
-    fourplus_   @ lfa>xt        @ ( xt )
-    r_from_                     @ ( xt xtflags )
-
-NFATOXTF_EXIT:
-    pop {pc}
-
-@ ( -- )
-@ set the context and current to root forth vocabulary and remove
-@ other vocabularies
-Forthword_ ONLY, IMMEDIATE_EN, "only"
-    push {lr}
-    @ forth vocab always takes slot 0
-    dolit32_ EE_FORTHWORDLIST
-    push_
-    bl CONTEXT
-    bl STORE
-    @ make current also forth vocab
-    bl CURRENT
-    bl STORE
-    @ move index to next slot
-    one_
-    bl CONTEXT
-    twominus_
-    bl HSTORE
-    @ make second slot have no vocab
-    bl CONTEXT
-    fourplus_
-    pop_lr_
-    b ZEROSTORE
