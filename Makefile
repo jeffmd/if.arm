@@ -3,8 +3,8 @@ INCS = *.S
 
 all: if
 
-if : if.o input.o
-	gcc -Os -ldl -lm -o $@ $+
+if : main.o if.o input.o
+	gcc -Os -g -ldl -lm -o $@ $+
 
 if.o : $(INCS)
 	as -o $@ $<
