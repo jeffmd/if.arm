@@ -7,17 +7,17 @@
 @ d2               b              r2
 @                  x
 @                  y
+@                  dsp
+@                  rp
 
 wreg .req r0 @ working register
 @ r1 is temp/scratch
-@ r2 is temp/scratch
 xreg .req r3 @ X register 
 yreg .req r4 @ Y register
 areg .req r5 @ A register - non-volatile: user must preserve
 breg .req r6 @ B register - non-volatile: user must preserve
 dsp  .req r7 @ holds the Data stack pointer
-
-@ sysvar .req r? @ system variables base pointer
+sysvar .req r2 @ system variables base pointer
 
 @ header flags
 .set HFLAGS, 0xFF
@@ -55,16 +55,10 @@ dsp  .req r7 @ holds the Data stack pointer
 
 @ Inline macros
 
+@ push registers on return stack
+
 .macro rpush_ @ put copy of wr on return stack
     push {wreg}
-.endm
-
-.macro rpush_x_ @ put copy of X on return stack
-    push {xreg}
-.endm
-
-.macro rpush_y_ @ put copy of Y on return stack
-    push {yreg}
 .endm
 
 .macro rpush_a_ @ put copy of A on return stack
@@ -75,9 +69,19 @@ dsp  .req r7 @ holds the Data stack pointer
     push {breg}
 .endm
 
+.macro rpush_x_ @ put copy of X on return stack
+    push {xreg}
+.endm
+
+.macro rpush_y_ @ put copy of Y on return stack
+    push {yreg}
+.endm
+
 .macro rpush_sp_ @ put copy of data stack pointer on return stack
     push {dsp}
 .endm
+
+@ pop value from return stack into register
 
 .macro rpop_
   pop {wreg}
@@ -114,6 +118,8 @@ dsp  .req r7 @ holds the Data stack pointer
 .macro rnip3_ 
     adds sp, #12
 .endm
+
+@ load value from return stack into register
 
 .macro r0_str_a_
   ldr areg, [sp]
@@ -162,6 +168,8 @@ dsp  .req r7 @ holds the Data stack pointer
 .macro r2_str_y_
   ldr yreg, [sp, #8]
 .endm
+
+@ store register value in return stack
 
 .macro str_r0_
   str wreg, [sp] 
@@ -223,6 +231,8 @@ dsp  .req r7 @ holds the Data stack pointer
   str yreg, [sp, #8] 
 .endm
 
+# store return stack register in register
+
 .macro rp_
   mov wreg, sp
 .endm
@@ -247,6 +257,8 @@ dsp  .req r7 @ holds the Data stack pointer
   mov sp, wreg
 .endm
 
+@ load working register with value from return stack location
+
 .macro r0_
   ldr wreg, [sp]
 .endm
@@ -263,8 +275,8 @@ dsp  .req r7 @ holds the Data stack pointer
 .if rpi2
   pop {lr}
 .else
-  pop {r0}
-  mov lr, r0
+  pop {r1}
+  mov lr, r1
 .endif
 .endm
 
@@ -344,6 +356,8 @@ dsp  .req r7 @ holds the Data stack pointer
 .macro d2_
   ldr wreg, [dsp, #8]
 .endm
+
+@ store register into data stack
 
 .macro str_d0_
   str wreg, [dsp] @ Replace it with wr.
@@ -453,6 +467,8 @@ dsp  .req r7 @ holds the Data stack pointer
   ldr yreg, [dsp, #8]
 .endm
 
+@ make room on data stack
+
 .macro top1_ @ move stack pointer down one cell
    subs dsp, #4
 .endm
@@ -464,6 +480,8 @@ dsp  .req r7 @ holds the Data stack pointer
 .macro top3_ @ move stack pointer down three cells
    subs dsp, #12
 .endm
+
+@ push register onto data stack
 
 .macro push_ @ duplicate wr
 .if rpi2
@@ -500,6 +518,8 @@ dsp  .req r7 @ holds the Data stack pointer
   y_str_d0_
 .endm
 
+@ pop value from data stack into register
+
 .macro pop_ @ pop val from data stack into wr
   ldmia dsp!, {wreg}
 .endm
@@ -525,6 +545,18 @@ dsp  .req r7 @ holds the Data stack pointer
   ldmia dsp!, {yreg}
 .endm
 
+.macro nip_
+  adds dsp, #4
+.endm
+
+.macro nip2_
+  adds dsp, #8
+.endm
+
+.macro nip3_
+  adds dsp, #12
+.endm
+
 .macro swap_
   ldr r1, [dsp] @ Load r1 from the stack, no SP change.
   str_d0_       @ Replace it with wr.
@@ -542,18 +574,6 @@ dsp  .req r7 @ holds the Data stack pointer
 
 .macro str_sp_
   mov dsp, wreg
-.endm
-
-.macro nip_
-  adds dsp, #4
-.endm
-
-.macro nip2_
-  adds dsp, #8
-.endm
-
-.macro nip3_
-  adds dsp, #12
 .endm
 
 .macro plus_a_
@@ -874,21 +894,13 @@ dsp  .req r7 @ holds the Data stack pointer
   mov wreg, r1
 .endm
 
-@ fetch value from memory pointed to by working register
+@ fetch from memory pointed to by working register and store in register
+@ @!a @!b @!x @!y h@!a
+
 .macro fetch_
   ldr wreg, [wreg]
 .endm
 
-.macro hfetch_
-  ldrh wreg, [wreg]
-.endm
-
-.macro cfetch_
-  ldrb wreg, [wreg]
-.endm
-
-@ fetch from memory pointed to by working register and store in register
-@ @!a @!b @!x @!y h@!a
 .macro fetch_str_a_
   ldr areg, [wreg]
 .endm
@@ -905,6 +917,10 @@ dsp  .req r7 @ holds the Data stack pointer
   ldr yreg, [wreg]
 .endm
 
+.macro hfetch_
+  ldrh wreg, [wreg]
+.endm
+
 .macro hfetch_str_a_
   ldrh areg, [wreg]
 .endm
@@ -919,6 +935,10 @@ dsp  .req r7 @ holds the Data stack pointer
 
 .macro hfetch_str_y_
   ldrh yreg, [wreg]
+.endm
+
+.macro cfetch_
+  ldrb wreg, [wreg]
 .endm
 
 .macro cfetch_str_a_
@@ -938,6 +958,7 @@ dsp  .req r7 @ holds the Data stack pointer
 .endm
 
 @ store register into memory pointed to by working register
+
 .macro aw_str_
   strh areg, [wreg]     
 .endm
@@ -955,6 +976,7 @@ dsp  .req r7 @ holds the Data stack pointer
 .endm
 
 @ 0 store into memory
+
 .macro zero_str_
   movs r1, #0
   str r1, [wreg]
@@ -971,6 +993,7 @@ dsp  .req r7 @ holds the Data stack pointer
 .endm
 
 @ load register into working register
+
 .macro a_
     mov wreg, areg
 .endm
@@ -1005,6 +1028,7 @@ dsp  .req r7 @ holds the Data stack pointer
 .endm
 
 @ fetch value from memory pointed to by register
+
 .macro a_fetch_
   ldr wreg, [areg]
 .endm
@@ -1053,6 +1077,8 @@ dsp  .req r7 @ holds the Data stack pointer
   ldrb wreg, [yreg]
 .endm
 
+@ add 4 to register
+
 .macro a_plus4_
   adds areg, #4
 .endm
@@ -1068,6 +1094,8 @@ dsp  .req r7 @ holds the Data stack pointer
 .macro y_plus4_
   adds yreg, #4
 .endm
+
+@ subtract 4 from register
 
 .macro a_minus4_
   subs areg, #4
@@ -1085,6 +1113,8 @@ dsp  .req r7 @ holds the Data stack pointer
   subs yreg, #4
 .endm
 
+@ add 2 to register
+
 .macro a_plus2_
   adds areg, #2
 .endm
@@ -1100,6 +1130,8 @@ dsp  .req r7 @ holds the Data stack pointer
 .macro y_plus2_
   adds yreg, #2
 .endm
+
+@ subtract 2 from register
 
 .macro a_minus2_
   subs areg, #2
@@ -1117,6 +1149,8 @@ dsp  .req r7 @ holds the Data stack pointer
   subs yreg, #2
 .endm
 
+@ add 1 to register
+
 .macro a_plus1_
   adds areg, #1
 .endm
@@ -1132,6 +1166,8 @@ dsp  .req r7 @ holds the Data stack pointer
 .macro y_plus1_
   adds yreg, #1
 .endm
+
+@ subtract 1 from register
 
 .macro a_minus1_
   subs areg, #1
