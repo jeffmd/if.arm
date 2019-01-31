@@ -3,10 +3,10 @@ INCS = *.S
 
 all: if
 
-if : main.o if.o input.o
+if :  main.o input.o if.o
 	gcc -Os -g -ldl -lm -o $@ $+
 
-if.o : $(INCS)
+if.o : if.S $(INCS)
 	as -o $@ $<
 
 lst:
