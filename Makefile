@@ -9,7 +9,7 @@ if :  main.o input.o if.o
 if.o : if.S $(INCS)
 	as -o $@ $<
 
-lst:
+lst: if
 	objdump -h -x -D -S if > lst.txt
 
 clean:
