@@ -356,7 +356,6 @@ sysvar .req r4 @ system variables base pointer
 .macro bittest_ v
     movs r1, #\v
     tst wreg, r1
-    pop_
 .endm
 
 .macro user_ sym

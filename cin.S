@@ -74,9 +74,9 @@ Forthword_ INRESET, 0, "in_"
 Forthword_ ACCEPT, 0, "accept"
     push {lr}
     @ <begin>
-    @bl KEY        @ ( k )
+    bl KEY        @ ( k )
     iszero_
-    @bgt.n ACCEPT_checkeol
+    bgt.n ACCEPT_checkeol
     oneplus_
     pop {pc}
 

@@ -115,7 +115,7 @@ Forthword_ BYE, 0, "bye"
 @ send the READY prompt to the command line
 Forthword_ PROMPTRDY, 0, ".>"
     push {lr}
-    type_ "\n> testing... \n"
+    type_ "\n> "
     pop {pc}
 
 @ ( -- )
@@ -177,38 +177,38 @@ DOREFILL_do:
 @ ( -- )
 @ Fetch pause vector and EXEC it. may make a context/task switch
 Forthword_ DOPAUSE, 0, "(pause)"
-    push {lr}
-    push_
-    bl SLEEP @@ temp fix for cpu hogging
-    bl PAUSE_FETCH
-    pop_lr_
-    b EXEC
+  push {lr}
+  push_
+  bl SLEEP @@ temp fix for cpu hogging
+  bl PAUSE_FETCH
+  pop_lr_
+  b EXEC
 
 @ ( -- )
 @ main loop - iterate through scheduled tasks
 Forthword_ DOTASKS, 0, "(tasks)"
-    @ <begin>
-    push {lr}
+  @ <begin>
+  push {lr}
 DOTASKS1:
-    bl DOREFILL      @ ( flag )
-    @ <if>
-    iszero_
-    beq.n DOTASK_N1
-      @ there is something in the input buffer, try interpreting it
+  bl DOREFILL      @ ( flag )
+  @ <if>
+  iszero_
+  beq.n DOTASK_N1
+    @ there is something in the input buffer, try interpreting it
 .if BUILD_LEVEL > 1
-      bl DOINTERPRET
+    bl DOINTERPRET
 .endif
 DOTASK_N1:
-    bl DOPAUSE
-    
+  bl DOPAUSE
+  
 
-    @ check to see if tasks should be terminated
-    bl FFLAGS
-    hmw_
-    bittest_ TERMINATE_F
-    @ <again>
-    beq.n DOTASKS1
-    pop {pc}
+  @ check to see if tasks should be terminated
+  bl FFLAGS
+  hmw_
+  bittest_ TERMINATE_F
+  @ <again>
+  beq.n DOTASKS1
+  pop {pc}
 
 
 @ ( -- a-addr )
@@ -292,15 +292,15 @@ Forthword_ RESET, 0, "reset"
 @ ( -- )
 @ reset stacks and start over again
 Forthword_ QUIT, 0, "quit"
-    push {lr}
-    @ reset data stack
-    bl DSP0
-    dsp_w_
-    @ reset return stack pointers
-    @bl RP0
-    @fetch_
-    @bl RP_STORE
-    bl RESET
-    pop_lr_
-    b DOTASKS
+  push {lr}
+  @ reset data stack
+  bl DSP0
+  dsp_w_
+  @ reset return stack pointers
+  @bl RP0
+  @fetch_
+  @bl RP_STORE
+  bl RESET
+  pop_lr_
+  b DOTASKS
 
