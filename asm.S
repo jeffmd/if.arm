@@ -431,17 +431,6 @@ Forthword_ BRNZ1_COMPILE, 0, "bne1,"
     lsls wreg, #8
     b COMMA
 
-@ ( -- 32b )
-@ fetch a 32 bit inlinned constant pointed to by lr onto the top of stack
-@ assumes caller was in thumb mode
-Forthword_ ICFETCH, 0, "ic@"
-    push_
-    mov r0, lr
-    subs r0, #1     @ clear bit 0 which is thumb indicator
-    ldr wreg, [r0]
-    adds r0, #5     @ return after constant and default to thumb mode
-    bx r0
-
 @ compile top of stack as inlinned immediate 32 bit constant
 @ ( n -- )
 Forthword_ LIT, 0, "lit"

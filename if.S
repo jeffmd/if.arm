@@ -1,4 +1,12 @@
 @  if.S 
+
+.set BUILD_LEVEL, 0
+@ if BUILD_LEVEL is 0 then a minimum kernel is built but with no interpreter
+@ BUILD_LEVEL 1: core and kernel are working
+@ BUILD_LEVEL 2: interpreter and dictionary working
+@ BUILD_LEVEL 3: compiler working
+@ minimum kernel build has minimum word set needed to be up and running without interpreter
+
 .syntax unified
 .thumb
 
@@ -8,6 +16,7 @@
 
 @ size of the Terminal Input Buffer
 .set TIBSIZE, 100
+.set MAX_CONTEXTS, 10
 
 .bss
 .balign 4
@@ -19,6 +28,9 @@ topdatastack:
 
 .balign 2
 sysvar_base:
+
+.globl USER_ARGC
+.globl  USER_ARGV
 
 COLON_SMUDGE: .space 4
 user_g_in: .space 2
@@ -34,9 +46,22 @@ USER_HERE: .space 4
 USER_IDLETIME: .space 4
 ram_CURRENT: .space 4
 ram_CONTEXTidx: .space 2
-ram_CONTEXT: .space 4 * 10 @ 10 wordlists max
+ram_CONTEXT: .space 4 * MAX_CONTEXTS @ 10 wordlists max
 fflags: .space 2
 ram_dp: .space 4
+ram_cp: .space 4
+
+# interpreter register copy
+WR: .space 4
+RA: .space 4
+RB: .space 4
+RX: .space 4
+RY: .space 4
+
+# litteral word defer
+Lit_Interpret: .space 4
+Lit_Compile: .space 4
+
 rstack0: .space 4
 ram_handler: .space 4
 ram_sharptib: .space 2
@@ -48,12 +73,18 @@ EE_FORTHWORDLIST:
   .space 4 @ sibling link pointer
   .space 4 @ child pointer
 
-@ start of user ram area
+DICTIONARY_START:
+  .space 4
+  @ start of user program area
+DPSTART:
+  .space 0xffff
+
+  @ start of user ram area
 HERESTART:
    .space 0xffff
 
-@ start of user program area
-DPSTART:
+  # start of user code area
+CPSTART:
    .space 0xffff
 
 @ start of hard coded program area that can not be modified at runtime
@@ -64,83 +95,117 @@ DPSTART:
 .set VE_HEAD, 0
 
 .include "core-base.S"
-@.include "core.S"
-@.include "core-inline.S"
 .include "cin.S"
 .include "cout.S"
-@.include "string.S"
-@.include "include.S"
-@.include "math.S"
-@.include "mathadv.S"
+.include "math.S"
+.include "string.S"
 .include "kernel-base.S"
-@.include "kernel.S"
 
-@.include "defer.S"
-@.include "dictionary.S"
-@.include "compiler.S"
-@.include "number.S"
-@.include "interpret.S"
-@.include "asm.S"
-@.include "file.S"
+.if BUILD_LEVEL
+  .include "core.S"
+  .include "kernel.S"
 
+  .if BUILD_LEVEL > 1
+    .include "interpret.S"
+    .include "dictionary.S"
+
+    .if BUILD_LEVEL > 2
+      .include "number.S"
+      .include "compiler.S"
+      .include "asm.S"
+      .include "include.S"
+      .include "mathadv.S"
+
+      .include "defer.S"
+      @ .include "file.S"
+      .include "core-inline.S"
+    .endif
+  .endif
+  
+.endif
 
 @ ( nx* -- ) (R: ny* -- )
 @ initialize asforth further. EXECs turnkey operation and go to quit
 Forthword_ WARM, 0, "warm"
-    push {lr}
-    push_
-    mov wreg, sp
-    bl RP0
-    bl STORE
-    bl ONLY
-    bl RESET
-@    bl DECIMAL           @ default to decimal base
-@    type_ "rf 0.1\n"
-    @ check if command line args need to be loaded
-@    bl DOCMDARG
-    pop_lr_  
-    b QUIT
+  push {lr}
+  bl RESET
+.if BUILD_LEVEL > 1
+  bl ONLY
+.if BUILD_LEVEL > 2
+  bl DECIMAL           @ default to decimal base
+.endif
+.endif
+
+  type_ "if.arm 0.2\n"
+  @ check if command line args need to be loaded
+.if BUILD_LEVEL > 1
+  bl DOCMDARG
+.endif
+
+  pop_lr_  
+  b QUIT
 
 @ ( -- addr)
 @ start address of the data stack
-Forthword_ SP0, 0, "sp0"
-  push_
+Forthword_ DSP0, 0, "dsp0"
   ldr wreg, addr_dstack
   bx lr
 
-.global main
+@ ( -- addr)
+@ start address of return stack
+Forthword_ RSP0, 0, "rsp0"
+  user_ rstack0
+  bx lr
+
+
+.globl RECOVER
+@.type RECOVER, @function
+
 @ ( -- )
-@ start up asforth.
-Forthword_ COLD, 0, "cold"
+@ start up if after sig alarm ie segv.
 .thumb_func
-main:
-    push {lr} @ save return
-    @ save r0 and r1 which contain command line arguments
-    push {r0, r1}
-    bl set_input_mode
-    @ initialize data stack
-    ldr dsp, addr_dstack
-    @ initialize sysvar pointer
-    ldr sysvar, addr_sysvar
+Forthword_ RECOVER, 0, "recover"
+  push {lr}
+  @ initialize data stack
+  ldr dsp, addr_dstack
+  @ initialize sysvar pointer
+  ldr sysvar, addr_sysvar
 
-    bl WIPE
-    pop {r0, r1}
-    @ save r0 and r1
-    push_
-    movs wreg, r0
-    push_
-    movs wreg, r1
-    bl ARGVADDR
-    bl STORE
-    bl ARGCADDR
-    bl STORE
-    bl WARM
+  type_ "recovering...\n"
+	bl QUIT
 
-    mov r0, wreg
-    pop {pc}
+  pop {lr}
+  bx lr
 
+.globl COLD
+@.type COLD, @function
+
+@ ( -- )
+@ start up if from cold.
+.thumb_func
+Forthword_ COLD, 0, "cold"
+  push {lr} @ save return
+  @ initialize data stack
+  ldr dsp, addr_dstack
+  @ initialize sysvar pointer
+  ldr sysvar, addr_sysvar
+
+  rsp_
+  y_w_
+  bl RSP0
+  mw_y_
+
+.if BUILD_LEVEL > 1
+  bl WIPE
+.endif
+  bl WARM
+
+  pop {pc}
+
+.if BUILD_LEVEL > 1
 @ minimum.S must be last
-@.include "minimum.S"
+.include "minimum.S"
+.endif
 
 .balign 4
 @ ram pointers that need relocation on startup

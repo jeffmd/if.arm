@@ -4,7 +4,6 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <termios.h>
-#include <math.h>
 
 /* Use this variable to remember original terminal attributes. */
 
@@ -35,14 +34,11 @@ void set_input_mode (void)
   tattr.c_cc[VMIN] = 0;
   tattr.c_cc[VTIME] = 0;
   tcsetattr (STDIN_FILENO, TCSAFLUSH, &tattr);
+  fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);
 }
 
-float getCos( float val )
+int getchr(void)
 {
-	return cosf(val);
-}
-
-void doCos( void )
-{
-	 float cosresult = getCos(25.0f);
+  clearerr(stdin);
+  return getchar();
 }

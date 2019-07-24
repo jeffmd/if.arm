@@ -3,20 +3,20 @@
 @ ( n1 n2 -- n1|n2 )
 @ compare two values leave the smaller one
 Forthword_ MIN, 0, "min"
-  ldm dsp!, {r0}
-  cmp r0, wreg
+  popy_
+  cmp yreg, wreg
   bge.n 1f
-  movs wreg, r0
+  y_
 1:
   bx lr
 
 @ ( n1 n2 -- n1|n2 )
 @ compare two values, leave the bigger one
 Forthword_ MAX, 0, "max"
-  ldm dsp!, {r0}
-  cmp r0, wreg
+  popy_
+  cmp yreg, wreg
   blt.n 1f
-  mov wreg, r0
+  y_
 1:
   bx lr
 
@@ -39,21 +39,9 @@ Forthword_ UGREATEREQUAL, 0, "u>="
 @ ( n1 -- u1 )
 @ get the absolute value
 Forthword_ ABS, 0, "abs"
-  dupzerosense_
+  iszero_
   bpl.n 1f
   neg_
 1:
   bx lr
   
-@ ( n -- -n )
-@ negate a double word
-Forthword_ DNEG, 0, "dneg"
-  ldr r0, [dsp]
-  movs r1, #0
-  mvns r0, r0
-  mvns wreg, wreg
-  adds r0, #1
-  adcs wreg, r1
-  str r0, [dsp]
-  bx lr
-

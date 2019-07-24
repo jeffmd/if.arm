@@ -82,7 +82,7 @@ Forthword_ NOT, INLINE_OPT, "not"
 
 @ ( n1 n2 -- flag)
 @ flag is true if n1 is not equal to n2
-Forthword_ NOTEQUAL, INLINE_OPT, "<>"
+Forthword_ NOTEQUAL, INLINE_OPT, "!="
   xor_
   bx lr
 
@@ -134,22 +134,6 @@ Forthword_ ZEROEQUAL, INLINE_OPT, "0="
   zeroequal_
   bx lr
 
-@ ( u1 u2 -- flag )
-@ flag is true if u1 > u2 (unsigned)
-Forthword_ UGREATER, 0, "u>"
-  ldm dsp!, {r0}
-  subs wreg, r0
-  sbcs wreg, wreg
-  bx lr
-
-@ ( u1 u2 -- flag)
-@ flag is true if u1 < u2 (unsigned)
-Forthword_ ULESS, 0, "u<"
-  ldm dsp!, {r0}
-  subs wreg, r0, wreg
-@ wreg = a-b  -- carry set if a is less than b
-  sbcs wreg, wreg
-  bx lr
 
 @ ( n1 -- flag)
 @ flag is true if wreg is less than zero
@@ -157,59 +141,23 @@ forthword_ ZEROLESS, INLINE_OPT, "0<"
   zeroless_
   bx lr
 
-@ ( -- 0 )
-@ place a value 0 on wreg
-Forthword_ ZERO, INLINE_OPT, "0"
-  zero_
-  bx lr
-
-@ ( -- 0 )
-@ set wreg to 0
-Forthword_ ZEROSET, INLINE_OPT, "0:"
-    zerotos_
-    bx lr
-
-@ ( n -- )
-@ test wreg if zero
-Forthword_ ZEROSENSE, INLINE_OPT, "0?"
-    zerosense_
-    bx lr
-
-@ ( n -- n)
-@ test wreg if zero, does not consume wreg
-Forthword_ QZEROSENSE, INLINE_OPT, "?0?"
-    dupzerosense_
-    bx lr
-
 @ ( -- -1 )
 @ leaves the value -1 (true) on wreg
 Forthword_ TRUE, INLINE_OPT, "true"
   true_
   bx lr
 
-@ ( -- 1 )
-@ place a value 1 on wreg
-Forthword_ ONE, INLINE_OPT, "1"
-  one_
+@ ( -- 0 )
+@ place a value 0 in wreg
+Forthword_ ZERO, INLINE_OPT, "0"
+  zero_
   bx lr
 
-@ ( -- 2 )
-@ place a value 2 on wreg
-Forthword_ TWO, INLINE_OPT, "2"
-  two_
-  bx lr
-
-@ ( -- 4 )
-@ place a value 4 on wreg
-Forthword_ FOUR, INLINE_OPT, "4"
-  four_
-  bx lr
-
-@ ( -- 10 )
-@ place a value 10 on wreg
-Forthword_ TEN, INLINE_OPT, "10"
-  ten_
-  bx lr
+@ ( n -- )
+@ test wreg if zero
+Forthword_ ZEROSENSE, INLINE_OPT, "0="
+    zerosense_
+    bx lr
 
 @ ( n1 -- n2 )
 @ convert byte length to half word align length
@@ -235,33 +183,17 @@ forthword_ RSHIFT, INLINE_OPT, ">>"
   rshift_
   bx lr
 
-@ ( n1 -- n2/2 )
-@ convert byte length to half word align length
-@ round number up to even value
-Forthword_ HALIGN, 0, "h_"
-  oneplus_
-  movs r0, #1
-  mvns r0, r0
-  ands wreg, r0
-  bx lr
-
 
 @ ( a-addr -- n32 )
 @ read 1 cell (32 bits) from RAM address
 Forthword_ FETCH, INLINE_OPT, "@"
-  fetch_
+  mw_
   bx lr
 
 @ ( A:n32 a-addr -- )
 @ store a word (32 bits) in A register to RAM address
-Forthword_ AWSTORE, 0, "a.!"
-  aw_str_
-  bx lr
-
-@ ( a-addr -- )
-@ store 0 (32 bits) to RAM address
-Forthword_ ZEROSTORE, 0, "0!"
-  zero_str_
+Forthword_ MW_A, 0, "@w=a"
+  mw_a_
   bx lr
 
 
@@ -278,6 +210,7 @@ PLUSSTORE_do:
 
 @ ( n32 a-addr -- )
 @ add 1 to content of cell RAM address a-addr
+@ *w+=1
 Forthword_ ONEPLUSSTORE, 0, "1+!"
   ldm dsp!, {r1}
   movs r0, #1
@@ -285,12 +218,14 @@ Forthword_ ONEPLUSSTORE, 0, "1+!"
 
 @ ( a-addr -- n16 )
 @ read half cell (16 bits) from RAM address
+@ w=*wh
 Forthword_ HFETCH, INLINE_OPT, "h@"
   hfetch_
   bx lr
 
 @ ( a-addr A:n -- )
 @ store a half word (16 bits) in A register to RAM address
+@ *wh=a
 Forthword_ AWHSTORE, 0, "a.h!"
   aw_str_
   bx lr
@@ -311,12 +246,6 @@ Forthword_ XWHSTORE, 0, "x.h!"
 @ store a half word (16 bits) in Y register to RAM address
 Forthword_ YWHSTORE, 0, "y.h!"
   yw_str_      
-  bx lr
-
-@ ( a-addr -- )
-@ store 0 (16 bits) to RAM address
-Forthword_ ZEROHSTORE, 0, "0h!"
-  zero_hstr_
   bx lr
 
 @ ( n16 a-addr -- )
@@ -482,18 +411,6 @@ Forthword_ AHPLUS, INLINE_OPT, "ah+"
 Forthword_ ACPLUS, INLINE_OPT, "ac+"
     acplus_
     bx lr
-
-Forthword_ DSWAP, 0, "2swap"
-@ ( 4 3 2 1 -- 2 1 4 3 )
-  ldm dsp!, {r0, r1, r2}
-  subs dsp, #4
-  str r0, [dsp]
-  push_
-  subs dsp, #4
-  str r2, [dsp]
-  movs wreg, r1
-  bx lr
-
 
 @ ( len -- len/2 rem)
 @ convert byte length to word length plus remainder

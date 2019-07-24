@@ -8,16 +8,18 @@
 @                  x
 @                  y
 @                  dsp
-@                  rp
+@                  rsp
 
+@ use register load / store
 wreg .req r0 @ working register
 @ r1 is temp/scratch
-xreg .req r3 @ X register 
-yreg .req r4 @ Y register
+xreg .req r2 @ X register 
+yreg .req r3 @ Y register
 areg .req r5 @ A register - non-volatile: user must preserve
 breg .req r6 @ B register - non-volatile: user must preserve
 dsp  .req r7 @ holds the Data stack pointer
-sysvar .req r2 @ system variables base pointer
+sysvar .req r4 @ system variables base pointer
+
 
 @ header flags
 .set HFLAGS, 0xFF
@@ -40,8 +42,8 @@ sysvar .req r2 @ system variables base pointer
 .set IMMEDIATE_EN, 1 << IMMEDIATE_EN_FB
 
 @ forth flags
-@ bit 0 : rcall was last instruction
-.set LAST_RCALL_FB, 0
+@ bit 0 : Terminate Tasks
+.set TERMINATE_F, 1
 @ bit 1 : call was last instruction
 .set LAST_CALL_FB, 1
 @ if bit 0 and 1 are cleared then last instruction was an inline or tail call optimization was disabled by word
@@ -55,59 +57,115 @@ sysvar .req r2 @ system variables base pointer
 
 @ Inline macros
 
+@ load register into working register
+
+@ a
+.macro a_
+    mov wreg, areg
+.endm
+
+@ b
+.macro b_
+    mov wreg, breg
+.endm
+
+@ x
+.macro x_
+    mov wreg, xreg
+.endm
+
+@ y
+.macro y_
+    mov wreg, yreg
+.endm
+
+@ load working register into another register
+
+@ a=w
+.macro a_w_
+    mov areg, wreg
+.endm
+
+@ b=w
+.macro b_w_
+    mov breg, wreg
+.endm
+
+@ x=w
+.macro x_w_
+    mov xreg, wreg
+.endm
+
+@ y=w
+.macro y_w_
+    mov yreg, wreg
+.endm
+
 @ push registers on return stack
 
-.macro rpush_ @ put copy of wr on return stack
+@ rpush
+.macro rpush_ @ put copy of w on return stack
     push {wreg}
 .endm
 
-.macro rpush_a_ @ put copy of A on return stack
+@ rpusha
+.macro rpusha_ @ put copy of A on return stack
     push {areg}
 .endm
 
-.macro rpush_b_ @ put copy of B on return stack
+@ rpushb
+.macro rpushb_ @ put copy of B on return stack
     push {breg}
 .endm
 
-.macro rpush_x_ @ put copy of X on return stack
+@ rpushx
+.macro rpushx_ @ put copy of X on return stack
     push {xreg}
 .endm
 
-.macro rpush_y_ @ put copy of Y on return stack
+@ rpushb
+.macro rpushy_ @ put copy of Y on return stack
     push {yreg}
 .endm
 
-.macro rpush_sp_ @ put copy of data stack pointer on return stack
+@ rpushdp
+.macro rpushdsp_ @ put copy of data stack pointer on return stack
     push {dsp}
 .endm
 
 @ pop value from return stack into register
 
+@ rpop
 .macro rpop_
   pop {wreg}
 .endm
 
-.macro rpop_a_
+@ rpopa
+.macro rpopa_
   pop {areg}
 .endm
 
-.macro rpop_b_
+@ rpopb
+.macro rpopb_
   pop {breg}
 .endm
 
-.macro rpop_x_
+@ rpopx
+.macro rpopx_
   pop {xreg}
 .endm
 
-.macro rpop_y_
+@ rpopy
+.macro rpopy_
   pop {yreg}
 .endm
 
-.macro rpop_sp_
+@ rpopdsp
+.macro rpopdsp_
   pop {dsp}
 .endm
 
-.macro rnip_ @ drop TOR
+.macro rnip_
     adds sp, #4
 .endm
 
@@ -121,154 +179,168 @@ sysvar .req r2 @ system variables base pointer
 
 @ load value from return stack into register
 
-.macro r0_str_a_
+@ r0
+.macro r0_
+  ldr wreg, [sp]
+.endm
+
+@ a=r0
+.macro a_r0_
   ldr areg, [sp]
 .endm
 
-.macro r0_str_b_
+@ b=r0
+.macro b_r0_
   ldr breg, [sp]
 .endm
 
-.macro r0_str_x_
+@ x=r0
+.macro x_r0_
   ldr xreg, [sp]
 .endm
 
-.macro r0_str_y_
+@ y=r0
+.macro y_r0_
   ldr yreg, [sp]
 .endm
 
-.macro r1_str_a_
+@ r1
+.macro r1_
+  ldr wreg, [sp, #4]
+.endm
+
+@ a=r1
+.macro a_r1_
   ldr areg, [sp, #4]
 .endm
 
-.macro r1_str_b_
+@ b=r1
+.macro b_r1_
   ldr breg, [sp, #4]
 .endm
 
-.macro r1_str_x_
+@ x=r1
+.macro x_r1_
   ldr xreg, [sp, #4]
 .endm
 
-.macro r1_str_y_
+@ y=r1
+.macro y_r1_
   ldr yreg, [sp, #4]
 .endm
 
-.macro r2_str_a_
+@ r2
+.macro r2_
+  ldr wreg, [sp, #8]
+.endm
+
+@ a=r2
+.macro a_r2_
   ldr areg, [sp, #8]
 .endm
 
-.macro r2_str_b_
+@ b=r2
+.macro b_r2_
   ldr breg, [sp, #8]
 .endm
 
-.macro r2_str_x_
+@ x=r2
+.macro x_r2_
   ldr xreg, [sp, #8]
 .endm
 
-.macro r2_str_y_
+@ y=r2
+.macro y_r2_
   ldr yreg, [sp, #8]
 .endm
 
 @ store register value in return stack
 
-.macro str_r0_
+@ r0=w
+.macro r0_w_
   str wreg, [sp] 
 .endm
 
-.macro a_str_r0_
+@ r0=a
+.macro r0_a_
   str areg, [sp] 
 .endm
 
-.macro b_str_r0_
+@ r0=b
+.macro r0_b_
   str breg, [sp] 
 .endm
 
-.macro x_str_r0_
+@ r0=x
+.macro r0_x_
   str xreg, [sp] 
 .endm
 
-.macro y_str_r0_
+@ r0=y
+.macro r0_y_
   str yreg, [sp] 
 .endm
 
-.macro str_r1_
+@ r1=w
+.macro r1_w_
   str wreg, [sp, #4] 
 .endm
 
-.macro a_str_r1_
+@ r1=a
+.macro r1_a_
   str areg, [sp, #4] 
 .endm
 
-.macro b_str_r1_
+@ r1=b
+.macro r1_b_
   str breg, [sp, #4] 
 .endm
 
-.macro x_str_r1_
+@ r1=x
+.macro r1_x_
   str xreg, [sp, #4] 
 .endm
 
-.macro y_str_r1_
+@ r1=y
+.macro r1_y_
   str yreg, [sp, #4] 
 .endm
 
-.macro str_r2_
+@ r2=w
+.macro r2_w_
   str wreg, [sp, #8] 
 .endm
 
-.macro a_str_r2_
+@ r2=a
+.macro r2_a_
   str areg, [sp, #8] 
 .endm
 
-.macro b_str_r2_
+@ r2=b
+.macro r2_b_
   str breg, [sp, #8] 
 .endm
 
-.macro x_str_r2_
+@ r2=x
+.macro r2_x_
   str xreg, [sp, #8] 
 .endm
 
-.macro y_str_r2_
+@ r2=y
+.macro r2_y_
   str yreg, [sp, #8] 
 .endm
 
 # store return stack register in register
 
-.macro rp_
+@ rsp
+.macro rsp_
   mov wreg, sp
 .endm
 
-.macro rp_str_a_
-  mov areg, sp
-.endm
-
-.macro rp_str_b_
-  mov breg, sp
-.endm
-
-.macro rp_str_x_
-  mov xreg, sp
-.endm
-
-.macro rp_str_y_
-  mov yreg, sp
-.endm
-
-.macro str_rp_
+@ rsp=w
+.macro rsp_w_
   mov sp, wreg
-.endm
-
-@ load working register with value from return stack location
-
-.macro r0_
-  ldr wreg, [sp]
-.endm
-
-.macro r1_
-  ldr wreg, [sp, #4]
-.endm
-
-.macro r2_
-  ldr wreg, [sp, #8]
 .endm
 
 .macro pop_lr_ @ pop lr from return stack into lr
@@ -280,25 +352,11 @@ sysvar .req r2 @ system variables base pointer
 .endif
 .endm
 
-.macro sysv_ sym
-    #(\sym - sysvar_base)
-.endm
-
 @ test with 8 bit constant
 .macro bittest_ v
     movs r1, #\v
     tst wreg, r1
     pop_
-.endm
-
-.macro pushsysv_ sym
-    push_
-    ldr wreg, 1f
-    bx lr
-.balign 4
-1:
-    .word \sym
-.balign 2
 .endm
 
 .macro user_ sym
@@ -307,574 +365,781 @@ sysvar .req r2 @ system variables base pointer
 .endm
 
 
-@ load small 8 bit constant into working register
-.macro lit8_ val
-  movs wreg, #\val
+.macro lit_ val reg=wreg
+.if \val < 256
+  movs \reg, #\val
+.else
+  .if \val < 0x10000
+    movs \reg, #(\val/256)
+    lsls \reg, #8
+    adds \reg, #(\val & 255)
+  .else
+    bl CIFETCH
+    .word \val
+  .endif
+.endif
 .endm
 
-@ load small 8 bit constant into A register
-.macro lit8_a_ val
-  movs areg, #\val
+.macro lit_y_ val
+  lit_ \val yreg
 .endm
 
-@ load small 8 bit constant into B register
-.macro lit8_b_ val
-  movs breg, #\val
+.macro lit_x_ val
+  lit_ \val xreg
 .endm
 
-@ load small 8 bit constant into X register
-.macro lit8_x_ val
-  movs xreg, #\val
+.macro lit_a_ val
+  lit_ \val areg
 .endm
 
-@ load small 8 bit constant into Y register
-.macro lit8_y_ val
-  movs yreg, #\val
-.endm
-
-@ Push small 16 bit constant on datastack
-.macro lit16_ val
-  movs wreg, #(\val/256)
-  lsls wreg, #8
-  adds wreg, #(\val & 255)
+.macro lit_b_ val
+  lit_ \val breg
 .endm
 
 @ push a 32 bit inline val on datastack
-.macro dolit32_ val
-  bl ICFETCH
+.macro lit32_ val
+  bl CIFETCH
   .word \val
 .endm
 
+
+@ store register into data stack
+
+@ d0=w
+.macro d0_w_
+  str wreg, [dsp] @ Replace it with wr.
+.endm
+
+@ d1=w
+.macro d1_w_
+  str wreg, [dsp, #4] @ Replace it with wr.
+.endm
+
+@ d2=w
+.macro d2_w_
+  str wreg, [dsp, #8] @ Replace it with wr.
+.endm
+
+@ d0=a
+.macro d0_a_
+  str areg, [dsp] 
+.endm
+
+@ d1=a
+.macro d1_a_
+  str areg, [dsp, #4] 
+.endm
+
+@ d2=a
+.macro d2_a_
+  str areg, [dsp, #8] 
+.endm
+
+@ d0=b
+.macro d0_b_
+  str breg, [dsp] 
+.endm
+
+@ d1=b
+.macro d1_b_
+  str breg, [dsp, #4] 
+.endm
+
+@ d2=b
+.macro d2_b_
+  str breg, [dsp, #8] 
+.endm
+
+@ d0=x
+.macro d0_x_
+  str xreg, [dsp] 
+.endm
+
+@ d1=x
+.macro d1_x_
+  str xreg, [dsp, #4] 
+.endm
+
+@ d2=x
+.macro d2_x_
+  str areg, [dsp, #8] 
+.endm
+
+@ d0=y
+.macro d0_y_
+  str yreg, [dsp] 
+.endm
+
+@ d1=y
+.macro d1_y_
+  str yreg, [dsp, #4] 
+.endm
+
+@ d2=y
+.macro d2_y_
+  str areg, [dsp, #8] 
+.endm
+
+@ store data stack item in register
+
+@ d0
 .macro d0_
   ldr wreg, [dsp]
 .endm
 
+@ d1
 .macro d1_
   ldr wreg, [dsp, #4]
 .endm
 
+@ d2
 .macro d2_
   ldr wreg, [dsp, #8]
 .endm
 
-@ store register into data stack
-
-.macro str_d0_
-  str wreg, [dsp] @ Replace it with wr.
-.endm
-
-.macro str_d1_
-  str wreg, [dsp, #4] @ Replace it with wr.
-.endm
-
-.macro str_d2_
-  str wreg, [dsp, #8] @ Replace it with wr.
-.endm
-
-.macro a_str_d0_
-  str areg, [dsp] 
-.endm
-
-.macro a_str_d1_
-  str areg, [dsp, #4] 
-.endm
-
-.macro a_str_d2_
-  str areg, [dsp, #8] 
-.endm
-
-.macro b_str_d0_
-  str breg, [dsp] 
-.endm
-
-.macro b_str_d1_
-  str breg, [dsp, #4] 
-.endm
-
-.macro b_str_d2_
-  str breg, [dsp, #8] 
-.endm
-
-.macro x_str_d0_
-  str xreg, [dsp] 
-.endm
-
-.macro x_str_d1_
-  str xreg, [dsp, #4] 
-.endm
-
-.macro x_str_d2_
-  str areg, [dsp, #8] 
-.endm
-
-.macro y_str_d0_
-  str yreg, [dsp] 
-.endm
-
-.macro y_str_d1_
-  str yreg, [dsp, #4] 
-.endm
-
-.macro y_str_d2_
-  str areg, [dsp, #8] 
-.endm
-
-.macro d0_str_a_
+@ a=d0
+.macro a_d0_
   ldr areg, [dsp]
 .endm
 
-.macro d1_str_a_
+@ a=d1
+.macro a_d1_
   ldr areg, [dsp, #4]
 .endm
 
-.macro d2_str_a_
+@ a=d2
+.macro a_d2_
   ldr areg, [dsp, #8]
 .endm
 
-.macro d0_str_b_
+@ b=d0
+.macro b_d0_
   ldr breg, [dsp]
 .endm
 
-.macro d1_str_b_
+@ b=d1
+.macro b_d1_
   ldr breg, [dsp, #4]
 .endm
 
-.macro d2_str_b_
+@ b=d2
+.macro b_d2_
   ldr breg, [dsp, #8]
 .endm
 
-.macro d0_str_x_
+@ x=d0
+.macro x_d0_
   ldr xreg, [dsp]
 .endm
 
-.macro d1_str_x_
+@ x=d1
+.macro x_d1_
   ldr xreg, [dsp, #4]
 .endm
 
-.macro d2_str_x_
+@ x=d2
+.macro x_d2_
   ldr xreg, [dsp, #8]
 .endm
 
-.macro d0_str_y_
+@ y=d0
+.macro y_d0_
   ldr yreg, [dsp]
 .endm
 
-.macro d1_str_y_
+@ y=d1
+.macro y_d1_
   ldr yreg, [dsp, #4]
 .endm
 
-.macro d2_str_y_
+@ y=d2
+.macro y_d2_
   ldr yreg, [dsp, #8]
 .endm
 
 @ make room on data stack
 
-.macro top1_ @ move stack pointer down one cell
+.macro put1_ @ move stack pointer down one cell
    subs dsp, #4
 .endm
 
-.macro top2_ @ move stack pointer down two cells
+.macro put2_ @ move stack pointer down two cells
    subs dsp, #8
 .endm
 
-.macro top3_ @ move stack pointer down three cells
+.macro put3_ @ move stack pointer down three cells
    subs dsp, #12
 .endm
 
 @ push register onto data stack
 
-.macro push_ @ duplicate wr
-.if rpi2
-  str.w wreg, [dsp, #-4]!
-.else
-  top1_
-  str_d0_
-.endif
+@ push
+.macro push_ 
+  put1_
+  d0_w_
 .endm
 
-.macro push2_ 
-  top2_
-  str_d0_
-  str_d1_
+@ pusha
+.macro pusha_ 
+  put1_
+  d0_a_
 .endm
 
-.macro push_a_ 
-  top1_
-  a_str_d0_
+@ pushb
+.macro pushb_ 
+  put1_
+  d0_b_
 .endm
 
-.macro push_b_ 
-  top1_
-  b_str_d0_
+@ pushx
+.macro pushx_ 
+  put1_
+  d0_x_
 .endm
 
-.macro push_x_ 
-  top1_
-  x_str_d0_
-.endm
-
-.macro push_y_ 
-  top1_
-  y_str_d0_
+@ pushy
+.macro pushy_ 
+  put1_
+  d0_y_
 .endm
 
 @ pop value from data stack into register
 
-.macro pop_ @ pop val from data stack into wr
+@ pop
+.macro pop_
   ldmia dsp!, {wreg}
 .endm
 
-.macro pop2_
-  nip_
-  pop_
-.endm
-
-.macro pop_a_ 
+@ popa
+.macro popa_
   ldmia dsp!, {areg}
 .endm
 
-.macro pop_b_ 
+@ popb
+.macro popb_
   ldmia dsp!, {breg}
 .endm
 
-.macro pop_x_ 
+@ popx
+.macro popx_
   ldmia dsp!, {xreg}
 .endm
 
-.macro pop_y_ 
+@ popy
+.macro popy_
   ldmia dsp!, {yreg}
 .endm
 
+@ nip
 .macro nip_
   adds dsp, #4
 .endm
 
+@ nip2
 .macro nip2_
   adds dsp, #8
 .endm
 
+@ nip3
 .macro nip3_
   adds dsp, #12
 .endm
 
-.macro swap_
-  ldr r1, [dsp] @ Load r1 from the stack, no SP change.
-  str_d0_       @ Replace it with wr.
-  mov wreg, r1    @ And vice versa.
-.endm
-
-.macro over_
-  push_
-  d1_
-.endm
-
-.macro sp_
+@ dsp
+.macro dsp_
   mov wreg, dsp
 .endm
 
-.macro str_sp_
+@ dsp=w
+.macro dsp_w_
   mov dsp, wreg
 .endm
 
-.macro plus_a_
+@ add register to register
+
+@ w+=a
+.macro w_plus_a_
   adds wreg, areg
 .endm
 
-.macro a_plus_
-  adds areg, wreg
-.endm
-
-.macro plus_b_
+@ w+=b
+.macro w_plus_b_
   adds wreg, breg
 .endm
 
-.macro b_plus_
-  adds breg, wreg
-.endm
-
-.macro plus_x_
+@ w+=x
+.macro w_plus_x_
   adds wreg, xreg
 .endm
 
-.macro x_plus_
-  adds xreg, wreg
-.endm
-
-.macro plus_y_
+@ w+=y
+.macro w_plus_y_
   adds wreg, yreg
 .endm
 
-.macro y_plus_
+@ a+=w
+.macro a_plus_w_
+  adds areg, wreg
+.endm
+
+@ a+=b
+.macro a_plus_b_
+  adds areg, breg
+.endm
+
+@ a+=x
+.macro a_plus_x_
+  adds areg, xreg
+.endm
+
+@ a+=y
+.macro a_plus_y_
+  adds areg, yreg
+.endm
+
+@ b+=w
+.macro b_plus_w_
+  adds breg, wreg
+.endm
+
+@ b+=a
+.macro b_plus_a_
+  adds breg, areg
+.endm
+
+@ b+=x
+.macro b_plus_x_
+  adds breg, xreg
+.endm
+
+@ b+=y
+.macro b_plus_y_
+  adds breg, yreg
+.endm
+
+@ x+=w
+.macro x_plus_w_
+  adds xreg, wreg
+.endm
+
+@ x+=a
+.macro x_plus_a_
+  adds xreg, areg
+.endm
+
+@ x+=b
+.macro x_plus_b_
+  adds xreg, breg
+.endm
+
+@ x+=y
+.macro x_plus_y_
+  adds xreg, yreg
+.endm
+
+@ y+=w
+.macro y_plus_w_
   adds yreg, wreg
 .endm
 
-.macro minus_a_
+@ y+=a
+.macro y_plus_a_
+  adds yreg, areg
+.endm
+
+@ y+=b
+.macro y_plus_b_
+  adds yreg, breg
+.endm
+
+@ y+=x
+.macro y_plus_x_
+  adds yreg, xreg
+.endm
+
+@ w-=a
+.macro w_minus_a_
   subs wreg, areg
 .endm
 
-.macro a_minus_
-  subs areg, wreg
-.endm
-
-.macro minus_b_
+@ w-=b
+.macro w_minus_b_
   subs wreg, breg
 .endm
 
-.macro b_minus_
-  subs breg, wreg
-.endm
-
-.macro minus_x_
+@ w-=x
+.macro w_minus_x_
   subs wreg, xreg
 .endm
 
-.macro x_minus_
-  subs xreg, wreg
-.endm
-
-.macro minus_y_
+@ w-=y
+.macro w_minus_y_
   subs wreg, yreg
 .endm
 
-.macro y_minus_
+@ a-=w
+.macro a_minus_w_
+  subs areg, wreg
+.endm
+
+@ a-=b
+.macro a_minus_b_
+  subs areg, breg
+.endm
+
+@ a-=x
+.macro a_minus_x_
+  subs areg, xreg
+.endm
+
+@ a-=y
+.macro a_minus_y_
+  subs areg, yreg
+.endm
+
+@ b-=w
+.macro b_minus_w_
+  subs breg, wreg
+.endm
+
+@ b-=a
+.macro b_minus_a_
+  subs breg, areg
+.endm
+
+@ b-=x
+.macro b_minus_x_
+  subs breg, xreg
+.endm
+
+@ b-=y
+.macro b_minus_y_
+  subs breg, yreg
+.endm
+
+@ x-=w
+.macro x_minus_w_
+  subs xreg, wreg
+.endm
+
+@ x-=a
+.macro x_minus_a_
+  subs xreg, areg
+.endm
+
+@ x-=b
+.macro x_minus_b_
+  subs xreg, breg
+.endm
+
+@ x-=y
+.macro x_minus_y_
+  subs xreg, yreg
+.endm
+
+@ y-=w
+.macro y_minus_w_
   subs yreg, wreg
 .endm
 
-.macro and_a_
+@ y-=a
+.macro y_minus_a_
+  subs yreg, areg
+.endm
+
+@ y-=b
+.macro y_minus_b_
+  subs yreg, breg
+.endm
+
+@ y-=x
+.macro y_minus_x_
+  subs yreg, xreg
+.endm
+
+@ w&=a
+.macro w_and_a_
   ands wreg, areg
 .endm
 
-.macro a_and_
+@ a&=w
+.macro a_and_w_
   ands areg, wreg
 .endm
 
-.macro and_b_
+@ w&=b
+.macro w_and_b_
   ands wreg, breg
 .endm
 
-.macro b_and_
+@ b&=w
+.macro b_and_w_
   ands breg, wreg
 .endm
 
-.macro and_x_
+@ w&=x
+.macro w_and_x_
   ands wreg, xreg
 .endm
 
-.macro x_and_
+@ x&=w
+.macro x_and_w_
   ands xreg, wreg
 .endm
 
-.macro and_y_
+@ w&=y
+.macro w_and_y_
   ands wreg, yreg
 .endm
 
-.macro y_and_
+@ y&=w
+.macro y_and_w_
   ands yreg, wreg
 .endm
 
-.macro or_a_
+@ w|=a
+.macro w_or_a_
   orrs wreg, areg
 .endm
 
-.macro a_or_
+@ a|=w
+.macro a_or_w_
   orrs areg, wreg
 .endm
 
-.macro or_b_
+@ w|=b
+.macro w_or_b_
   orrs wreg, breg
 .endm
 
+@ b|=w
 .macro b_or_
   orrs breg, wreg
 .endm
 
-.macro or_x_
+@ w|=x
+.macro w_or_x_
   orrs wreg, xreg
 .endm
 
-.macro x_or_
+@ x|=w
+.macro x_or_w_
   orrs xreg, wreg
 .endm
 
-.macro xor_a_
+@ w|=y
+.macro w_or_y_
+  orrs wreg, yreg
+.endm
+
+@ y|=w
+.macro y_or_w_
+  orrs yreg, wreg
+.endm
+
+@ w^=a
+.macro w_xor_a_
   eors wreg, areg
 .endm
 
-.macro a_xor_
+@ a^=w
+.macro a_xor_w_
   eors areg, wreg
 .endm
 
-.macro xor_b_
+@ w^=b
+.macro w_xor_b_
   eors wreg, breg
 .endm
 
-.macro b_xor_
+@ b^=w
+.macro b_xor_w_
   eors breg, wreg
 .endm
 
-.macro xor_x_
+@ w^=x
+.macro w_xor_x_
   eors wreg, xreg
 .endm
 
-.macro x_xor_
+@ x^=w
+.macro x_xor_w_
   eors xreg, wreg
 .endm
 
-.macro xor_y_
+@ w^=y
+.macro w_xor_y_
   eors wreg, yreg
 .endm
 
-.macro y_xor_
+@ y^=w
+.macro y_xor_w_
   eors yreg, wreg
 .endm
 
+@ !
 .macro not_
   mvns wreg, wreg
 .endm
 
+@ !a
 .macro not_a_
   mvns areg, areg
 .endm
 
+@ !b
 .macro not_b_
   mvns breg, breg
 .endm
 
+@ !x
 .macro not_x_
   mvns xreg, xreg
 .endm
 
+@ !y
 .macro not_y_
   mvns yreg, yreg
 .endm
 
+@ -
 .macro neg_
     rsbs wreg, wreg, #0
 .endm
 
+@ -a
 .macro neg_a_
     rsbs areg, areg, #0
 .endm
 
+@ -b
 .macro neg_b_
     rsbs breg, breg, #0
 .endm
 
+@ -x
 .macro neg_x_
     rsbs xreg, xreg, #0
 .endm
 
+@ -y
 .macro neg_y_
     rsbs yreg, yreg, #0
 .endm
 
+@ 1+ 
 .macro oneplus_
   adds wreg, #1
 .endm
 
+@ 1-
 .macro oneminus_
   subs wreg, #1
 .endm
 
+@ 2+
 .macro twoplus_
   adds wreg, #2
 .endm
 
+@ 4+
 .macro fourplus_
   adds wreg, #4
 .endm
 
+@ 2-
 .macro twominus_
   subs wreg, #2
 .endm
 
+@ 4-
 .macro fourminus_
   subs wreg, #4
 .endm
 
+@ 2/
 .macro twoslash_
     asrs wreg, #1
 .endm
 
+@ 4/
 .macro fourslash_
     asrs wreg, #2
 .endm
 
+@ 2*
 .macro twostar_
     lsls wreg, #1
 .endm
 
+@ 4*
 .macro fourstar_
     lsls wreg, #2
 .endm
 
+@ ==0
 .macro iszero_
     cmp wreg, #0
 .endm
 
+@ a==0
 .macro a_iszero_
     cmp areg, #0
 .endm
 
+@ b==0
 .macro b_iszero_
     cmp breg, #0
 .endm
 
+@ x==0
 .macro x_iszero_
     cmp xreg, #0
 .endm
 
+@ y==0
 .macro y_iszero_
     cmp yreg, #0
 .endm
 
+@ <0
 .macro zeroless_
   asrs wreg, #31    @ Turn MSB into 0xffffffff or 0x00000000
 .endm
 
+@ 0
 .macro zero_
     movs wreg, #0
 .endm
 
-.macro zero_a_
+@ a=0
+.macro a_0_
     movs areg, #0
 .endm
 
-.macro zero_b_
+@ b=0
+.macro b_0_
     movs breg, #0
 .endm
 
-.macro zero_x_
+@ x=0
+.macro x_0_
     movs xreg, #0
 .endm
 
-.macro zero_y_
+@ y=0
+.macro y_0_
     movs yreg, #0
 .endm
 
+@ 0= 
 .macro zeroequal_
   subs wreg, #1
   sbcs wreg, wreg
 .endm
 
 .macro bl_
-  lit8_ 32
-.endm
-
-.macro one_
-  lit8_ 1
-.endm
-
-.macro two_
-  lit8_ 2
-.endm
-
-.macro four_
-  lit8_ 4
-.endm
-
-.macro ten_
-  lit8_ 10
+  lit_ 32
 .endm
 
 .macro true_
@@ -895,303 +1160,405 @@ sysvar .req r2 @ system variables base pointer
 .endm
 
 @ fetch from memory pointed to by working register and store in register
-@ @!a @!b @!x @!y h@!a
 
-.macro fetch_
+@ @
+.macro mw_
   ldr wreg, [wreg]
 .endm
 
-.macro fetch_str_a_
+@ a=@w
+.macro a_mw_
   ldr areg, [wreg]
 .endm
 
-.macro fetch_str_b_
+@ b=@w
+.macro b_mw_
   ldr breg, [wreg]
 .endm
 
-.macro fetch_str_x_
+@ x=@w
+.macro x_mw_
   ldr xreg, [wreg]
 .endm
 
-.macro fetch_str_y_
+@ y=@w
+.macro y_mw_
   ldr yreg, [wreg]
 .endm
 
-.macro hfetch_
+@ h@
+.macro hmw_
   ldrh wreg, [wreg]
 .endm
 
-.macro hfetch_str_a_
+@ a=h@w
+.macro a_hmw_
   ldrh areg, [wreg]
 .endm
 
-.macro hfetch_str_b_
+@ b=h@w
+.macro b_hmw_
   ldrh breg, [wreg]
 .endm
 
-.macro hfetch_str_x_
+@ x=h@w
+.macro x_hmw_
   ldrh xreg, [wreg]
 .endm
 
-.macro hfetch_str_y_
+@ y=h@w
+.macro y_hmw_
   ldrh yreg, [wreg]
 .endm
 
-.macro cfetch_
+@ c@ 
+.macro cmw_
   ldrb wreg, [wreg]
 .endm
 
-.macro cfetch_str_a_
+@ a=c@w
+.macro a_cmw_
   ldrb areg, [wreg]
 .endm
 
-.macro cfetch_str_b_
+@ b=c@w
+.macro b_cmw_
   ldrb breg, [wreg]
 .endm
 
-.macro cfetch_str_x_
+@ x=c@w
+.macro x_cmw_
   ldrb xreg, [wreg]
 .endm
 
-.macro cfetch_str_y_
+@ y=c@w
+.macro y_cmw_
   ldrb yreg, [wreg]
-.endm
-
-@ store register into memory pointed to by working register
-
-.macro aw_str_
-  strh areg, [wreg]     
-.endm
-
-.macro bw_str_
-  strh breg, [wreg]     
-.endm
-
-.macro xw_str_
-  strh xreg, [wreg]     
-.endm
-
-.macro yw_str_
-  strh yreg, [wreg]
-.endm
-
-@ 0 store into memory
-
-.macro zero_str_
-  movs r1, #0
-  str r1, [wreg]
-.endm
-
-.macro zero_hstr_
-  movs r1, #0
-  strh r1, [wreg]
-.endm
-
-.macro zero_cstr_
-  movs r1, #0
-  strb r1, [wreg]
-.endm
-
-@ load register into working register
-
-.macro a_
-    mov wreg, areg
-.endm
-
-.macro b_
-    mov wreg, breg
-.endm
-
-.macro x_
-    mov wreg, xreg
-.endm
-
-.macro y_
-    mov wreg, yreg
-.endm
-
-@ store working register into another register
-.macro str_a_
-    mov areg, wreg
-.endm
-
-.macro str_b_
-    mov breg, wreg
-.endm
-
-.macro str_x_
-    mov xreg, wreg
-.endm
-
-.macro str_y_
-    mov yreg, wreg
 .endm
 
 @ fetch value from memory pointed to by register
 
-.macro a_fetch_
+@ @a
+.macro ma_
   ldr wreg, [areg]
 .endm
 
-.macro b_fetch_
+@ @b
+.macro mb_
   ldr wreg, [breg]
 .endm
 
-.macro x_fetch_
+@ @x
+.macro mx_
   ldr wreg, [xreg]
 .endm
 
-.macro y_fetch_
+@ @y
+.macro my_
   ldr wreg, [yreg]
 .endm
 
-.macro a_hfetch_
+@ h@a
+.macro hma_
   ldrh wreg, [areg]
 .endm
 
-.macro b_hfetch_
+@ h@b
+.macro hmb_
   ldrh wreg, [breg]
 .endm
 
-.macro x_hfetch_
+@ h@x
+.macro hmx_
   ldrh wreg, [xreg]
 .endm
 
-.macro y_hfetch_
+@ h@y
+.macro hmy_
   ldrh wreg, [yreg]
 .endm
 
-.macro a_cfetch_
+@ c@a
+.macro cma_
   ldrb wreg, [areg]
 .endm
 
-.macro b_cfetch_
+@ c@b
+.macro cmb_
   ldrb wreg, [breg]
 .endm
 
-.macro x_cfetch_
+@ c@x
+.macro cmx_
   ldrb wreg, [xreg]
 .endm
 
-.macro y_cfetch_
+@ c@y
+.macro cmy_
   ldrb wreg, [yreg]
+.endm
+
+@ store register into memory pointed to by working register
+
+@ @w=a
+.macro mw_a_
+  str areg, [wreg]     
+.endm
+
+@ @w=b
+.macro mw_b_
+  str breg, [wreg]     
+.endm
+
+@ @w=x
+.macro mw_x_
+  str xreg, [wreg]     
+.endm
+
+@ @w=y
+.macro mw_y_
+  str yreg, [wreg]
+.endm
+
+@ h@w=a
+.macro hmw_a_
+  strh areg, [wreg]     
+.endm
+
+@ h@w=b
+.macro hmw_b_
+  strh breg, [wreg]     
+.endm
+
+@ h@w=x
+.macro hmw_x_
+  strh xreg, [wreg]     
+.endm
+
+@ h@w=y
+.macro hmw_y_
+  strh yreg, [wreg]
+.endm
+
+@ c@w=a
+.macro cmw_a_
+  strb areg, [wreg]     
+.endm
+
+@ c@w=b
+.macro cmw_b_
+  strb breg, [wreg]     
+.endm
+
+@ c@w=x
+.macro cmw_x_
+  strb xreg, [wreg]     
+.endm
+
+@ c@w=y
+.macro cmw_y_
+  strb yreg, [wreg]
+.endm
+
+@ @a=w
+.macro ma_w_
+  str wreg, [areg]     
+.endm
+
+@ @b=w
+.macro mb_w_
+  str wreg, [breg]     
+.endm
+
+@ @x=w
+.macro mx_w_
+  str wreg, [xreg]     
+.endm
+
+@ @y=w
+.macro my_w_
+  str wreg, [yreg]     
+.endm
+
+@ h@a=w
+.macro hma_w_
+  strh wreg, [areg]     
+.endm
+
+@ h@b=w
+.macro hmb_w_
+  strh wreg, [breg]     
+.endm
+
+@ h@x=w
+.macro hmx_w_
+  strh wreg, [xreg]     
+.endm
+
+@ h@y=w
+.macro hmy_w_
+  strh wreg, [yreg]     
+.endm
+
+@ c@a=w
+.macro cma_w_
+  strb wreg, [areg]     
+.endm
+
+@ c@b=w
+.macro cmb_w_
+  strb wreg, [breg]     
+.endm
+
+@ c@x=w
+.macro cmx_w_
+  strb wreg, [xreg]     
+.endm
+
+@ c@y=w
+.macro cmy_w_
+  strb wreg, [yreg]     
 .endm
 
 @ add 4 to register
 
+@ a+=4
 .macro a_plus4_
   adds areg, #4
 .endm
 
+@ b+=4
 .macro b_plus4_
   adds breg, #4
 .endm
 
+@ x+=4
 .macro x_plus4_
   adds xreg, #4
 .endm
 
+@ y+=4
 .macro y_plus4_
   adds yreg, #4
 .endm
 
 @ subtract 4 from register
 
+@ a-=4
 .macro a_minus4_
   subs areg, #4
 .endm
 
+@ b-=4
 .macro b_minus4_
   subs breg, #4
 .endm
 
+@ x-=4
 .macro x_minus4_
   subs xreg, #4
 .endm
 
+@ y-=4
 .macro y_minus4_
   subs yreg, #4
 .endm
 
 @ add 2 to register
 
+@ a+=2
 .macro a_plus2_
   adds areg, #2
 .endm
 
+@ b+=2
 .macro b_plus2_
   adds breg, #2
 .endm
 
+@ x+=2
 .macro x_plus2_
   adds xreg, #2
 .endm
 
+@ y+=2
 .macro y_plus2_
   adds yreg, #2
 .endm
 
 @ subtract 2 from register
 
+@ a-=2
 .macro a_minus2_
   subs areg, #2
 .endm
 
+@ b-=2
 .macro b_minus2_
   subs breg, #2
 .endm
 
+@ x-=2
 .macro x_minus2_
   subs xreg, #2
 .endm
 
+@ y-=2
 .macro y_minus2_
   subs yreg, #2
 .endm
 
 @ add 1 to register
 
+@ a+=1
 .macro a_plus1_
   adds areg, #1
 .endm
 
+@ b+=1
 .macro b_plus1_
   adds breg, #1
 .endm
 
+@ x+=1
 .macro x_plus1_
   adds xreg, #1
 .endm
 
+@ y+=1
 .macro y_plus1_
   adds yreg, #1
 .endm
 
 @ subtract 1 from register
 
+@ a-=1
 .macro a_minus1_
   subs areg, #1
 .endm
 
+@ b-=1
 .macro b_minus1_
   subs breg, #1
 .endm
 
+@ x-=1
 .macro x_minus1_
   subs xreg, #1
 .endm
 
+@ y-=1
 .macro y_minus1_
   subs yreg, #1
 .endm
 
 .macro ascii_ str, flg=0
-@  .p2align 1 @ Align to even locations
+  .p2align 1 @ Align to even locations
   .byte (8f - 7f)
   .byte \flg
 7:  .ascii "\str"
 8:
-@  .p2align 1
+  .p2align 1
 .endm
 
 .macro $lit_ str

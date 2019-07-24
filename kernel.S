@@ -1,52 +1,23 @@
 @ kernel.S 
 
-@ ( -- addr )
-@ flags address
-Forthword_ FFLAGS, 0, "fflags"
-    douser_  fflags
-    .set TERMINATE_F, 1
-    @ bit 0 - Terminate Tasks
-
-@ ( -- addr )
-@ system state variable. 0 is interpret mode. Not 0 is compile mode
-@ is half word
-Forthword_ STATE, 0, "state"
-    douser_ state
-
-Forthword_ STATEFETCH, 0, "state@"
-    push {lr}
-    bl STATE
-    hfetch_
-    pop {pc}
-
-@ ( --  )
-@ enter interpreter mode
-Forthword_ LBRACKET, IMMEDIATE_EN, "["
-    push {lr}
-    bl STATE
-    pop_lr_
-    b ZEROHSTORE
-
-@ ( -- pauseaddr )
-@ get ram address of pause defer
-Forthword_ PAUSEADDR, 0, "pause#"
-    douser_ USER_PAUSE
-
 @ ( -- argcaddr )
 @ get ram address of command line argument count
 Forthword_ ARGCADDR, 0, "argc#"
-    douser_ USER_ARGC
-
+    user_ USER_ARGC
+    bx lr
+    
 @ ( -- cmd[]addr )
 @ get ram address of command line argument vector
 Forthword_ ARGVADDR, 0, "argv#"
-    douser_ USER_ARGV
-
+    user_ USER_ARGV
+    bx lr
+    
 @ ( -- a-addr )
 @ location of the cell containing the address of the next free ram location
 Forthword_ HEREADDR, 0, "here#"
-    douser_ USER_HERE
-
+    user_ USER_HERE
+    bx lr
+    
 @ ( -- a-addr )
 @ the address of the next free ram location
 Forthword_ HERE, 0, "here"
@@ -56,163 +27,6 @@ Forthword_ HERE, 0, "here"
     pop {pc}
 
 
-@ ( -- a-addr )
-@ address of idletime
-Forthword_ IDLETIMEADDR, 0, "idletime#"
-  douser_ USER_IDLETIME
-
-@ ( n -- )
-@ set idletime
-Forthword_ IDLETIMESTORE, 0, "idletime!"
-  push {lr}
-  bl IDLETIMEADDR
-  pop_lr_
-  b STORE
-
-@ ( -- n )
-@ get idletime
-Forthword_ IDLETIMEFETCH, 0, "idletime@"
-  push {lr}
-  bl IDLETIMEADDR
-  fetch_
-  pop {pc}
-
-
-@ ( -- )
-@ send the READY prompt to the command line
-Forthword_ PROMPTRDY, 0, ".>"
-    push {lr}
-    type_ "\n> "
-    pop {pc}
-
-@ ( -- )
-@ send the READY prompt to the command line
-Forthword_ PROMPTCOMPILE, 0, ".:"
-    push {lr}
-    type_ "\n: "
-    pop {pc}
-
-@ ( -- )
-@ send the OK prompt to the command line
-Forthword_ PROMPTOK, 0, ".ok"
-    push {lr}
-    type_ " ok"
-    pop {pc}
-
-@ ( n -- )
-@ process the error prompt
-Forthword_ PROMPTERROR, 0, ".??"
-    push {lr}
-    pop_
-    type_ " ?? "
-    pop {pc}
-
-@ ( -- )
-@ check if a ready prompt is required
-Forthword_ QP_RD, 0, "?prd"
-    push {lr}
-    bl STATEFETCH
-    @ output ready prompt if in interpret mode
-    @ <-if>
-    zerosense_
-    bne.n QP_RD_exit
-      pop_lr_
-      b PROMPTRDY
-
-QP_RD_exit:
-    @ <then>
-      pop_lr_
-      b PROMPTCOMPILE
-
-
-@ ( -- flag )
-@ refill the input buffer
-@ flag is true if buffer needs processing ie full or enter pressed
-Forthword_ DOREFILL, 0, "(refill)"
-  push {lr}
-  @ if just starting new input line then check prompt and reset input position
-  bl G_IN                  @ ( >inaddr )
-  hfetch_                  @ ( >in )
-  zerosense_               @ ( )
-  beq.n DOREFILL_do
-    bl INRESET
-
-DOREFILL_do:
-  @ refill the input buffer
-  bl REFILL                @ ( f )
-  pop {pc}
-
-@ ( -- )
-@ Fetch pause vector and EXEC it. may make a context/task switch
-Forthword_ DOPAUSE, 0, "(pause)"
-    push {lr}
-    bl SLEEP @@ temp fix for cpu hogging
-    bl PAUSEADDR
-    fetch_
-    pop_lr_
-    b EXEC
-
-@ ( -- )
-@ main loop - iterate through scheduled tasks
-Forthword_ DOTASKS, 0, "(tasks)"
-    @ <begin>
-    push {lr}
-DOTASKS1:
-    bl DOREFILL      @ ( flag )
-    @ <if>
-    zerosense_
-    beq.n DOTASK_N1
-      @ there is something in the input buffer, try interpreting it
-      bl DOINTERPRET
-DOTASK_N1:
-    bl DOPAUSE
-    
-
-    @ check to see if tasks should be terminated
-    bl FFLAGS
-    hfetch_
-    bittest_ TERMINATE_F
-    @ <again>
-    beq.n DOTASKS1
-    pop {pc}
-
-@ ( -- )
-@ set terminate flag which indicates request to exit forth interpreter
-Forthword_ BYE, 0, "bye"
-    push {lr}
-    one_
-    bl FFLAGS
-    hfetch_
-    or_
-    bl FFLAGS
-    pop_lr_
-    b HSTORE
-
-@ ( -- )
-@ reset input source
-Forthword_ RESET, 0, "reset"
-    push {lr}
-    bl SMUDGE
-    bl ZEROSTORE
-
-    @ reset input source for key
-    dolit32_ STDIN
-    bl KEYADDR
-    bl STORE
-
-    @ reset output source for emit
-    dolit32_ PUTCHAR
-    bl EMITADDR
-    bl STORE
-
-    @ reset input buffer
-    bl INRESET
-
-    bl SLEEPON
-    @ switch to interpret mode
-    pop_lr_
-    b LBRACKET
-    
 @ ( nx* -- ) (R: ny* -- )
 @ initialize rf further. EXECs turnkey operation and go to quit
 Forthword_ DOCMDARG, 0, "docmdarg"
@@ -248,11 +62,6 @@ Forthword_ TIME, 0, "time"
     pop_
     pop {pc}
     
-@ ( -- addr)
-@ start address of return stack
-Forthword_ RP0, 0, "rp0"
-  douser_ rstack0
-
 @ ( -- n )
 @ number of single-cell (4 byte) values contained in the data stack before n was placed on the stack.
 Forthword_ DEPTH, 0, "depth"
@@ -267,7 +76,7 @@ Forthword_ DEPTH, 0, "depth"
 
 @ ( --  )
 @ check stack underflow, throw exception -4
-Forthword_ QSTACK, 0, "?sp"
+Forthword_ QSTACK, 0, "?dsp"
     push {lr}
     bl DEPTH
     zeroless_
@@ -282,7 +91,8 @@ QSTACKFIN:
 
 @ USER variable used by catch/throw
 Forthword_ HANDLER, 0, "handler"
-  douser_ ram_handler
+  user_ ram_handler
+  bx lr
 
 @ ( i*x xt -- j*x 0 | i*x n )
 @ setup handler to catch exceptions and then EXEC XT.
@@ -326,36 +136,3 @@ Forthword_ THROW, 0, "throw"
     one_               @ ( ... 1 )
     pop {pc}
 
-@ ( n -- )
-@ sleep for n micro seconds
-Forthword_ USLEEP, 0, "usleep"
-  mov r0, wreg
-  pop_
-  b usleep
-
-
-@ ( -- )
-@ sleep for n micro seconds
-Forthword_ SLEEP, 0, "sleep"
-  push {lr}
-  bl IDLETIMEFETCH
-  iszero_
-  beq.n NO_IDLESLEEP
-    pop_lr_
-    b USLEEP
-NO_IDLESLEEP:
-  pop_
-  pop {pc}
-
-@ ( -- )
-@ turn sleep off
-Forthword_ SLEEPOFF, 0, "sleep.off"
-  zero_
-  b IDLETIMESTORE
- 
-@ ( -- )
-@ turn sleep on
-Forthword_ SLEEPON, 0, "sleep.on"
-  dolit16_ 5000
-  b IDLETIMESTORE
- 

@@ -5,6 +5,28 @@
 Forthword_ KEYFILEADDR, 0, "keyf#"
     douser_ USER_KEYFILE
 
+@ ( -- key )
+@ fetch key from an open file using filedes, should leave
+@ a single character on wreg or -1 if no more to read in file.
+Forthword_ KEYFILE, 0, "keyfile"
+  push {lr}
+  bl KEYFILEADDR
+  fetch_
+  movs r0, wreg
+  movs wreg, #0
+  push_
+  mov r1, dsp
+  movs r2, #1
+  bl read 
+  pop_
+  @ was one key read from the file?
+  cmp r0, #1
+  beq.n KEYEND
+  subs wreg, #1
+  bl BYE  
+ KEYEND:
+  pop {pc}
+
 @ ( caddr -- ** )
 @ open a file that will be used for key input
 @ caddr points to null terminated file name
