@@ -9,167 +9,191 @@
 @ ( -- addr )
 @ current vocabulary for new words
 Forthword_ CURRENT, 0, "current"
-    douser_ ram_CURRENT
-
+  user_ ram_CURRENT
+  end_
+  
 @ ( -- addr )
 @ context vocabulary for searching
 @ array of wordlists
 Forthword_ CONTEXT, 0, "context"
-    douser_ ram_CONTEXT
+  user_ ram_CONTEXT
+  end_
 
 @ ( nfa -- lfa )
 @ get the link field address from the name field address
 Forthword_ NFA2LFA, 0, "nfa>lfa"
-    push {lr}                   @ ( nfa )
-    bl STRINGLEN                @ ( nfa+2 len+flags )
-    @ mask out flags in len, allow up to 31 characters
-    movs r0, #31
-    ands wreg, r0                 @ ( nfa+2 len )
-    bl WALIGN
-    plus_
-    pop {pc}
+                              @ ( nfa )
+  do_ STRINGLEN                @ ( nfa+2 len+flags )
+  @ mask out flags in len, allow up to 31 characters
+  movs r1, #31
+  popy_                       @ ( len+flags ) Y:nfa+2
+  ands wreg, r1               @ ( len )
+  w_plus_y_                   @ ( nfa+2+len )
+  @ align to half word boundry
+  end_do_ HALIGN
 
 @ ( nfa -- [ 0 ] | [ xt xtflags] )
 @ convert name field address to xt and xtflags
 Forthword_ NFATOXTF, 0, "nfa>xtf"
-    push {lr}
-    dupzerosense_               @ ( n )
-    beq.n NFATOXTF_EXIT
+  push_lr_
+  iszero_                     @ ( n )
+  beq.n NFATOXTF_EXIT
 
-    push_                        @ ( nfa nfa )
-    hfetch_                     @ ( nfa xtflags )
-    to_r_                       @ ( nfa ) (R: xtflags)
-    bl NFA2LFA                  @ ( lfa )
-    fourplus_   @ lfa>xt        @ ( xt )
-    r_from_                     @ ( xt xtflags )
+  y_hmw_                      @ ( nfa Y:xtflags )
+  rpushy_                     @ ( nfa ) (R: xtflags)
+  do_ NFA2LFA                 @ ( lfa )
+  fourplus_   @ lfa>xt        @ ( xtlink )
+  mw_                         @ ( xt )
+  push_                       @ ( xt xt )
+  rpop_                       @ ( xt xtflags )
 
 NFATOXTF_EXIT:
-    pop {pc}
+  end_
+
+@ ( addr len idx -- 0 | nfa )
+FINDWI:
+  fourstar_          @ ( addr len idx*4)
+  y_w_               @ ( addr len idx*4 ) Y: idx*4
+  do_ CONTEXT        @ ( addr len context )
+  w_plus_y_          @ ( addr len context' )
+  mw_                @ ( addr len wid )
 
 @ ( c-addr len wid -- [ 0 | nfa ] )
 @ find a word in the dictionary
 @ 0 if word not found in dictionary
 @ nfa if word is found
 Forthword_ FINDNFA, 0, "findnfa"
-    push {lr}
-    dupzerosense_
-    bne.n FINDNFA_
-      @ terminating, wid is empty
-      dnip_
-      pop {pc}
-FINDNFA_:
-    fetch_                      @ ( c-addr len nfa )
+  push_lr_
+  iszero_
+  if_not_0_ FINDNFA_BEGIN
+    @ terminating, wid is empty
+    nip2_
+    exit_
 
-    @ <begin>
+  @ <begin>
 FINDNFA_BEGIN:
-    @ <while>
-    dupzerosense_               @ ( c-addr len nfa )
-    bne.n FINDNFA_CHECK
-      @ terminating, 0 found
-      dnip_                     @ ( 0 )
-      pop {pc}
+  mw_                         @ ( c-addr len nfa )
+  @ <while>
+FINDNFA_BEGIN1:
+  iszero_                    @ ( c-addr len nfa )
+  if_not_0_ FINDNFA_CHECK
+    @ terminating, 0 found
+    nip2_                     @ ( 0 )
+    exit_
 
 FINDNFA_CHECK:
-    to_r_                       @ ( c-addr len ) (R: nfa )
-    bl TWOOVER                  @ ( c-addr len c-addr len )
-    r_fetch_                    @ ( c-addr len c-addr len nfa )
-    bl STRINGLEN                @ ( c-addr len c-addr len f-addr len )
-    movs r0, #31
-    ands wreg, r0                 @ ( c-addr len c-addr len f-addr 0:len )
-    bl MCMP                     @ ( c-addr len flag )
-    @ <if>
-    zerosense_
-    beq.n FINDNFA_NEXT
-      @ we found the string
-      ddrop_                    @ ( )
-      r_from_                   @ ( nfa )
-      pop {pc}
-    @ <then>
-FINDNFA_NEXT:
-      @ next try
-      r_from_
-      bl NFA2LFA
-      fetch_
-      @ <repeat>
-      b.n FINDNFA_BEGIN
 
+  rpush_                      @ ( c-addr len ) (R: nfa )
+  y_d1_                       @ ( c-addr len nfa ) Y:c-addr
+  x_d0_                       @ ( c-addr len nfa ) X:len
+  pushy_                      @ ( c-addr len c-addr nfa )
+  pushx_                      @ ( c-addr len c-addr len nfa )
+  do_ STRINGLEN               @ ( c-addr len c-addr len f-addr len )
+  movs r1, #31
+  ands wreg, r1               @ ( c-addr len c-addr len f-addr 0:len )
+  do_ MCMP                    @ ( c-addr len flag )
+  @ <if>
+  iszero_
+  rpop_                       @ ( c-addr len nfa )
+  if_not_0_ FINDNFA_NEXT
+    @ we found the string
+    nip2_                     @ ( nfa )
+    exit_
+    
+  @ <then>
+FINDNFA_NEXT:
+    @ next try
+    do_ NFA2LFA                @ ( c-addr len lfa )
+    @ <repeat>
+    goto_ FINDNFA_BEGIN
+
+@ ( addr len idx * )
+FINDLAST:
+  d1_
+  nip2_
 
 @ ( addr len --  0 | nfa )
 @ search root wordlists for the name from string addr/len
 Forthword_ FINDROOT, 0, "froot"
-    push {lr}
-    @ put root wid on stack
-    dolit32_ VE_COLD
-    b.n FINDNFA_BEGIN
+  push {lr}
+  @ put root wid on stack
+  push_
+  lit32_ VE_WIPE
+  b.n FINDNFA_BEGIN1
 
-@ ( addr len idx -- 0 | nfa )
-FINDWI:
-      push {lr}
-      fourstar_          @ ( addr len idx*4)
-      bl CONTEXT         @ ( addr len idx*4 context )
-      plus_              @ ( addr len context' )
-      fetch_             @ ( addr len wid )
-      pop_lr_
-      b FINDNFA         @ ( nfa)
+@ ( -- idx )
+@ get context index
+Forthword_ CONTIDX_FETCH, 0 "contidx@"
+  push {lr}
+  bl CONTEXT          @ ( context )
+  @ get context index
+  twominus_           @ ( context-2 )
+  y_w_                @ ( contidx ) Y:contidx
+  hmw_                @ ( idx )
+  x_w_            
+  push_               @ ( idx idx ) X:idx
+  lit_ (MAX_CONTEXTS - 1) @ ( idx max )
+  bl GREATER          @ ( flag )
+  iszero_
+  je 1f
+    lit_ (MAX_CONTEXTS - 1)  @ ( max )
+    hmy_w_
+    pop {pc}
+1:
+  x_                  # ( idx )
+  pop {pc}
 
-FINDLAST:
-      pop_
-      pop_lr_
-      b FINDROOT
 
 @ ( addr len --  0 | nfa )
 @ search wordlists for the name from string addr/len
 Forthword_ FINDW, 0, "findw"
-    push {lr}
     @ loop through context slots to find a word
     @ start with last slot
-    bl CONTEXT          @ ( addr len context )
+    push_               @ ( addr len len )
+    do_ CONTIDX_FETCH    @ ( addr len idx )
     @ get context index and use as counter
-    twominus_           @ ( addr len context-2 )
-    hfetch_             @ ( addr len idx )
+    push_               @ ( addr len idx idx )
 FINDW_BEGIN:
-    dupzerosense_
-    bmi.n FINDLAST        @ ( addr len idx )
-      to_r_             @ ( addr len ) ( R: idx )
-      bl TWOOVER        @ ( addr len addr len ) ( R: idx )
-      @ get next wordlist in array
-      r_fetch_          @ ( addr len addr len idx ) ( R: idx)
+    iszero_
+    bmi.n FINDLAST      @ ( addr len idx )
+      y_d2_
+      x_d1_
+      pushy_
+      pushx_            @ ( addr len idx addr len idx )
       bl FINDWI
-      r_from_           @ ( addr len nfa idx ) ( R: )
-      swap_             @ ( addr len idx nfa )
-      dupzerosense_
+      iszero_
       @ end loop if word found
       beq.n FINDW_NEXT
-        dnip_           @ ( addr nfa )
-        nip_            @ ( nfa )
+        nip3_           @ ( nfa )
         pop {pc}
 
 FINDW_NEXT:
-      pop_             @ ( addr len idx )
+      d0_               @ ( addr len idx idx )
       @ decrement index
-      oneminus_         @ ( addr len idx-1 )
-      b.n FINDW_BEGIN
+      oneminus_         @ ( addr len idx idx-1 )
+      d0_w_             @ ( addr len idx-1 idx-1 )
+      goto_ FINDW_BEGIN
 
 @ ( -- )
 @ set the context and current to root forth vocabulary and remove
 @ other vocabularies
 Forthword_ ONLY, IMMEDIATE_EN, "only"
-    push {lr}
-    @ forth vocab always takes slot 0
-    dolit32_ EE_FORTHWORDLIST
-    push_
-    bl CONTEXT
-    bl STORE
-    @ make current also forth vocab
-    bl CURRENT
-    bl STORE
-    @ move index to next slot
-    one_
-    bl CONTEXT
-    twominus_
-    bl HSTORE
-    @ make second slot have no vocab
-    bl CONTEXT
-    fourplus_
-    pop_lr_
-    b ZEROSTORE
+  @ forth vocab always takes slot 0
+  lit32_ EE_FORTHWORDLIST
+  y_w_
+  do_ CURRENT                  @ ( CURRENT )
+  mw_y_                        @ ( CURRENT )
+  @ make current also forth vocab
+  do_ CONTEXT                  @ ( CONTEXT )
+  mw_y_                        @ ( CONTEXT )
+  @ move index to slot 1
+  twominus_                    @ ( CONTEXT-2 )
+  lit_y_ 1                     @ ( CONTEXT-2 Y:1 )
+  hmw_y_                       @ ( CONTEXT-2 )
+  @ make second slot have no vocab
+  twoplus_                     @ ( CONTEXT )
+  y_0_
+  fourplus_                    @ ( CONTEXT+4 )
+  mw_y_
+  end_
+    
