@@ -7,6 +7,9 @@
 @ BUILD_LEVEL 3: compiler working
 @ minimum kernel build has minimum word set needed to be up and running without interpreter
 
+@ used to track when lr is pushed onto return stack: 0 - not pushed, 1 - pushed on return stack
+.set PUSH_LR, 0
+ 
 .syntax unified
 .thumb
 
@@ -113,6 +116,7 @@ CPSTART:
       .include "number.S"
       .include "compiler.S"
       .include "asm.S"
+      .include "interpret_number.S"
       .include "include.S"
       .include "mathadv.S"
 
@@ -127,35 +131,33 @@ CPSTART:
 @ ( nx* -- ) (R: ny* -- )
 @ initialize asforth further. EXECs turnkey operation and go to quit
 Forthword_ WARM, 0, "warm"
-  push {lr}
-  bl RESET
+  do_ RESET
 .if BUILD_LEVEL > 1
-  bl ONLY
+  do_ ONLY
 .if BUILD_LEVEL > 2
-  bl DECIMAL           @ default to decimal base
+  do_ DECIMAL           @ default to decimal base
 .endif
 .endif
 
   type_ "if.arm 0.2\n"
   @ check if command line args need to be loaded
 .if BUILD_LEVEL > 1
-  bl DOCMDARG
+  do_ DOCMDARG
 .endif
 
-  pop_lr_  
-  b QUIT
+  end_do_ QUIT
 
 @ ( -- addr)
 @ start address of the data stack
 Forthword_ DSP0, 0, "dsp0"
   ldr wreg, addr_dstack
-  bx lr
+  end_
 
 @ ( -- addr)
 @ start address of return stack
 Forthword_ RSP0, 0, "rsp0"
   user_ rstack0
-  bx lr
+  end_
 
 
 .globl RECOVER
@@ -165,17 +167,15 @@ Forthword_ RSP0, 0, "rsp0"
 @ start up if after sig alarm ie segv.
 .thumb_func
 Forthword_ RECOVER, 0, "recover"
-  push {lr}
+  push_lr_
   @ initialize data stack
   ldr dsp, addr_dstack
   @ initialize sysvar pointer
   ldr sysvar, addr_sysvar
 
   type_ "recovering...\n"
-	bl QUIT
+	end_do_ QUIT
 
-  pop {lr}
-  bx lr
 
 .globl COLD
 @.type COLD, @function
@@ -184,7 +184,7 @@ Forthword_ RECOVER, 0, "recover"
 @ start up if from cold.
 .thumb_func
 Forthword_ COLD, 0, "cold"
-  push {lr} @ save return
+  push_lr_ @ save return
   @ initialize data stack
   ldr dsp, addr_dstack
   @ initialize sysvar pointer
@@ -192,15 +192,13 @@ Forthword_ COLD, 0, "cold"
 
   rsp_
   y_w_
-  bl RSP0
+  do_ RSP0
   mw_y_
 
 .if BUILD_LEVEL > 1
-  bl WIPE
+  do_ WIPE
 .endif
-  bl WARM
-
-  pop {pc}
+  end_do_ WARM
 
 .if BUILD_LEVEL > 1
 @ minimum.S must be last

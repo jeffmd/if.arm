@@ -350,6 +350,7 @@ sysvar .req r4 @ system variables base pointer
   pop {r1}
   mov lr, r1
 .endif
+.set PUSH_LR, 0
 .endm
 
 @ test with 8 bit constant
@@ -393,12 +394,6 @@ sysvar .req r4 @ system variables base pointer
 
 .macro lit_b_ val
   lit_ \val breg
-.endm
-
-@ push a 32 bit inline val on datastack
-.macro lit32_ val
-  bl CIFETCH
-  .word \val
 .endm
 
 
@@ -1551,6 +1546,59 @@ sysvar .req r4 @ system variables base pointer
   subs yreg, #1
 .endm
 
+@ if zero flag ==0 jump to addr
+.macro if_0_ addr
+  beq.n \addr
+.endm
+
+@ if zero flag !=0 jump to addr
+.macro if_not_0_ addr
+  bne.n \addr
+.endm
+
+.macro push_lr_
+  .set PUSH_LR, 1
+  push {lr}
+.endm
+
+@ do command
+.macro do_ addr
+  .if PUSH_LR == 0
+    push_lr_ 
+  .endif
+  bl \addr
+.endm
+
+.macro goto_ addr
+  b \addr
+.endm
+
+.macro end_do_ addr
+  .if PUSH_LR
+    pop_lr_
+  .endif
+  b \addr
+.endm
+
+.macro exit_
+  .if PUSH_LR
+    pop {pc}
+  .else
+    bx lr
+  .endif
+.endm
+
+.macro end_
+  exit_
+  .set PUSH_LR, 0
+.endm
+
+@ push a 32 bit inline val on datastack
+.macro lit32_ val
+  do_ CIFETCH
+  .word \val
+.endm
+
 .macro ascii_ str, flg=0
   .p2align 1 @ Align to even locations
   .byte (8f - 7f)
@@ -1561,13 +1609,13 @@ sysvar .req r4 @ system variables base pointer
 .endm
 
 .macro $lit_ str
-    bl DOSLIT
+    do_ DOSLIT
     ascii_ "\str"
 .endm
 
 .macro type_ str
     $lit_ "\str"
-    bl TYPE
+    do_ TYPE
 .endm
 
 

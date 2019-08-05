@@ -113,14 +113,14 @@ Forthword_ R0, INLINE_OPT, "r0"
 
 @ (  -- n)
 @ current return stack pointer address
-Forthword_ RP, INLINE_OPT, "rp"
-    rpfetch_
+Forthword_ RSP, INLINE_OPT, "rsp"
+    rsp_
     bx lr
 
 @ ( addr  -- ) (R: -- x*y)
 @ set return stack pointer
 @ must be called
-Forthword_ STR_RP, INLINE_OPT, "!rp"
+Forthword_ RSP_W, INLINE_OPT, "rsp=w"
     @ keep the return address
-    str_rp_
+    rsp_w_
     bx lr

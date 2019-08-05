@@ -4,7 +4,7 @@
 @ flags address
 Forthword_ FFLAGS, 0, "fflags"
     user_  fflags
-    bx lr
+    end_
     
 @ ( -- addr )
 @ system state variable. 0 is interpret mode. Not 0 is compile mode
@@ -12,33 +12,35 @@ Forthword_ FFLAGS, 0, "fflags"
 Forthword_ STATE, 0, "state"
     user_ state
     hmw_
-    bx lr
+    end_
 
+@ ( val -- state )
+@ state = val
 Forthword_ STATESTORE, 0, "state="
     y_w_
     user_ state
     hmw_y_
-    bx lr
+    end_
 
 @ ( --  )
 @ enter interpreter mode
 Forthword_ LBRACKET, IMMEDIATE_EN, "["
     zero_
-    b STATESTORE
+    end_do_ STATESTORE
 
 @ ( --  )
 @ enter compile mode
 Forthword_ RBRACKET, 0, "]"
     lit_ 1
-    b STATESTORE
+    end_do_ STATESTORE
 
 
 @ ( -- pauseaddr )
-@ get ram address of pause defer
+@ get pause defer
 Forthword_ PAUSE_FETCH, 0, "pause@"
     user_ USER_PAUSE
     mw_
-    bx lr
+    end_
 
 @ ( addr --  )
 @ set pause to addr
@@ -46,14 +48,12 @@ Forthword_ PAUSE_STR, 0, "pause="
   y_w_
   user_ USER_PAUSE
   mw_y_
-  bx lr
+  end_
 
 Forthword_ PAUSE_CLR, 0, "pause.clr"
   @ init pause to noop
-  push {lr}
   lit32_ NOOP
-  pop_lr_
-  b PAUSE_STR
+  end_do_ PAUSE_STR
 
 @ ( val -- char )
 @ convert low byte of val to a printable hex character
@@ -67,155 +67,140 @@ Forthword_ NHEX, 0, "#h"
     @ <then>
 NHEX_NEXT:
     adds wreg, #48
-    bx lr
+    end_
 
 @ ( n -- )
 @ simple 4 bit hex print
 Forthword_ PNIB, 0, ".h"
-    push {lr}
-    bl NHEX
-    pop_lr_
-    b EMIT
+    do_ NHEX
+    end_do_ EMIT
 
 @ ( n -- )
 @ simple 32 bit hex print
 Forthword_ PHEX, 0, ".$"
-    push {lr}
     lit_ '$
-    bl EMIT
+    do_ EMIT
     lit_ 28
 PHEX_BEGIN:
     y_d0_
     push_
     pushy_       @ ( n x n x )
     rshift_
-    bl PNIB
+    do_ PNIB
     fourminus_
-    bne.n PHEX_BEGIN
+    if_not_0_ PHEX_BEGIN
 
     pop_
-    bl PNIB
+    do_ PNIB
     lit_ 32
-    pop_lr_
-    b EMIT
+    end_do_ EMIT
 
 @ ( -- )
 @ set terminate flag which indicates request to exit forth interpreter
 Forthword_ BYE, 0, "bye"
-    push {lr}
-    bl FFLAGS
+    do_ FFLAGS
     x_w_
     lit_y_ 1 
     hmx_
     w_or_y_
     hmx_w_
-    pop {pc}
+    end_
 
 @ ( -- )
 @ send the READY prompt to the command line
 Forthword_ PROMPTRDY, 0, ".>"
-    push {lr}
     type_ "\n> "
-    pop {pc}
+    end_
 
 @ ( -- )
 @ send the READY prompt to the command line
 Forthword_ PROMPTCOMPILE, 0, ".:"
-    push {lr}
     type_ "\n: "
-    pop {pc}
+    end_
 
 @ ( -- )
 @ send the OK prompt to the command line
 Forthword_ PROMPTOK, 0, ".ok"
-    push {lr}
     type_ " ok"
-    pop {pc}
+    end_
 
 @ ( n -- )
 @ process the error prompt
 Forthword_ PROMPTERROR, 0, ".??"
-    push {lr}
     type_ " ?? "
-    pop {pc}
+    end_
 
 @ ( -- )
 @ check if a ready prompt is required
 Forthword_ QP_RD, 0, "?prd"
-    push {lr}
-    bl STATE
+    do_ STATE
     @ output ready prompt if in interpret mode
     @ <-if>
     iszero_
-    bne.n QP_RD_exit
+    if_not_0_ QP_RD_exit
       pop_lr_
-      b PROMPTRDY
+      goto_ PROMPTRDY
 
 QP_RD_exit:
     @ <then>
-      pop_lr_
-      b PROMPTCOMPILE
+    end_do_ PROMPTCOMPILE
 
 
 @ ( -- flag )
 @ refill the input buffer
 @ flag is true if buffer needs processing ie full or enter pressed
 Forthword_ DOREFILL, 0, "(refill)"
-  push {lr}
   @ if just starting new input line then check prompt and reset input position
-  bl G_IN                  @ ( >inaddr )
+  do_ G_IN                 @ ( >inaddr )
   hmw_                     @ ( >in )
   iszero_                  @ ( )
-  beq.n DOREFILL_do
-    bl INRESET
+  if_0_ DOREFILL_do
+    do_ INRESET
 
 DOREFILL_do:
   @ refill the input buffer
-  pop_lr_
-  b REFILL                 @ ( f )
+  end_do_ REFILL           @ ( f )
 
 @ ( -- )
 @ Fetch pause vector and EXEC it. may make a context/task switch
 Forthword_ DOPAUSE, 0, "(pause)"
-  push {lr}
   push_
-  bl SLEEP @@ temp fix for cpu hogging
-  bl PAUSE_FETCH
-  pop_lr_
-  b EXEC
+  do_ SLEEP @@ temp fix for cpu hogging
+  do_ PAUSE_FETCH
+  end_do_ EXEC
 
 @ ( -- )
 @ main loop - iterate through scheduled tasks
 Forthword_ DOTASKS, 0, "(tasks)"
   @ <begin>
-  push {lr}
+  push_lr_
 DOTASKS1:
-  bl DOREFILL      @ ( flag )
+  do_ DOREFILL     @ ( flag )
   @ <if>
   iszero_
-  beq.n DOTASK_N1
+  if_0_ DOTASK_N1
     @ there is something in the input buffer, try interpreting it
 .if BUILD_LEVEL > 1
-    bl DOINTERPRET
+    do_ DOINTERPRET
 .endif
 DOTASK_N1:
-  bl DOPAUSE
+  do_ DOPAUSE
   
 
   @ check to see if tasks should be terminated
-  bl FFLAGS
+  do_ FFLAGS
   hmw_
   bittest_ TERMINATE_F
   @ <again>
-  beq.n DOTASKS1
-  pop {pc}
+  if_0_ DOTASKS1
+  end_
 
 
 @ ( -- a-addr )
 @ address of idletime
 Forthword_ IDLETIMEADDR, 0, "idletime#"
   user_ USER_IDLETIME
-  bx lr
+  end_
 
 @ ( n -- )
 @ set idletime
@@ -223,28 +208,27 @@ Forthword_ IDLETIMESTORE, 0, "idletime="
   y_w_
   user_ USER_IDLETIME
   mw_y_
-  bx lr
+  end_
   
 @ ( -- n )
 @ get idletime
 Forthword_ IDLETIMEFETCH, 0, "idletime@"
   user_ USER_IDLETIME
   mw_
-  bx lr
+  end_
 
 @ ( n -- )
 @ sleep for n micro seconds
 Forthword_ USLEEP, 0, "usleep"
-  b usleep
+  end_do_ usleep
 
 
 @ ( -- )
 @ sleep for n micro seconds
 Forthword_ SLEEP, 0, "sleep"
-  push {lr}
-  bl IDLETIMEFETCH
+  do_ IDLETIMEFETCH
   iszero_
-  beq.n NO_IDLESLEEP
+  if_0_ NO_IDLESLEEP
     pop_lr_
     b USLEEP
 NO_IDLESLEEP:
@@ -254,53 +238,49 @@ NO_IDLESLEEP:
 @ turn sleep off
 Forthword_ SLEEPOFF, 0, "sleep.off"
   zero_
-  b IDLETIMESTORE
+  end_do_ IDLETIMESTORE
  
 @ ( -- )
 @ turn sleep on
 Forthword_ SLEEPON, 0, "sleep.on"
   lit_ 5000
-  b IDLETIMESTORE
+  end_do_ IDLETIMESTORE
 
 @ ( -- )
 @ reset input source
 Forthword_ RESET, 0, "reset"
-  push {lr}
 
   @ reset input source for key
   lit32_ STDIN
   y_w_
-  bl KEYADDR
+  do_ KEYADDR
   mw_y_
 
-  bl EMIT_ON
+  do_ EMIT_ON
   @ reset input buffer
-  bl INRESET
-  bl SLEEPON
+  do_ INRESET
+  do_ SLEEPON
 
 .if BUILD_LEVEL > 2
-  bl WSET
+  do_ WSET
   zero_
-  bl SMUDGE_STR
+  do_ SMUDGE_STR
 .endif
 
-  bl PAUSE_CLR
+  do_ PAUSE_CLR
   @ switch to interpret mode
-  pop_lr_
-  b LBRACKET
+  end_do_ LBRACKET
      
 @ ( -- )
 @ reset stacks and start over again
 Forthword_ QUIT, 0, "quit"
-  push {lr}
   @ reset data stack
-  bl DSP0
+  do_ DSP0
   dsp_w_
   @ reset return stack pointers
   @bl RP0
   @fetch_
   @bl RP_STORE
-  bl RESET
-  pop_lr_
-  b DOTASKS
+  do_ RESET
+  end_do_ DOTASKS
 

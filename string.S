@@ -7,22 +7,21 @@ Forthword_ STRINGLEN, 0, "$l"
     twoplus_    @ ( addr+2 )
     push_       @ ( addr+2 addr+2 )
     hmx_        @ ( addr+2 len )
-    bx lr
+    end_
 
 @ ( addr1 u1 n -- addr2 u2 )
 @ adjust string from addr1 to addr1+n, reduce length from u1 to u2 by n
 Forthword_ SLASHSTRING, 0, "/$"
-    push {lr}
-    push_         @ ( -- addr1 u1 n n )
-    d1_           @ ( -- addr1 u1 n u1 )
-    bl MIN        @ ( -- addr1 u1 n|u1 )
+    push_         @ ( addr1 u1 n n )
+    d1_           @ ( addr1 u1 n u1 )
+    do_ MIN       @ ( addr1 u1 n|u1 )
     y_w_          @ ( addr1 u1 n ) Y: n
     d1_           @ ( addr1 u1 addr1 )
     w_plus_y_     @ ( addr1 u1 addr2 )
     d1_w_         @ ( addr2 u1 addr2 )
     pop_          @ ( addr2 u1 )
     w_minus_y_    @ ( addr2 u2 )
-    pop {pc}
+    end_
 
 @ ( -- addr len )
 @ runtime portion of sliteral
@@ -32,7 +31,7 @@ Forthword_ SLASHSTRING, 0, "/$"
 Forthword_ DOSLIT, 0, "(slit)"
   @ get return address to get string length, calculate string address start,
   @ and calculate return address
-  push {lr}
+  push_lr_
   y_r0_          @ ( Y:raddr )  (R: raddr -- )
   @ get the string length
   y_minus1_      @ account for odd address number because using thumb instructions
@@ -47,5 +46,5 @@ Forthword_ DOSLIT, 0, "(slit)"
   pop_           @ ( straddr slength )
   y_plus1_       @ make sure return address is odd
   r0_y_          @ ( straddr slength ) (R: straddr+k )
-  pop {pc}
+  end_
 

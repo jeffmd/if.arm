@@ -159,18 +159,6 @@ Forthword_ ZEROSENSE, INLINE_OPT, "0="
     zerosense_
     bx lr
 
-@ ( n1 -- n2 )
-@ convert byte length to half word align length
-@ round number up to even value
-
-forthword_ WALIGN, 0, "w_"
-    oneplus_
-    movs r0, #2
-    rsbs r0, r0, #0
-    ands wreg, r0
-    bx lr
-
-
 @ ( n1 n2 -- n3)
 @ logically shift n1 left n2 times
 forthword_ LSHIFT, INLINE_OPT, "<<"
