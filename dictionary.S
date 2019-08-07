@@ -160,12 +160,12 @@ FINDW_BEGIN:
       x_d1_
       pushy_
       pushx_            @ ( addr len idx addr len idx )
-      bl FINDWI
+      do_ FINDWI
       iszero_
       @ end loop if word found
       beq.n FINDW_NEXT
         nip3_           @ ( nfa )
-        pop {pc}
+        end_
 
 FINDW_NEXT:
       d0_               @ ( addr len idx idx )
