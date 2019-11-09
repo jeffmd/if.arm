@@ -1,10 +1,11 @@
 @  if.S 
 
 .set BUILD_LEVEL, 0
-@ if BUILD_LEVEL is 0 then a minimum kernel is built but with no interpreter
+@ BUILD_LEVEL 0: then a minimum kernel is built but with no interpreter
 @ BUILD_LEVEL 1: core and kernel are working
-@ BUILD_LEVEL 2: interpreter and dictionary working
-@ BUILD_LEVEL 3: compiler working
+@ BUILD_LEVEL 2: word interpreter and dictionary working
+@ BUILD_LEVEL 3: core-inline working
+@ BUILD_LEVEL 10: compiler and interpret number working
 @ minimum kernel build has minimum word set needed to be up and running without interpreter
 
 @ used to track when lr is pushed onto return stack: 0 - not pushed, 1 - pushed on return stack
@@ -13,7 +14,7 @@
 .syntax unified
 .thumb
 
-.set rpi2, 1
+.set rpi2, 0
 
 .include "macros.S"
 
@@ -113,16 +114,17 @@ CPSTART:
     .include "dictionary.S"
 
     .if BUILD_LEVEL > 2
-      .include "number.S"
-      .include "compiler.S"
-      .include "asm.S"
-      .include "interpret_number.S"
-      .include "include.S"
-      .include "mathadv.S"
-
-      .include "defer.S"
-      @ .include "file.S"
       .include "core-inline.S"
+      .if BUILD_LEVEL > 9
+        .include "number.S"
+        .include "compiler.S"
+        .include "asm.S"
+        .include "interpret_number.S"
+        .include "include.S"
+        .include "mathadv.S"
+        @ .include "defer.S"
+        @ .include "file.S"
+      .endif
     .endif
   .endif
   
@@ -134,7 +136,7 @@ Forthword_ WARM, 0, "warm"
   do_ RESET
 .if BUILD_LEVEL > 1
   do_ ONLY
-.if BUILD_LEVEL > 2
+.if BUILD_LEVEL > 9
   do_ DECIMAL           @ default to decimal base
 .endif
 .endif
@@ -145,7 +147,8 @@ Forthword_ WARM, 0, "warm"
   do_ DOCMDARG
 .endif
 
-  end_do_ QUIT
+@  end_do_ QUIT
+end_
 
 @ ( -- addr)
 @ start address of the data stack
