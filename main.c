@@ -34,10 +34,10 @@ int main(int argc, char *argv[])
   action.sa_flags |= SA_SIGINFO;
   sigaction(SIGSEGV, &action, NULL);
 
-	USER_ARGC = argc;
-	USER_ARGV = argv;
+  USER_ARGC = argc;
+  USER_ARGV = argv;
 
-	set_input_mode();
+  set_input_mode();
   
   if (sigsetjmp(quitbuf, 1) != 0)
   { 
