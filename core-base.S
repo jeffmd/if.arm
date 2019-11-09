@@ -32,7 +32,7 @@ Forthword_ ULESS, 0, "u<"
   sbcs wreg, wreg
   bx lr
 
-@ ( n1 -- n2/2 )
+@ ( n1 -- n2 )
 @ convert byte length to half word align length
 @ round number up to even value
 Forthword_ HALIGN, 0, "h_"
