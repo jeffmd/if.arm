@@ -128,7 +128,7 @@ sysvar .req r4 @ system variables base pointer
     push {yreg}
 .endm
 
-@ rpushdp
+@ rpushdsp
 .macro rpushdsp_ @ put copy of data stack pointer on return stack
     push {dsp}
 .endm
