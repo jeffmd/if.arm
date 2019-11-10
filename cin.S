@@ -39,9 +39,8 @@ Forthword_ KEYADDR, 0, "key#"
 @ fetch key from standard input, should leave a single character on wreg
 @ if a key was pressed. If no key pressed then -1 is on wreg.
 Forthword_ STDIN, 0, "stdin"
-  @ push {lr}
-  end_do_ getchr
-  @ pop {pc}
+  do_ getchr
+  end_
 
 @ ( -- key )
 @ fetch key from deffered routine, should leave a single character
@@ -183,5 +182,5 @@ REFILLTIB_exit:
 @ ( -- f )
 @ refills the input buffer
 Forthword_ REFILL, 0, "refill"
-  exit_do_ REFILLTIB
+  end_do_ REFILLTIB
 
