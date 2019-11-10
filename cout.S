@@ -10,7 +10,8 @@ Forthword_ EMITADDR, 0, "emit#"
 @ ( c -- )
 @ fetch the emit vector and EXEC it. Will emit a character from wreg
 Forthword_ PUTCHAR, 0, "putchar"
-  end_do_ putchar
+  do_ putchar
+  end_
 
 @ ( -- )
 @ turn emit off

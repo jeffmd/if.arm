@@ -343,16 +343,6 @@ sysvar .req r4 @ system variables base pointer
   mov sp, wreg
 .endm
 
-.macro pop_lr_ @ pop lr from return stack into lr
-.if rpi2
-  pop {lr}
-.else
-  pop {r1}
-  mov lr, r1
-.endif
-.set PUSH_LR, 0
-.endm
-
 @ test with 8 bit constant
 .macro bittest_ v
     movs r1, #\v
@@ -1561,6 +1551,16 @@ sysvar .req r4 @ system variables base pointer
   push {lr}
 .endm
 
+.macro pop_lr_ @ pop lr from return stack into lr
+.if rpi2
+  pop {lr}
+.else
+  pop {r1}
+  mov lr, r1
+.endif
+.set PUSH_LR, 0
+.endm
+
 @ do command
 .macro do_ addr
   .if PUSH_LR == 0
@@ -1573,13 +1573,6 @@ sysvar .req r4 @ system variables base pointer
   b \addr
 .endm
 
-.macro end_do_ addr
-  .if PUSH_LR
-    pop_lr_
-  .endif
-  b \addr
-.endm
-
 .macro exit_
   .if PUSH_LR
     pop {pc}
@@ -1588,9 +1581,24 @@ sysvar .req r4 @ system variables base pointer
   .endif
 .endm
 
+.macro exit_do_ addr
+  .if PUSH_LR
+    pop_lr_
+    .set PUSH_LR, 1
+  .endif
+  b \addr  
+.endm
+
 .macro end_
   exit_
   .set PUSH_LR, 0
+.endm
+
+.macro end_do_ addr
+  .if PUSH_LR
+    pop_lr_
+  .endif
+  b \addr
 .endm
 
 @ push a 32 bit inline val on datastack

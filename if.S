@@ -147,8 +147,8 @@ Forthword_ WARM, 0, "warm"
   do_ DOCMDARG
 .endif
 
-@  end_do_ QUIT
-end_
+  end_do_ QUIT
+
 
 @ ( -- addr)
 @ start address of the data stack

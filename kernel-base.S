@@ -78,6 +78,7 @@ Forthword_ PNIB, 0, ".h"
 @ ( n -- )
 @ simple 32 bit hex print
 Forthword_ PHEX, 0, ".$"
+    push_
     lit_ '$
     do_ EMIT
     lit_ 28
@@ -87,6 +88,7 @@ PHEX_BEGIN:
     pushy_       @ ( n x n x )
     rshift_
     do_ PNIB
+    pop_
     fourminus_
     if_not_0_ PHEX_BEGIN
 
@@ -138,8 +140,7 @@ Forthword_ QP_RD, 0, "?prd"
     @ <-if>
     iszero_
     if_not_0_ QP_RD_exit
-      pop_lr_
-      goto_ PROMPTRDY
+      exit_do_ PROMPTRDY
 
 QP_RD_exit:
     @ <then>
@@ -186,7 +187,6 @@ DOTASKS1:
 DOTASK_N1:
   do_ DOPAUSE
   
-
   @ check to see if tasks should be terminated
   do_ FFLAGS
   hmw_
@@ -220,7 +220,8 @@ Forthword_ IDLETIMEFETCH, 0, "idletime@"
 @ ( n -- )
 @ sleep for n micro seconds
 Forthword_ USLEEP, 0, "usleep"
-  end_do_ usleep
+  do_ usleep
+  end_
 
 
 @ ( -- )
@@ -229,10 +230,9 @@ Forthword_ SLEEP, 0, "sleep"
   do_ IDLETIMEFETCH
   iszero_
   if_0_ NO_IDLESLEEP
-    pop_lr_
-    b USLEEP
+    exit_do_ USLEEP
 NO_IDLESLEEP:
-  pop {pc}
+  end_
 
 @ ( -- )
 @ turn sleep off
@@ -261,7 +261,7 @@ Forthword_ RESET, 0, "reset"
   do_ INRESET
   do_ SLEEPON
 
-.if BUILD_LEVEL > 2
+.if BUILD_LEVEL > 9
   do_ WSET
   zero_
   do_ SMUDGE_STR

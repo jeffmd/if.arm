@@ -4,7 +4,7 @@
 @ terminal input buffer address
 Forthword_ TIB, 0, "tib"
   user_  ram_tib
-	end_
+  end_
 
 @ ( -- addr-half )
 @ variable holding the number of characters in TIB
@@ -183,5 +183,5 @@ REFILLTIB_exit:
 @ ( -- f )
 @ refills the input buffer
 Forthword_ REFILL, 0, "refill"
-  goto_ REFILLTIB
+  exit_do_ REFILLTIB
 
