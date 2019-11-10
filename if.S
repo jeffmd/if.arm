@@ -176,6 +176,15 @@ Forthword_ RECOVER, 0, "recover"
   @ initialize sysvar pointer
   ldr sysvar, addr_sysvar
 
+  do_ RESET
+  
+.if BUILD_LEVEL > 1
+	do_ ONLY
+.if BUILD_LEVEL > 9
+  do_ DECIMAL           @ default to decimal base
+.endif
+.endif
+
   type_ "recovering...\n"
 	end_do_ QUIT
 
