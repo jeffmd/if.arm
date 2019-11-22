@@ -1061,6 +1061,86 @@ sysvar .req r4 @ system variables base pointer
     lsls wreg, #2
 .endm
 
+@ x/=2
+.macro x_twoslash_
+  asrs xreg, #1
+.endm
+
+@ x/=4
+.macro x_fourslash_
+  asrs xreg, #2
+.endm
+
+@ x*=2
+.macro x_twostar_
+  lsls xreg, #1
+.endm
+
+@ x*=4
+.macro x_fourstar_
+  lsls xreg, #2
+.endm
+
+@ y/=2
+.macro y_twoslash_
+  asrs yreg, #1
+.endm
+
+@ y/=4
+.macro y_fourslash_
+  asrs yreg, #2
+.endm
+
+@ y*=2
+.macro y_twostar_
+  lsls yreg, #1
+.endm
+
+@ y*=4
+.macro y_fourstar_
+  lsls yreg, #2
+.endm
+
+@ a/=2
+.macro a_twoslash_
+  asrs areg, #1
+.endm
+
+@ a/=4
+.macro a_fourslash_
+  asrs areg, #2
+.endm
+
+@ a*=2
+.macro a_twostar_
+  lsls areg, #1
+.endm
+
+@ a*=4
+.macro a_fourstar_
+  lsls areg, #2
+.endm
+
+@ b/=2
+.macro b_twoslash_
+  asrs breg, #1
+.endm
+
+@ b/=4
+.macro b_fourslash_
+  asrs breg, #2
+.endm
+
+@ b*=2
+.macro b_twostar_
+  lsls breg, #1
+.endm
+
+@ b*=4
+.macro b_fourstar_
+  lsls breg, #2
+.endm
+
 @ ==0
 .macro iszero_
     cmp wreg, #0
@@ -1128,7 +1208,7 @@ sysvar .req r4 @ system variables base pointer
 
 .macro true_
   zero_
-  mvns wreg, wreg
+  not_
 .endm
 
 .macro lshift_
@@ -1616,13 +1696,13 @@ sysvar .req r4 @ system variables base pointer
   .p2align 1
 .endm
 
-.macro $lit_ str
+.macro slit_ str
     do_ DOSLIT
     ascii_ "\str"
 .endm
 
 .macro type_ str
-    $lit_ "\str"
+    slit_ "\str"
     do_ TYPE
 .endm
 

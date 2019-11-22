@@ -2,26 +2,29 @@
 
 @ must be last word in core
 Forthword_ WIPE, 0, "WIPE"
-    push {lr}
+  push_lr_
    
-    ldr r0, addr_dpstart
-    movs wreg, #(ram_dp-sysvar_base)
-    adds wreg, sysvar
-    str r0, [wreg]
+.if BUILD_LEVEL > 9
+  lit32_ DPSTART
+  y_w_
+  do_ DPSHARP
+  mw_y_
+
+  lit32_ CPSTART
+  y_w_
+  do_ CPSHARP
+  mw_y_
+.endif
     
-    dolit32_ EE_FORTHWORDLIST
-    push_
-    bl ZEROSTORE
-    fourplus_
-    bl ZEROSTORE
-    
-    @ init pause to noop
-    dolit32_ NOOP
-    bl PAUSEADDR
-    bl STORE
-    
-    dolit32_ HERESTART
-    bl HEREADDR
-    bl STORE
-    pop_lr_
-    b ONLY    
+  lit32_ EE_FORTHWORDLIST
+  y_0_
+  mw_y_
+  fourplus_
+  mw_y_
+       
+  lit32_ HERESTART
+  y_w_
+  do_ HEREADDR
+  mw_y_
+
+  end_do_ ONLY    

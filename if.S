@@ -1,6 +1,6 @@
 @  if.S 
 
-.set BUILD_LEVEL, 0
+.set BUILD_LEVEL, 2
 @ BUILD_LEVEL 0: then a minimum kernel is built but with no interpreter
 @ BUILD_LEVEL 1: core and kernel are working
 @ BUILD_LEVEL 2: word interpreter and dictionary working
