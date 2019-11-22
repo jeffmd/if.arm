@@ -166,15 +166,15 @@ sysvar .req r4 @ system variables base pointer
 .endm
 
 .macro rnip_
-    adds sp, #4
+    add sp, #4
 .endm
 
 .macro rnip2_ 
-    adds sp, #8
+    add sp, #8
 .endm
 
 .macro rnip3_ 
-    adds sp, #12
+    add sp, #12
 .endm
 
 @ load value from return stack into register
