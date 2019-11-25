@@ -1674,10 +1674,21 @@ sysvar .req r4 @ system variables base pointer
   .set PUSH_LR, 0
 .endm
 
+.macro end_next_
+  .if PUSH_LR
+    pop_lr_
+  .endif
+.endm
+
 .macro end_do_ addr
   .if PUSH_LR
     pop_lr_
   .endif
+  b \addr
+.endm
+
+.macro end_goto_ addr
+  .set PUSH_LR,0
   b \addr
 .endm
 

@@ -216,17 +216,17 @@ forthword_ REGL, 0, "regl"
 @ save registers W, A, B, X, Y
 @ ( n -- )
 forthword_ REGS, 0, "regs"
-  pushy_               @ ( Y n )
-  y_w_                 @ ( Y n ) Y:n
-  user_ WR             @ ( Y WR )
+  pushy_               @ ( y n )
+  y_w_                 @ ( y n ) Y:n
+  user_ WR             @ ( y WR )
   mw_y_
-  fourplus_            @ ( Y RA )
+  fourplus_            @ ( y RA )
   mw_a_
-  fourplus_            @ ( Y RB )
+  fourplus_            @ ( y RB )
   mw_b_
-  fourplus_            @ ( Y RX )
+  fourplus_            @ ( y RX )
   mw_x_
-  fourplus_            @ ( Y RY )
+  fourplus_            @ ( y RY )
   popy_                @ ( RY )
   mw_y_
   end_
@@ -234,21 +234,22 @@ forthword_ REGS, 0, "regs"
 @ ( addr len -- ** [addr len] f )
 @ recognize a word in the dictionary
 Forthword_ REC_WORD, 0, "recw"
-  rpush_              @ ( addr len ) (R: len )
+  push_lr_            @ ( addr len ) (R: retaddr )
+  rpush_              @ ( addr len ) (R: retaddr len )
   y_d0_               @ ( addr len Y:addr )
-  rpushy_             @ ( addr len ) (R: len addr )
-  do_ FINDW
+  rpushy_             @ ( addr len ) (R: retaddr len addr )
+  do_ FINDW           @ ( 0 | nfa )
   iszero_
   if_not_0_ REC_WORD_FOUND
-    rpop_             @ ( addr ) (R: len )
-    push_             @ ( addr addr ) (R: len )
-    rpop_             @ ( addr len ) (R: ) 
+    rpop_             @ ( addr ) (R: retaddr len )
+    push_             @ ( addr addr ) (R: retaddr len )
+    rpop_             @ ( addr len ) (R: retaddr ) 
     push_             @ ( addr len len )
     zero_             @ ( addr len 0 )
     exit_
 
 REC_WORD_FOUND:
-  rnip2_            @ ( nfa ) (R: )
+  rnip2_            @ ( nfa ) (R: retaddr )
   do_ NFATOXTF      @ ( xt flag )
   @ check if compile only word
   @sbrc tosh, COMPILE_ONLY_FB
@@ -281,16 +282,16 @@ REC_WORD_CHECKSTATE:
     if_0_ REC_WORD_EXECUTE
 .if BUILD_LEVEL > 9
       @ in compile mode so compile xt
-      do_ COMPILEXT      @ ( ? )
+      do_ COMPILEXT    @ ( ? )
 .endif
       true_
       exit_
 
 REC_WORD_EXECUTE:
     @ state is zero, EXEC xt
-  do_ REGL
-  do_ EXEC
-  do_ REGS
+  do_ REGL             @ ( w xt )
+  do_ EXEC             @ ( * )
+  do_ REGS             @ ( ? )
 
   true_
   end_
@@ -301,7 +302,7 @@ Forthword_ RECX, 0, "recx"
   @ test if its a word
   do_ REC_WORD            @ ( [addr len] flag )
   iszero_                 @ ( [addr len] flag )
-  if_0_ RECX_DONE
+  if_not_0_ RECX_DONE
 
 .if BUILD_LEVEL > 3
   @ test if its a number
@@ -327,7 +328,6 @@ RECX_DONE:
 @ ( -- )
 @ interpret input word by word.
 Forthword_ INTERPRET, 0, "interp"
-  end_
   push_lr_
 INTERPRET_DO:
   @ begin

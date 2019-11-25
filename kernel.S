@@ -97,7 +97,7 @@ Forthword_ CATCH, 0, "catch"
   y_w_                @ ( xt haddr Y:haddr )
   mw_                 @ ( xt hxt )
   rpush_              @ ( xt hxt ) (R: callerret DSP hxt )
-  rsp_                @ ( xt RSP ) (R: callerret SP hxt)
+  rsp_                @ ( xt RSP ) (R: callerret DSP hxt)
   @ @haddr = rsp
   my_w_               @ ( xt RSP )
   pop_                @ ( xt )

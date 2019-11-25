@@ -57,18 +57,17 @@ FINDWI:
   do_ CONTEXT        @ ( addr len context )
   w_plus_y_          @ ( addr len context' )
   mw_                @ ( addr len wid )
+  end_next_
 
-@ ( c-addr len wid -- [ 0 | nfa ] )
+@ ( c-addr len wid -- 0 | nfa )
 @ find a word in the dictionary
 @ 0 if word not found in dictionary
 @ nfa if word is found
 Forthword_ FINDNFA, 0, "findnfa"
   push_lr_
   iszero_
-  if_not_0_ FINDNFA_BEGIN
-    @ terminating, wid is empty
-    nip2_
-    exit_
+  @ terminate if wid is empty
+  if_0_ FINDNFA_END
 
   @ <begin>
 FINDNFA_BEGIN:
@@ -76,13 +75,8 @@ FINDNFA_BEGIN:
   @ <while>
 FINDNFA_BEGIN1:
   iszero_                     @ ( c-addr len nfa )
-  if_not_0_ FINDNFA_CHECK
-    @ terminating, 0 found
-    nip2_                     @ ( 0 )
-    exit_
-
-FINDNFA_CHECK:
-
+  @ terminate if 0 found
+  if_0_ FINDNFA_END
   rpush_                      @ ( c-addr len ) (R: nfa )
   y_d1_                       @ ( c-addr len nfa ) Y:c-addr
   x_d0_                       @ ( c-addr len nfa ) X:len
@@ -92,35 +86,30 @@ FINDNFA_CHECK:
   movs r1, #31
   ands wreg, r1               @ ( c-addr len c-addr len f-addr 0:len )
   do_ MCMP                    @ ( c-addr len flag )
-  @ <if>
-  iszero_
-  rpop_                       @ ( c-addr len nfa )
-  if_not_0_ FINDNFA_NEXT
-    @ we found the string
-    nip2_                     @ ( nfa )
-    exit_
-    
-  @ <then>
-FINDNFA_NEXT:
-    @ next try
-    do_ NFA2LFA                @ ( c-addr len lfa )
-    @ <repeat>
-    goto_ FINDNFA_BEGIN
 
-@ ( addr len idx * )
-FINDLAST:
-  d1_
-  nip2_
-  @ fall into froot
+  iszero_
+  rpop_                       @ ( c-addr len nfa ) (R: )
+  @ match found if flag is > 0
+  if_not_0_ FINDNFA_END
+    
+  @ next try
+  do_ NFA2LFA                @ ( c-addr len lfa )
+  @ <repeat>
+  goto_ FINDNFA_BEGIN
+
+FINDNFA_END:
+  @ we found the string
+  nip2_                     @ ( nfa )
+  end_
+
 
 @ ( addr len --  0 | nfa )
 @ search root wordlists for the name from string addr/len
 Forthword_ FINDROOT, 0, "froot"
-  push {lr}
   @ put root wid on stack
-  push_
-  lit32_ VE_WIPE
-  end_do_ FINDNFA_BEGIN1
+  push_                     @ ( addr len len ) 
+  lit32_ VE_WIPE            @ ( addr len VE_WIPE )
+  end_goto_ FINDNFA_BEGIN1
 
 @ ( -- idx )
 @ get context index
@@ -147,32 +136,39 @@ Forthword_ CONTIDX_FETCH, 0 "contidx@"
 @ ( addr len --  0 | nfa )
 @ search wordlists for the name from string addr/len
 Forthword_ FINDW, 0, "findw"
-    @ loop through context slots to find a word
-    @ start with last slot
-    push_               @ ( addr len len )
-    do_ CONTIDX_FETCH   @ ( addr len idx )
-    @ get context index and use as counter
-    push_               @ ( addr len idx idx )
-FINDW_BEGIN:
-    iszero_
-    bmi.n FINDLAST      @ ( addr len idx )
-      y_d2_
-      x_d1_
-      pushy_
-      pushx_            @ ( addr len idx addr len idx )
-      do_ FINDWI        @ ( addr len idx nfa )
-      iszero_
-      @ end loop if word found
-      if_0_ FINDW_NEXT
-        nip3_           @ ( nfa )
-        end_
+  @ loop through context slots to find a word
+  @ start with last slot
+  push_               @ ( addr len len )
+  do_ CONTIDX_FETCH   @ ( addr len idx )
+  @ get context index and use as counter
+  push_               @ ( addr len idx idx )
 
-FINDW_NEXT:
-      d0_               @ ( addr len idx idx )
-      @ decrement index
-      oneminus_         @ ( addr len idx idx-1 )
-      d0_w_             @ ( addr len idx-1 idx-1 )
-      goto_ FINDW_BEGIN
+FINDW_BEGIN:
+  iszero_
+  bmi.n FINDW_LAST      @ ( addr len idx idx )
+    y_d2_
+    x_d1_
+    pushy_
+    pushx_            @ ( addr len idx addr len idx )
+    do_ FINDWI        @ ( addr len idx nfa )
+    iszero_
+    @ end loop if word found
+    if_not_0_ FINDW_END
+
+  d0_                 @ ( addr len idx idx )
+  @ decrement index
+  oneminus_           @ ( addr len idx idx-1 )
+  d0_w_               @ ( addr len idx-1 idx-1 )
+  goto_ FINDW_BEGIN
+
+FINDW_LAST:
+  d1_                       @ ( addr len idx len )
+  nip2_                     @ ( addr len )
+  exit_do_ FINDROOT
+
+FINDW_END:
+  nip3_               @ ( nfa )
+  end_
 
 @ ( -- )
 @ set the context and current to root forth vocabulary and remove
