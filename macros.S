@@ -1650,7 +1650,7 @@ sysvar .req r4 @ system variables base pointer
 .endm
 
 .macro goto_ addr
-  b \addr
+  b.n \addr
 .endm
 
 .macro exit_
@@ -1666,7 +1666,7 @@ sysvar .req r4 @ system variables base pointer
     pop_lr_
     .set PUSH_LR, 1
   .endif
-  b \addr  
+  b.n \addr  
 .endm
 
 .macro end_
@@ -1684,12 +1684,12 @@ sysvar .req r4 @ system variables base pointer
   .if PUSH_LR
     pop_lr_
   .endif
-  b \addr
+  b.n \addr
 .endm
 
 .macro end_goto_ addr
   .set PUSH_LR,0
-  b \addr
+  b.n \addr
 .endm
 
 @ push a 32 bit inline val on datastack
