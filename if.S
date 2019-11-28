@@ -1,6 +1,6 @@
 @  if.S 
 
-.set BUILD_LEVEL, 2
+.set BUILD_LEVEL, 3
 @ BUILD_LEVEL 0: then a minimum kernel is built but with no interpreter
 @ BUILD_LEVEL 1: core and kernel are working
 @ BUILD_LEVEL 2: word interpreter and dictionary working
@@ -98,6 +98,21 @@ CPSTART:
 
 .set VE_HEAD, 0
 
+.if BUILD_LEVEL >= 3
+  .include "core-inline.S"
+.endif
+
+.if BUILD_LEVEL >= 10
+  .include "number.S"
+  .include "compiler.S"
+  .include "asm.S"
+  .include "interpret_number.S"
+  .include "include.S"
+  .include "mathadv.S"
+  @ .include "defer.S"
+  @ .include "file.S"  
+.endif
+
 .include "core-base.S"
 .include "cin.S"
 .include "cout.S"
@@ -105,30 +120,16 @@ CPSTART:
 .include "string.S"
 .include "kernel-base.S"
 
-.if BUILD_LEVEL
+.if BUILD_LEVEL >= 1
   .include "core.S"
   .include "kernel.S"
-
-  .if BUILD_LEVEL > 1
-    .include "interpret.S"
-    .include "dictionary.S"
-
-    .if BUILD_LEVEL > 2
-      .include "core-inline.S"
-      .if BUILD_LEVEL > 9
-        .include "number.S"
-        .include "compiler.S"
-        .include "asm.S"
-        .include "interpret_number.S"
-        .include "include.S"
-        .include "mathadv.S"
-        @ .include "defer.S"
-        @ .include "file.S"
-      .endif
-    .endif
-  .endif
-  
 .endif
+
+.if BUILD_LEVEL >= 2
+  .include "interpret.S"
+  .include "dictionary.S"
+.endif
+
 
 @ ( nx* -- ) (R: ny* -- )
 @ initialize asforth further. EXECs turnkey operation and go to quit
@@ -148,7 +149,6 @@ Forthword_ WARM, 0, "warm"
 .endif
 
   end_do_ QUIT
-
 
 @ ( -- addr)
 @ start address of the data stack
@@ -186,7 +186,7 @@ Forthword_ RECOVER, 0, "recover"
 .endif
 
   type_ "recovering...\n"
-	end_do_ QUIT
+  end_do_ QUIT
 
 
 .globl COLD
