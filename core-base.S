@@ -3,11 +3,11 @@
 @ ( xt -- )
 @ execute XT
 Forthword_ EXEC, 0, "exec"
-    movs yreg, #1
+    movs r1, #1
     @ make sure its a thumb address mode
-    orrs yreg, wreg
+    orrs r1, wreg
     pop_
-    bx yreg
+    bx r1
 
 @ ( xx -- xx)
 @ Don't do anything, just chew up a few cycles
