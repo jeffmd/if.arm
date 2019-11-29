@@ -304,7 +304,7 @@ Forthword_ RECX, 0, "recx"
   iszero_                 @ ( [addr len] flag )
   if_not_0_ RECX_DONE
 
-.if BUILD_LEVEL > 3
+.if BUILD_LEVEL > 4
   @ test if its a number
   pop_                   @ ( addr len )
   do_ REC_NUM            @ ( [addr len] flag )

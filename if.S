@@ -1,10 +1,12 @@
 @  if.S 
 
-.set BUILD_LEVEL, 3
+.set BUILD_LEVEL, 4
 @ BUILD_LEVEL 0: then a minimum kernel is built but with no interpreter
 @ BUILD_LEVEL 1: core and kernel are working
 @ BUILD_LEVEL 2: word interpreter and dictionary working
 @ BUILD_LEVEL 3: core-inline working
+@ BUILD_LEVEL 4: number working
+@ BUILD_LEVEL 5: interpret_number working
 @ BUILD_LEVEL 10: compiler and interpret number working
 @ minimum kernel build has minimum word set needed to be up and running without interpreter
 
@@ -102,11 +104,17 @@ CPSTART:
   .include "core-inline.S"
 .endif
 
-.if BUILD_LEVEL >= 10
+.if BUILD_LEVEL >= 4
   .include "number.S"
+.endif
+
+.if BUILD_LEVEL >= 5
+  .include "interpret_number.S"
+.endif
+
+.if BUILD_LEVEL >= 10
   .include "compiler.S"
   .include "asm.S"
-  .include "interpret_number.S"
   .include "include.S"
   .include "mathadv.S"
   @ .include "defer.S"
@@ -137,7 +145,7 @@ Forthword_ WARM, 0, "warm"
   do_ RESET
 .if BUILD_LEVEL > 1
   do_ ONLY
-.if BUILD_LEVEL > 9
+.if BUILD_LEVEL > 3
   do_ DECIMAL           @ default to decimal base
 .endif
 .endif
@@ -180,7 +188,7 @@ Forthword_ RECOVER, 0, "recover"
   
 .if BUILD_LEVEL > 1
 	do_ ONLY
-.if BUILD_LEVEL > 9
+.if BUILD_LEVEL > 3
   do_ DECIMAL           @ default to decimal base
 .endif
 .endif
