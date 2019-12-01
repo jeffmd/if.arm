@@ -364,7 +364,7 @@ sysvar .req r4 @ system variables base pointer
     lsls \reg, #8
     adds \reg, #(\val & 255)
   .else
-    bl CIFETCH
+    do_ W_MI
     .word \val
   .endif
 .endif
@@ -1692,9 +1692,33 @@ sysvar .req r4 @ system variables base pointer
   b.n \addr
 .endm
 
-@ push a 32 bit inline val on datastack
+@ load a 32 bit inline val into working register
 .macro lit32_ val
-  do_ CIFETCH
+  do_ W_MI
+  .word \val
+.endm
+
+@ load a 32 bit inline val into X register
+.macro lit32_x_ val
+  do_ X_MI
+  .word \val
+.endm
+
+@ load a 32 bit inline val into Y register
+.macro lit32_y_ val
+  do_ Y_MI
+  .word \val
+.endm
+
+@ load a 32 bit inline val into A register
+.macro lit32_a_ val
+  do_ A_MI
+  .word \val
+.endm
+
+@ load a 32 bit inline val into B register
+.macro lit32_b_ val
+  do_ B_MI
   .word \val
 .endm
 

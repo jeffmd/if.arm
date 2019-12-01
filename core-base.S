@@ -43,11 +43,51 @@ Forthword_ HALIGN, 0, "h_"
   bx lr
 
 @ ( -- 32b )
-@ fetch a 32 bit constant inlinned pointed to by lr onto the top of stack
+@ fetch a 32 bit constant inlinned pointed to by lr into working register
 @ assumes caller was in thumb mode
-Forthword_ CIFETCH, 0, "ci@"
+Forthword_ W_MI, 0, "@i"
   mov r1, lr
   subs r1, #1     @ clear bit 0 which is thumb indicator
   ldr wreg, [r1]
+  adds r1, #5     @ return after constant and default to thumb mode
+  bx r1
+
+@ ( -- 32b )
+@ fetch a 32 bit constant inlinned pointed to by lr into Y register
+@ assumes caller was in thumb mode
+Forthword_ Y_MI, 0, "y=@i"
+  mov r1, lr
+  subs r1, #1     @ clear bit 0 which is thumb indicator
+  ldr yreg, [r1]
+  adds r1, #5     @ return after constant and default to thumb mode
+  bx r1
+
+@ ( -- 32b )
+@ fetch a 32 bit constant inlinned pointed to by lr into X register
+@ assumes caller was in thumb mode
+Forthword_ X_MI, 0, "x=@i"
+  mov r1, lr
+  subs r1, #1     @ clear bit 0 which is thumb indicator
+  ldr xreg, [r1]
+  adds r1, #5     @ return after constant and default to thumb mode
+  bx r1
+
+@ ( -- 32b )
+@ fetch a 32 bit constant inlinned pointed to by lr into A register
+@ assumes caller was in thumb mode
+Forthword_ A_MI, 0, "a=@i"
+  mov r1, lr
+  subs r1, #1     @ clear bit 0 which is thumb indicator
+  ldr areg, [r1]
+  adds r1, #5     @ return after constant and default to thumb mode
+  bx r1
+
+@ ( -- 32b )
+@ fetch a 32 bit constant inlinned pointed to by lr into B register
+@ assumes caller was in thumb mode
+Forthword_ B_MI, 0, "b=@i"
+  mov r1, lr
+  subs r1, #1     @ clear bit 0 which is thumb indicator
+  ldr breg, [r1]
   adds r1, #5     @ return after constant and default to thumb mode
   bx r1

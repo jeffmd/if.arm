@@ -31,49 +31,58 @@ Forthword_ REGSET, IMMEDIATE_EN, "regset"
   rpopy_
   end_
 
+.if BUILD_LEVEL == 5
+WLIT_C:
+ALIT_C:
+BLIT_C:
+XLIT_C:
+YLIT_C:
+  end_
+.endif
+
 @ ( -- )
 @ Select W register for literal
 Forthword_ WSET, IMMEDIATE_EN, "w="
   push_
-  lit_ WLIT_C
+  lit32_ WLIT_C
   push_
-  lit_ WLIT_INTERP
+  lit32_ WLIT_INTERP
   end_do_ REGSET
   
 @ ( -- )
 @ Select A register for literal
 Forthword_ ASET, IMMEDIATE_EN, "a="
   push_
-  lit_ ALIT_C
+  lit32_ ALIT_C
   push_
-  lit_ ALIT_INTERP
+  lit32_ ALIT_INTERP
   end_do_ REGSET
 
 @ ( -- )
 @ Select B register for literal
 Forthword_ BSET, IMMEDIATE_EN, "b="
   push_
-  lit_ BLIT_C
+  lit32_ BLIT_C
   push_
-  lit_ BLIT_INTERP
+  lit32_ BLIT_INTERP
   end_do_ REGSET
 
 @ ( -- )
 @ Select X register for literal
 Forthword_ XSET, IMMEDIATE_EN, "x="
   push_
-  lit_ XLIT_C
+  lit32_ XLIT_C
   push_
-  lit_ XLIT_INTERP
+  lit32_ XLIT_INTERP
   end_do_ REGSET
 
 @ ( -- )
 @ Select Y register for literal
 Forthword_ YSET, IMMEDIATE_EN, "y="
   push_
-  lit_ YLIT_C
+  lit32_ YLIT_C
   push_
-  lit_ YLIT_INTERP
+  lit32_ YLIT_INTERP
   end_do_ REGSET
 
 @ ( n -- )
@@ -127,10 +136,10 @@ Forthword_ REC_NUM, 0, "rec@"
   do_ NUMBER             @ ( [n] f )
   iszero_
   if_0_ REC_NONUMBER
-    rnip2_               @ ( n f )
+    rnip2_               @ ( n f ) (R: retaddr )
     do_ STATE            @ ( n state )
     iszero_
-    pop_
+    pop_                 @ ( n )
     if_0_ REC_NUMBER_OK
       do_ LIT_COMP
       goto_ REC_NUMBER_DONE
@@ -144,10 +153,9 @@ REC_NUMBER_DONE:
       exit_
 
 REC_NONUMBER:
-  rpop_                    @ ( addr ) (R: retaddr len )
-  push_                    @ ( addr addr ) (R: retaddr len )
-  rpop_                    @ ( addr len ) (R: retaddr )
-  push_                    @ ( addr len len )
-  zero_                    @ ( addr len 0 )
+  rpopy_                  @ ( 0 Y:addr ) (R: retaddr len )
+  pushy_                  @ ( addr 0 ) (R: retaddr len )
+  rpopy_                  @ ( addr 0 Y:len ) (R: retaddr )
+  pushy_                  @ ( addr len 0 )
   end_
 

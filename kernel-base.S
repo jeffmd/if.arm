@@ -251,8 +251,7 @@ Forthword_ SLEEPON, 0, "sleep.on"
 Forthword_ RESET, 0, "reset"
 
   @ reset input source for key
-  lit32_ STDIN
-  y_w_
+  lit32_y_ STDIN
   do_ KEYADDR
   mw_y_
 
@@ -261,8 +260,11 @@ Forthword_ RESET, 0, "reset"
   do_ INRESET
   do_ SLEEPON
 
-.if BUILD_LEVEL > 9
+.if BUILD_LEVEL > 4
   do_ WSET
+.endif
+
+.if BUILD_LEVEL > 9
   zero_
   do_ SMUDGE_STR
 .endif

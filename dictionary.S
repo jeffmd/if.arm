@@ -175,8 +175,7 @@ FINDW_END:
 @ other vocabularies
 Forthword_ ONLY, IMMEDIATE_EN, "only"
   @ forth vocab always takes slot 0
-  lit32_ EE_FORTHWORDLIST      @ ( EE_FORTHWORDLIST )
-  y_w_                         @ ( EE_FORTHWORDLIST ) Y:EE_FORTHWORDLIST
+  lit32_y_ EE_FORTHWORDLIST    @ ( ? ) Y:EE_FORTHWORDLIST
   do_ CURRENT                  @ ( CURRENT )
   mw_y_                        @ ( CURRENT )
   @ make current also forth vocab
