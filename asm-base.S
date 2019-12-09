@@ -103,14 +103,13 @@ Forthword_ COMPILEXT, 0, "cxt"
   lsls r1, #8
   tst wreg, r1
   @ if bit 0 of high byte flag is 0 then word is to be inlinned
-  pop_           @ ( xt )
   if_not_0_ COMPILEXT_DO
+    pop_           @ ( xt )
     exit_do_ INLINE
 
 COMPILEXT_DO:
   @ calculate relative distance in words from start to dest
-  push_                 @ ( xt xt )
-  do_ DP                @ ( xt dp )
+  do_ CP                @ ( xt dp )
   do_ RELDST            @ ( distance )
   end_do_ DOC
 
