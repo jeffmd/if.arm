@@ -1,13 +1,17 @@
 # Makefile
+
+CFLAGS += -Os -g
+#LDFLAGS += 
+LDLIBS += -ldl -lm
+
 INCS = *.S
+OBJS = main.o input.o if.o
 
 all: if
 
-if :  main.o input.o if.o
-	gcc -Os -g -ldl -lm -o $@ $+
+if : $(OBJS)
 
-if.o : if.S $(INCS)
-	as -o $@ $<
+if.o : $(INCS)
 
 lst: if
 	objdump -h -x -D -S if > lst.txt
