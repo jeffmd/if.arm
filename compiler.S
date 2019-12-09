@@ -2,190 +2,250 @@
 
 
 @ ( -- addr )
-@ system SMUDGE. Get flash program address of latest word currently being compiled.
+@ system SMUDGE. Get program address of latest word currently being compiled.
 Forthword_ SMUDGE, 0, "smudge"
-    douser_ COLON_SMUDGE
+  user_ COLON_SMUDGE
+  mw_
+  end_
+
+@ ( addr -- )
+@ system SMUDGE. Set program address of latest word being compiled.
+Forthword_ SMUDGE_STR, 0, "smudge="
+  y_w_
+  user_ COLON_SMUDGE
+  mw_y_
+  end_
 
 @ ( -- f-addr )
 @ get address of the dictionary cell
 Forthword_ DPSHARP, 0, "dp#"
-    push_
-    movs wreg, #(ram_dp-sysvar_base)
-    adds wreg, sysvar
-    bx lr
+  user_ ram_dp
+  end_
 
 @ ( -- f-addr )
 @ address of the next free dictionary cell
 Forthword_ DP, 0, "dp"
-    push {lr}
-    bl DPSHARP
-    fetch_
-    pop {pc}
+  user_ ram_dp
+  mw_
+  end_
 
 @ ( offset -- )
 @ add offset to 16 bit (dictionary pointer) DP
 Forthword_ DPPLUS, 0, "dp+"
-    push {lr}
-    bl DPSHARP
-    pop_lr_
-    b PLUSSTORE
+  y_w_
+  user_ ram_dp
+  x_mw_
+  x_plus_y_
+  mw_x_
+  end_
 
-@ ( -- )
-@ increment 32 bit (dictionary pointer) DP by one thumb cell
-Forthword_ DPPLUSONE, 0, "dp+1"
-    two_
-    b.n DPPLUS
+@ ( -- f-addr )
+@ get address of the code cell
+Forthword_ CPSHARP, 0, "cp#"
+  user_ ram_cp
+  end_
+
+@ ( -- f-addr )
+@ address of the next free code cell
+Forthword_ CP, 0, "cp"
+  user_ ram_cp
+  mw_
+  end_
+
+@ ( offset -- cp#)
+@ add offset to (code pointer) CP
+Forthword_ CPPLUS, 0, "cp+"
+  y_w_
+  user_ ram_cp
+  x_mw_
+  x_plus_y_
+  mw_x_
+  end_
 
 @ ( -- )
 @ tail call optimize: change last branch with link (bl) into a branch (b)
 Forthword_ TAILOPT, 0, ";opt"
-    push {lr}
-    @ optimize only if smudge is not zero
-    bl SMUDGE
-    bl FETCH
-    zerosense_
-    bne.n TAILOPT_OPT
-    pop {pc}
+  @ optimize only if smudge is not zero
+  do_ SMUDGE
+  iszero_
+  if_not_0_ TAILOPT_OPT
+  exit_
 
 TAILOPT_OPT:
-    @ don't optimize tail call, just compile a ret.
-    pop_lr_
-    b POPPC_C          @ ( )
-
+  @ don't optimize tail call, just compile a ret.
+.if BUILD_LEVEL >= ASM_BASE
+  end_do_ POPPC_C          @ ( )
+.else
+  end_
+.endif
 
 @ ( -- )
 @ clear data cache to force reload when executed as instructions
 Forthword_ CLRCACHE, 0, "clrcache"
-    push {lr}
-    @ r0 = start address: will be current last word defined
-    bl CURRENT
-    fetch_
-    mov r0, wreg
-    pop_
-    @ r1 = end address
-    bl DP
-    mov r1, wreg
-    pop_
-    @ can't tail call optimize here since calling c code in arm not thumb
-    bl __clear_cache
-    pop {pc}
+  @ r1 = end address
+  do_ DP
+  mov r1, wreg
+  @ r0 = start address: will be current last word defined
+  do_ CURRENT
+  mw_
+  @ can't tail call optimize here since calling c code in arm not thumb
+  do_ __clear_cache
+  end_
     
 @ ( -- )
 @ update wid from smudge if valid
 Forthword_ UWID, 0, "uwid"
-    push {lr}
-    bl SMUDGE
-    fetch_
-    bl QDUP
-    zerosense_
-    beq.n UWID_end
-       @ wid.word = smudge
-       bl CURRENT
-       fetch_
-       bl STORE
-       bl CLRCACHE
-       @ set smudge to zero indicating no longer compiling a word
-       bl SMUDGE
-       bl ZEROSTORE
+  do_ SMUDGE           @ (xt)
+  iszero_
+  if_0_ UWID_end
+    @ wid.word = smudge
+    y_w_               @ ( xt ) Y:xt
+    do_ CURRENT
+    mw_                @ ( wid )
+    mw_y_              @ ( wid )
+    do_ CLRCACHE
+    @ set smudge to zero indicating no longer compiling a word
+    zero_
+    do_ SMUDGE_STR
+
 UWID_end:
-    pop {pc}
+  end_
 
 
 @ ( n -- )
-@ store 16 bit value on wreg into ram at (dictionary pointer) DP
+@ store 16 bit value in WR into code section ram at (code pointer) CP
 Forthword_ COMMA, 0, ","
-    push {lr}
-    bl DP
-    bl HSTORE
-    pop_lr_
-    b DPPLUSONE
+  y_w_               @ ( n ) Y:n
+  do_ CP             @ ( CP )
+  hmw_y_             @ [CP]=n
+  lit_ 2             @ ( 2 )
+  end_do_ CPPLUS     @ CP+=2
 
 @ ( n -- )
-@ store 32 bit value on wreg into ram at (dictionary pointer) DP
+@ store 32 bit value in WR into code section ram at (code pointer) CP
 Forthword_ DCOMMA, 0, "d,"
-    push {lr}
-    bl DP
-    bl STORE
-    bl DPPLUSONE
-    pop_lr_
-    b DPPLUSONE
+  y_w_               @ ( n ) Y:n
+  do_ CP             @ ( CP )
+  mw_y_              @ [CP]=n
+  lit_ 4             @ ( 4 )
+  do_ CPPLUS         @ CP+=4
+
+@ ( n -- )
+@ store 32 bit value in WR into dictionary section ram at (dictionary pointer) DP
+@ automaticaly increment dp position by 4 bytes
+Forthword_ DPSTORE, 0, "@dp="
+  y_w_
+  do_ DP
+  mw_y_
+  lit_ 4
+  end_do_ DPPLUS
+
+@ ( s-addr len len' d-addr -- d-addr+len)
+@ copies a counted string with flags from s-addr to d-addr
+Forthword_ COPYSTRING, 0, "copy$"
+  rpushb_            @ ( s-addr len len' d-addr ) (R: b )
+  b_w_               @ ( s-addr len len' d-addr ) B:d-addr
+  d0_                @ ( s-addr len len' len' )
+  y_d1_              @ ( s-addr len len' len' ) Y:len
+  hmb_w_             @ [d-addr]=len'
+  x_d2_              @ ( s-addr len len' len' ) X:s-addr
+
+COPYSTRING_LOOP:
+  b_plus2_           @ ( s-addr len len' len' ) B:d-addr+2
+  y_iszero_          @ len == 0 ?
+  if_0_ COPYSTRING_DONE
+  hmx_               @ ( s-addr len len' c2c1 )
+  y_minus1_          @ ( s-addr len len' c2c1 ) Y:len-1
+  @ program strings could be zero-padded at the last cell for 16bit alignment
+  @ if count is even or > 1 then continue
+  if_not_0_ COPYSTRING_DO
+    movs r1, #255
+    @ count was at 1
+    @ count in Y is now at zero so add 1 to prevent underflow
+    @ so that loop can end properly
+    y_plus1_         @ ( s-addr len len' c1 ) Y:len+1
+    @ length of string is odd 
+    @ only allow low byte of W
+    ands wreg, r1    @ ( s-addr len len' c1 )
+
+COPYSTRING_DO:
+  hmb_w_             @ [d-addr]=c2c1
+  x_plus2_           @ ( s-addr len len' c2c1 ) X:s-addr+2
+  y_minus1_          @ ( s-addr len len' c2c1 ) Y:len-1 
+  goto_ COPYSTRING_LOOP
+
+
+COPYSTRING_DONE:
+  b_                 @ ( s-addr len len' s-addr+len )
+  nip3_              @ ( s-addr+len )
+  rpopb_             @ ( s-addr+len ) B:b (R: )
+  end_
 
 @ ( addr len len' -- )
-@ copies a string from RAM to program ram
-Forthword_ DOSCOMMA, 0, "(s,)"
-    push {lr}
-    bl COMMA           @ ( addr len )
-    bl BTOW            @ ( addr len/2 rem )
-    to_r_              @ ( addr len/2 ) (R: rem )
-    niptoa_            @ ( len/2 ) A: addr
+@ copies a counted string with flags to program ram
+Forthword_ STRINGPROGSTORE, 0, "@cp=$"
+  push_
+  do_ CP
+  do_ COPYSTRING
+  y_w_
+  do_ CPSHARP
+  mw_y_
+  end_
 
-    @ begin
-PFA_SCOMMA1:
-    @ ?while
-    dupzerosense_      @ ( len )
-    beq.n PFA_SCOMMA2
-    ahfetch_           @ ( len c1c2 )
-    ahplus_
-    bl COMMA           @ ( len )
-    oneminus_          @ ( len-1 )
-    @ repeat
-    b.n PFA_SCOMMA1
+@ ( addr len len' -- )
+@ copies a counted string with flags to dictionary ram
+Forthword_ STRINGDICTSTORE, 0, "@dp=$"
+  push_
+  do_ DP
+  do_ COPYSTRING
+  y_w_
+  do_ DPSHARP
+  mw_y_
+  end_
 
-PFA_SCOMMA2:
-    pop_              @ (  )
-    r_from_            @ ( rem ) (R: )
-    @ if
-    zerosense_         @ ( )
-    beq.n PFA_SCOMMA3
-      acfetch_         @ ( c1 )
-      bl COMMA         @ ( )
+@ ( source destination term -- count )
+@ copy half words from source to destination until match is made
+@ term is the 16 bit value that terminates copy operation
+@ source is the start address of the source in ram
+@ destination is the start address of where memory is copied to
+@ the copy/search goes up in ram address space
+@ count is the number of bytes copied
+Forthword_ COPY_HWORD_UNTIL, 0, "copy.hword.until"
+  @ fetch from ram and check if equal to match byte
+  rpusha_            @ ( source destination term ) (R: A )
+  x_w_               @ ( source destination term ) X: term
+  b_d0_              @ ( source destination match ) B: destination
+  y_d1_              @ ( source destination match ) Y: source
 
-    @ then
-PFA_SCOMMA3:
-    pop {pc}
+  @ begin
+CBU_BEGIN:
+  hmy_               @ ( source destination val16 )
+  y_plus2_           @ ( source destination val16 ) Y:Y+2
+  cmp wreg, xreg    
+  @ until
+  if_0_ CBU_DONE
+  hmb_w_             @ ( source destination val16 ) [B]:val16
+  b_plus2_           @ ( source destination val16 ) B:B+2
+  goto_ CBU_BEGIN
 
+CBU_DONE:
+  y_d0_              @ ( source destination byte ) Y: destination
+  nip2_              @ ( byte )
+  b_                 @ ( destination+count )
+  w_minus_y_         @ ( count )
+  rpopa_             @ ( count ) (R: ) A:A
+  end_
 
-@ ( start match -- start count )
-@ match is the 16 bit half word value to search for in ram
-@ start is the start address of the search in ram
-@ the search goes up in ram address space
-@ count is number of bytes to get to match value in ram
-@ or get word index of match
-Forthword_ FINDH, 0, "findh"
-    @ fetch from ram and check if equal to match half word
-    tob_             @ ( start ) B: match
-    copytoa_         @ ( start ) A: start
-    @ begin
-FINDI_BEGIN:
-      ldrh r0, [areg] @ ( start )
-      ahplus_
-      cmp r0, breg    @ ( start )
-    @ until
-    bne.n FINDI_BEGIN
-
-    geta_            @ ( start end )
-    twominus_        @ ( start end-2 )
-    over_            @ ( start end-2 start )
-    minus_           @ ( start count )
-    bx lr
 
 @ ( start -- )
-@ copy code to current dictionary entry
+@ copy code to current code entry
 Forthword_ INLINE, 0, "inline"
-    push {lr}
-    @ find the bx lr instruction, want count to bx lr
-    @ count will be number of half words to inline
-    push_
-    movs wreg, #0x47
-    lsls wreg, #8
-    adds wreg, #0x70
-    bl FINDH                 @ ( start count )
-
-    @ dp swap dup dp+ itoi
-    bl DP                    @ ( start count dp )
-    swap_                    @ ( start dp count )
-    push_                     @ ( start dp count count )
-    bl DPPLUS                @ ( start dp count )
-    pop_lr_
-    b MCPY                  @ ( )
+  @ find the bx lr instruction, want count to bx lr
+  @ count will be number of half words to inline
+  push_                    @ ( start start )
+  do_ CP                   @ ( start CP )
+  push_                    @ ( start CP CP )
+  lit_ 0x4770              @ ( start CP 0x4770 )
+  do_ COPY_HWORD_UNTIL     @ ( count )
+  end_do_ CPPLUS
 

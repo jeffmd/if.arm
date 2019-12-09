@@ -2,9 +2,8 @@
 
 @ must be last word in core
 Forthword_ WIPE, 0, "WIPE"
-  push_lr_
    
-.if BUILD_LEVEL > 9
+.if BUILD_LEVEL >= COMPILER
   lit32_ DPSTART
   y_w_
   do_ DPSHARP

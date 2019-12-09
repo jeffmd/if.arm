@@ -89,7 +89,8 @@ PFA_SETBASE1:
 PFA_SETBASE2:        @ ( error)
   do_ EMIT
   slit_ " Bad Base!"
-  end_do_ THROW
+  do_ THROW
+  end_
 
 @ ( addr len -- addr' len' )
 @ skip a numeric prefix character

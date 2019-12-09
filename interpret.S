@@ -44,14 +44,14 @@ MCMP_LOOP:
   @ program strings could be zero-padded at the last cell for 16bit alignment
   @ if count is even or > 1 then continue
   if_not_0_ MCMP_CHECK
-    @ length of string is odd 
-    @ only allow low byte of W
     movs r1, #255
-    ands wreg, r1            @ ( 0:r-cc )
     @ count was at 1
     @ count in Y is now at zero so add 1 to prevent underflow
     @ so that loop can end properly
     y_plus1_                 @ ( 0:r-cc ) Y:Y+1
+    @ length of string is odd 
+    @ only allow low byte of W
+    ands wreg, r1            @ ( 0:r-cc )
 
   @ then
 MCMP_CHECK:
@@ -88,19 +88,19 @@ Forthword_ CSKIP, 0, "cskip"
   y_w_                   @ ( addr1 n1 n1 ) Y: n1
   x_w_                   @ ( addr1 n1 n1 ) X: n1
   nip2_                  @ ( n1 )
-  goto_ PFA_CSKIP2
+  goto_ CSKIP_CHECK
 
-PFA_CSKIP1:
+CSKIP_LOOP:
   cma_                   @ ( c' )
   a_plus1_
   cmp wreg, breg         @ ( c' )
-  if_not_0_ PFA_CSKIP3
+  if_not_0_ CSKIP_DONE
   y_minus1_              @ ( c' ) Y-1
-PFA_CSKIP2:
+CSKIP_CHECK:
   y_iszero_              @ ( c' )
-  if_not_0_ PFA_CSKIP1
+  if_not_0_ CSKIP_LOOP
 
-PFA_CSKIP3:
+CSKIP_DONE:
   rpopb_
   rpopa_
   x_                     @ ( n1 )
@@ -120,20 +120,20 @@ Forthword_ CSCAN, 0, "cscan"
   y_w_                 @ ( addr1 n1 n1 ) Y: n1 
   x_w_                 @ ( addr1 n1 n1 ) X: n1
   nip_                 @ ( addr1 n1 )
-  goto_ PFA_CSCAN2
+  goto_ CSCAN_CHECK
 
-PFA_CSCAN1:
+CSCAN_LOOP:
   cma_                 @ ( addr1 c' )
   a_plus1_
   cmp wreg, breg       @ ( addr1 n1 n' c' )
-  if_0_ PFA_CSCAN3
+  if_0_ CSCAN_DONE
   y_minus1_            @ ( addr1 c' ) Y-1
 
-PFA_CSCAN2:
+CSCAN_CHECK:
   y_iszero_            @ ( addr1 c' )
-  if_not_0_ PFA_CSCAN1
+  if_not_0_ CSCAN_LOOP
 
-PFA_CSCAN3:
+CSCAN_DONE:
   rpopb_
   rpopa_
   x_                   @ ( addr1 n1 )
@@ -153,10 +153,10 @@ Forthword_ SRCIN, 0, "srcin"
 @ update position in input source.
 Forthword_ UPDIN, 0, "updin"
   y_w_                 @ ( n2 Y:n2 )
-  do_ G_IN             @ ( n2 ginaddr )
-  x_hmw_               @ ( ginaddr X:inidx)
-  x_plus_y_            @ ( ginaddr )
-  hmw_x_
+  do_ G_IN             @ ( n2 >inaddr )
+  x_hmw_               @ ( >inaddr X:inidx)
+  x_plus_y_            @ ( >inaddr ) X:inidx+n2
+  hmw_x_               @ [>inaddr]=inidx+n2
   end_
 
 @ ( -- )
@@ -200,16 +200,16 @@ forthword_ REGL, 0, "regl"
   d0_                  @ ( xt xt )
   push_                @ ( xt xt xt)
   user_ WR             @ ( xt xt WR )
-  y_mw_                @ ( xt xt WR ) Y:w
+  y_mw_                @ ( xt xt WR ) Y:[WR]
   d1_y_                @ ( w xt WR )
   fourplus_            @ ( w xt RA )
-  a_mw_                @ ( w xt RA ) A:a
+  a_mw_                @ ( w xt RA ) A:[RA]
   fourplus_            @ ( w xt RB )
-  b_mw_                @ ( w xt RB ) B:b
+  b_mw_                @ ( w xt RB ) B:[RB]
   fourplus_            @ ( w xt RX )
-  x_mw_                @ ( w xt RX ) X:x
+  x_mw_                @ ( w xt RX ) X:[RX]
   fourplus_            @ ( w xt RY )
-  y_mw_                @ ( w xt RY ) Y:y
+  y_mw_                @ ( w xt RY ) Y:[RY]
   pop_                 @ ( w xt )
   end_
 
@@ -219,16 +219,16 @@ forthword_ REGS, 0, "regs"
   pushy_               @ ( y n )
   y_w_                 @ ( y n ) Y:n
   user_ WR             @ ( y WR )
-  mw_y_
+  mw_y_                @ [WR]=n
   fourplus_            @ ( y RA )
-  mw_a_
+  mw_a_                @ [RA]=a
   fourplus_            @ ( y RB )
-  mw_b_
+  mw_b_                @ [RB]=b
   fourplus_            @ ( y RX )
-  mw_x_
+  mw_x_                @ [RB]=x
   fourplus_            @ ( y RY )
   popy_                @ ( RY )
-  mw_y_
+  mw_y_                @ [RY]=y
   end_
 
 @ ( addr len -- ** [addr len] f )
@@ -241,11 +241,10 @@ Forthword_ REC_WORD, 0, "recw"
   do_ FINDW           @ ( 0 | nfa )
   iszero_
   if_not_0_ REC_WORD_FOUND
-    rpop_             @ ( addr ) (R: retaddr len )
-    push_             @ ( addr addr ) (R: retaddr len )
-    rpop_             @ ( addr len ) (R: retaddr ) 
-    push_             @ ( addr len len )
-    zero_             @ ( addr len 0 )
+    rpopy_            @ ( 0 ) Y:addr (R: retaddr len )
+    pushy_            @ ( addr 0 ) (R: retaddr len )
+    rpopy_            @ ( addr 0 ) Y:len (R: retaddr ) 
+    pushy_            @ ( addr len 0 )
     exit_
 
 REC_WORD_FOUND:
@@ -280,7 +279,7 @@ REC_WORD_CHECKSTATE:
     iszero_
     pop_               @ ( xt flag )
     if_0_ REC_WORD_EXECUTE
-.if BUILD_LEVEL > 9
+.if BUILD_LEVEL > 8
       @ in compile mode so compile xt
       do_ COMPILEXT    @ ( ? )
 .endif
@@ -366,9 +365,9 @@ Forthword_ DOINTERPRET, 0, "(interp)"
 DOINTERPRET_ok:
   @ make sure in buf pointer is not at zero
   do_ G_IN              @ ( >inaddr )
-  y_hmw_                @ ( )
+  y_hmw_                @ y=[>inaddr]
   y_plus1_
-  hmw_y_
+  hmw_y_                @ [>inaddr]+=1
   end_do_ PROMPTOK
 
 

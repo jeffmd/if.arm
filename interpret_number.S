@@ -31,7 +31,7 @@ Forthword_ REGSET, IMMEDIATE_EN, "regset"
   rpopy_
   end_
 
-.if BUILD_LEVEL == 5
+.if BUILD_LEVEL < 9
 WLIT_C:
 ALIT_C:
 BLIT_C:

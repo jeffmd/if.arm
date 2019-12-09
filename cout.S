@@ -4,8 +4,8 @@
 @ ( -- emitaddr )
 @ get ram address of emit defer
 Forthword_ EMITADDR, 0, "emit#"
-    user_ USER_EMIT
-    end_
+  user_ USER_EMIT
+  end_
 
 @ ( c -- )
 @ fetch the emit vector and EXEC it. Will emit a character from wreg
@@ -52,32 +52,32 @@ Forthword_ CR, 0, "cr"
 @ ( -- 32 )
 @ put ascii code of the blank/space character to the stack
 Forthword_ BL, INLINE_OPT, "bl"
-    bl_
-    end_
+  bl_
+  end_
     
 @ ( addr n -- )
 @ print a counted string
 Forthword_ TYPE, 0, "type"
-   push_lr_
-   iszero_
-   if_0_ TYPE_END
+  push_lr_
+  iszero_
+  if_0_ TYPE_END
    
-   rpusha_
-   rpushb_
-   popa_
-   b_w_
+  rpusha_
+  rpushb_
+  popa_
+  b_w_
 
 TYPE1:
-   cma_
-   a_plus1_
-   do_ EMIT
-   b_minus1_
+  cma_
+  a_plus1_
+  do_ EMIT
+  b_minus1_
 
 TYPE2:
-   if_not_0_ TYPE1
+  if_not_0_ TYPE1
    
-   rpopb_
-   rpopa_
+  rpopb_
+  rpopa_
 
 TYPE_END:
-   end_
+  end_

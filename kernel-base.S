@@ -181,7 +181,7 @@ DOTASKS1:
   iszero_
   if_0_ DOTASK_N1
     @ there is something in the input buffer, try interpreting it
-.if BUILD_LEVEL > 1
+.if BUILD_LEVEL >= INT_DICTIONARY
     do_ DOINTERPRET
 .endif
 DOTASK_N1:
@@ -260,11 +260,11 @@ Forthword_ RESET, 0, "reset"
   do_ INRESET
   do_ SLEEPON
 
-.if BUILD_LEVEL > 4
+.if BUILD_LEVEL >= INT_NUMBER
   do_ WSET
 .endif
 
-.if BUILD_LEVEL > 9
+.if BUILD_LEVEL >= COMPILER
   zero_
   do_ SMUDGE_STR
 .endif

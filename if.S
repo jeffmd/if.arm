@@ -1,13 +1,20 @@
 @  if.S 
 
-.set BUILD_LEVEL, 5
-@ BUILD_LEVEL 0: then a minimum kernel is built but with no interpreter
-@ BUILD_LEVEL 1: core and kernel are working
-@ BUILD_LEVEL 2: word interpreter and dictionary working
-@ BUILD_LEVEL 3: core-inline working
-@ BUILD_LEVEL 4: number working
-@ BUILD_LEVEL 5: interpret_number working
-@ BUILD_LEVEL 10: compiler and interpret number working
+@ build levels, increasing build level adds higher level functions
+.set MIN_KERNEL,     0  @ minimum kernel built but with no interpreter
+.set CORE_KERNEL,    1  @ higher level core and kernel functionality but no interpreter
+.set INT_DICTIONARY, 2  @ interpreter and dictionary
+.set CORE_INLINE,    3  @ inline core functions
+.set NUMBER_BASE,    4  @ number conversion
+.set INT_NUMBER,     5  @ number interpreter
+.set COMPILER,       8  @ support routines for compiling
+.set ASM_BASE,       9  @ asm routines used by compiler
+.set INCLUDE,       12  @ include file support
+.set ASM,           14  @ simple ARM thumb assembler
+.set MATH_ADV,      16  @ advanced math routines 
+
+.set BUILD_LEVEL, ASM_BASE
+
 @ minimum kernel build has minimum word set needed to be up and running without interpreter
 
 @ used to track when lr is pushed onto return stack: 0 - not pushed, 1 - pushed on return stack
@@ -100,22 +107,35 @@ CPSTART:
 
 .set VE_HEAD, 0
 
-.if BUILD_LEVEL >= 3
+.if BUILD_LEVEL >= CORE_INLINE
   .include "core-inline.S"
 .endif
 
-.if BUILD_LEVEL >= 4
+.if BUILD_LEVEL >= NUMBER_BASE
   .include "number.S"
 .endif
 
-.if BUILD_LEVEL >= 5
+.if BUILD_LEVEL >= INT_NUMBER
   .include "interpret_number.S"
 .endif
 
-.if BUILD_LEVEL >= 10
+.if BUILD_LEVEL >= COMPILER
   .include "compiler.S"
+.endif
+
+.if BUILD_LEVEL >= ASM_BASE
+  .include "asm-base.S"
+.endif
+
+.if BUILD_LEVEL >= ASM
   .include "asm.S"
+.endif
+
+.if BUILD_LEVEL >= INCLUDE
   .include "include.S"
+.endif
+
+.if BUILD_LEVEL >= MATH_ADV
   .include "mathadv.S"
   @ .include "defer.S"
   @ .include "file.S"  
@@ -128,12 +148,12 @@ CPSTART:
 .include "string.S"
 .include "kernel-base.S"
 
-.if BUILD_LEVEL >= 1
+.if BUILD_LEVEL >= CORE_KERNEL
   .include "core.S"
   .include "kernel.S"
 .endif
 
-.if BUILD_LEVEL >= 2
+.if BUILD_LEVEL >= INT_DICTIONARY
   .include "interpret.S"
   .include "dictionary.S"
 .endif
@@ -143,16 +163,16 @@ CPSTART:
 @ initialize asforth further. EXECs turnkey operation and go to quit
 Forthword_ WARM, 0, "warm"
   do_ RESET
-.if BUILD_LEVEL > 1
+.if BUILD_LEVEL > CORE_KERNEL
   do_ ONLY
-.if BUILD_LEVEL > 3
+.if BUILD_LEVEL >= NUMBER_BASE
   do_ DECIMAL           @ default to decimal base
 .endif
 .endif
 
   type_ "if.arm 0.2\n"
   @ check if command line args need to be loaded
-.if BUILD_LEVEL > 1
+.if BUILD_LEVEL > CORE_KERNEL
   do_ DOCMDARG
 .endif
 
@@ -186,9 +206,9 @@ Forthword_ RECOVER, 0, "recover"
 
   do_ RESET
   
-.if BUILD_LEVEL > 1
-	do_ ONLY
-.if BUILD_LEVEL > 3
+.if BUILD_LEVEL > CORE_KERNEL
+  do_ ONLY
+.if BUILD_LEVEL >= NUMBER_BASE
   do_ DECIMAL           @ default to decimal base
 .endif
 .endif
@@ -215,12 +235,12 @@ Forthword_ COLD, 0, "cold"
   do_ RSP0
   mw_y_
 
-.if BUILD_LEVEL > 1
+.if BUILD_LEVEL > CORE_KERNEL
   do_ WIPE
 .endif
   end_do_ WARM
 
-.if BUILD_LEVEL > 1
+.if BUILD_LEVEL > CORE_KERNEL
 @ minimum.S must be last
 .include "minimum.S"
 .endif
