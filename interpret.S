@@ -279,7 +279,7 @@ REC_WORD_CHECKSTATE:
     iszero_
     pop_               @ ( xt flag )
     if_0_ REC_WORD_EXECUTE
-.if BUILD_LEVEL > 8
+.if BUILD_LEVEL >= ASM_BASE
       @ in compile mode so compile xt
       do_ COMPILEXT    @ ( ? )
 .endif
