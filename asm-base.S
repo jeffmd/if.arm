@@ -109,7 +109,7 @@ Forthword_ COMPILEXT, 0, "cxt"
 
 COMPILEXT_DO:
   @ calculate relative distance in words from start to dest
-  do_ CP                @ ( xt dp )
+  do_ CP                @ ( xt cp )
   do_ RELDST            @ ( distance )
   end_do_ DOC
 
