@@ -362,7 +362,9 @@ sysvar .req r4 @ system variables base pointer
   .if \val < 0x10000
     movs \reg, #(\val/256)
     lsls \reg, #8
-    adds \reg, #(\val & 255)
+    .if (\val & 255) > 0
+      adds \reg, #(\val & 255)
+    .endif
   .else
     do_ W_MI
     .word \val
