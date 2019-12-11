@@ -100,7 +100,7 @@ Forthword_ UWID, 0, "uwid"
   if_0_ UWID_end
     @ wid.word = smudge
     y_w_               @ ( xt ) Y:xt
-    do_ CURRENT
+    do_ CURRENT        @ ( current )
     mw_                @ ( wid )
     mw_y_              @ ( wid )
     do_ CLRCACHE
@@ -128,7 +128,7 @@ Forthword_ DCOMMA, 0, "d,"
   do_ CP             @ ( CP )
   mw_y_              @ [CP]=n
   lit_ 4             @ ( 4 )
-  do_ CPPLUS         @ CP+=4
+  end_do_ CPPLUS     @ CP+=4
 
 @ ( n -- )
 @ store 32 bit value in WR into dictionary section ram at (dictionary pointer) DP
