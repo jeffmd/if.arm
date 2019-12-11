@@ -1,39 +1,52 @@
-dp
-pname header dup $FF00 or (s,)
-  current @ @ d, 
-  smudge !
-    pushlr, 
-    1 state h!
-      dp >r >r dup $FF00 or (s,) r> @ d, r>
-    [
-    poppc,
+\ boot.fs - bootstrap the forth compiler
+\ header are (create) are created manually
+\ use (create) to make : then define the rest manually
+
+\ header ( addr len wid -- nfa )
+\ 
+dp push         \ ( nfa nfa ) name field address
+pname header push y= $FF00 w|=y @dp=$ \ ( nfa ? )
+  current @ @   \ ( nfa linkaddr ) get latest word
+  @dp=          \ ( nfa ? ) set link field to prev word in vocab
+  cp @dp= pop   \ ( nfa ) set code pointer field
+  smudge=       \ ( ? )
+  pushlr, 
+  ]
+    push dp     \ ( addr len wid nfa )
+    rpush       \ ( addr len wid nfa ) (R: nfa )
+    pop         \ ( addr len wid )
+    rpush       \ ( addr len wid ) (R: nfa wid )
+    y=d0        \ ( addr len wid Y:len )
+    $FF00 w|=y  \ ( addr len len|$FF00 )
+    @dp=$       \ ( ? )
+    rpop @      \ ( linkaddr ) (R: nfa )
+    @dp=        \ ( ? )
+    rpop        \ ( nfa ) (R: )
+  [
+  ;opt
   uwid
 
-pname (create) current @ header
-  smudge !
-    pushlr, 
-    1 state h!
-      pname current @ header
-    [
-    poppc,
+\ (create) ( <input> -- nfa )
+pname (create) push current @ header \ ( nfa )
+  push cp       \ ( nfa cp )
+  @dp= pop      \ ( nfa )
+  smudge=       \ ( ? )
+  pushlr, 
+  ]
+    pname push current @ header push cp @dp= pop
+  [
+  ;opt
   uwid
 
-(create) ] 
-  smudge !
-    pushlr, 
-    1 state h!
-      1 state h!
-    [
-    poppc,
-  uwid
-
+\ : ( <input> -- )
+\ used to define a new word
 (create) :
-  smudge !
-    pushlr,
-    ]
-      (create) smudge ! pushlr, ]
-    [
-    poppc,
+  smudge=
+  pushlr,
+  ]
+    (create) smudge= pushlr, ]
+  [
+  ;opt
   uwid
 
 : cur@
@@ -41,35 +54,21 @@ pname (create) current @ header
   [
   ;opt uwid
 
+\ ( n -- )
+\ set wid flags of current word
 : widf
-    cur@
-    @
-    dup
-    h@
-    rot and
-    swap
-    h!
+    y=w        \ ( n ) y; n
+    cur@ @ x=w \ ( nfa ) X: nfa
+    h@x        \ ( flags )
+    w&=y       \ ( n&flags )
+    h@x=w      \ ( n&flags )
   [
   ;opt uwid
 
 : immediate
     $7FFF widf
   [
-  ;opt uwid immediate
-
-: \
-    stib
-    nip
-    >in
-    h!
-  [
-  ;opt uwid immediate
-
-\ boot.fs - bootstrap the forth compiler
-\ header, (create), ] are created manually
-\ use (create) to make : then define the rest manually
-\ : can now be used to define a new word but must manually
-\ terminate the definition of a new word
+  ;opt uwid
 
 \ define ; which is used when finishing the compiling of a word
 : ;
