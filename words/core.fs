@@ -5,8 +5,9 @@
 \ Compiler
 \ skip everything up to the closing bracket on the same line
 : (
-    $29 parse
-    2drop
+    push          \ ( ?  ? )
+    $29 parse     \ ( ?  addr u )
+    nip pop       \ ( ? )
 ; immediate
 
 
@@ -14,107 +15,46 @@
 \ make most current word compile only
 : :c
     $F7FF widf
-; immediate
+;
 
 ( -- )
 \ make most current word inlinned
 : inlined
     $FEFF widf
-; immediate
+;
 
 ( -- )
 \ make most current word immediate and compile only
 : :ic
     $77FF widf
-; immediate
+;
 
 \ store address of the next free dictionary cell
-: dp! ( addr -- )
-    dp# !
+: dp= ( addr -- )
+    y=w dp# @w=y
+;
+
+\ store address of the next free code cell
+: cp= ( addr -- )
+    y=w cp# @w=y
 ;
 
 ( -- ) ( C: x "<spaces>name" -- )
 \ create a dictionary entry and register in word list
 : rword
-    (create)      ( voc-link )
-    cur@          ( voc-link wid )
-    !             ( )
+    (create)      ( nfa )
+    y=w cur@      ( wid Y:nfa )
+    @w=y          ( wid )
 ;
 
 \ inlinned assembly routines
 
-
-( n1 n2 n3 -- n3)
-\ drop NOS twice, two cells before TOS.
-rword 2nip inlined
-    dsp 8 adds#,
-    bxlr,
-
-( n1 -- n1*2 )
-\ shift left to give * 2
-rword 2* inlined
-    tos tos 1 lsls#,
-    bxlr,
-
-( n1 -- n1/2 )
-\ arithmetic shift right to give / 2
-rword 2/ inlined
-    tos tos 1 asrs#,
-    bxlr,
-
-( n1 -- n1*4 )
-\ shift left to give * 4
-rword 4* inlined
-    tos tos 2 lsls#,
-    bxlr,
-
-( n1 -- n1/4 )
-\ shift right to give / 4
-rword 4/ inlined
-    tos tos 2 asrs#,
-    bxlr,
-
-( n -- n+1 )
-\ optimized 1 increment
-rword 1+ inlined
-    tos 1 adds#,
-    bxlr,
-
-( n -- n-1 )
-\ optimized 1 decrement
-rword 1- inlined
-    tos 1 subs#,
-    bxlr,
-
-( n -- n+2 )
-\ optimized 2 increment
-rword 2+ inlined
-    tos 2 adds#,
-    bxlr,
-
-( n -- n-2 )
-\ optimized 2 decrement
-rword 2- inlined
-    tos 2 subs#,
-    bxlr,
-
-( n -- n+4 )
-\ optimized 4 increment
-rword 4+ inlined
-    tos 4 adds#,
-    bxlr,
-
-( n -- n-4 )
-\ optimized 4 decrement
-rword 4- inlined
-    tos 4 subs#,
-    bxlr,
-
 ( -- icell )
 \ push instruction cell size 
 rword icell inlined
+    pushlr,
     ] 2 [
-    bxlr,
+    poppc,
 
 ( n -- n+icell )
 \ add instruction stack cell size to n
@@ -158,10 +98,16 @@ rword dcell* inlined
     ] 4* [
     bxlr,
 
+( C:"<spaces>name" -- 0 | nfa )
+\ Dictionary
+\ search dictionary for name, returns nfa if found or 0 if not found
+: find
+    pname findw
+;
+
 \ search dictionary for name, returns XT or 0
 : 'f  ( "<spaces>name" -- XT XTflags )
-    pname
-    findw
+    find
     nfa>xtf
 ;
 
@@ -169,7 +115,7 @@ rword dcell* inlined
 \ search dictionary for name, returns XT
 : '  ( "<spaces>name" -- XT )
     'f
-    drop
+    pop
 ;
 
 ( -- ) ( C: "<space>name" -- )
@@ -178,7 +124,7 @@ rword dcell* inlined
 \ compiles xt as literal
 : [']
     '
-    lit
+    w=,
 ; :ic
 
 
@@ -188,15 +134,12 @@ rword dcell* inlined
 \ and xt and flag are compiled as two literals
 : ['f]
     'f
-    swap
-    lit
-    lit
+    push d1
+    w=,
+    \ compile literal of 'f push
+    [ 'f push push d1 w=, ]
+    push
+    [ d0 w=, nip pop ]
+    cxt
+    d0 w=, nip pop
 ; :ic
-
-
-( C:"<spaces>name" -- 0 | nfa )
-\ Dictionary
-\ search dictionary for name, returns nfa if found or 0 if not found
-: find
-    pname findw
-;

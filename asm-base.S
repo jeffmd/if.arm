@@ -15,7 +15,6 @@ Forthword_ PUSHLR_C, 0, "pushlr,"
 @ ( -- )
 @ compile assembler bx lr
 Forthword_ BXLR_C, 0, "bxlr,"
-  push_lr_
   lit_ 0x4770
   do_ COMMA
   end_do_ CLRCACHE
