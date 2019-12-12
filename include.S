@@ -3,103 +3,113 @@
 @ ( -- keyfileaddr )
 @ get ram address of key file descriptor
 Forthword_ KEYFILEADDR, 0, "keyf#"
-    douser_ USER_KEYFILE
+  user_ USER_KEYFILE
+  end_
 
 @ ( -- key )
 @ fetch key from an open file using filedes, should leave
 @ a single character on wreg or -1 if no more to read in file.
 Forthword_ KEYFILE, 0, "keyfile"
-  push {lr}
-  bl KEYFILEADDR
-  fetch_
-  movs r0, wreg
-  movs wreg, #0
-  push_
-  mov r1, dsp
+  push_lr_
+  do_ KEYFILEADDR        @ ( KEYFILEADDR )
+  mw_                    @ ( KEYFILEDES )
+  y_0_                   @ ( KEYFILEDES ) Y:0
+  pushy_                 @ ( 0 KEYFILEDES )
+  movs r1, dsp           @ dsp points to buffer that read will write to
   movs r2, #1
-  bl read 
-  pop_
+  do_ read               @ ( key count ) 
   @ was one key read from the file?
-  cmp r0, #1
-  beq.n KEYEND
-  subs wreg, #1
-  bl BYE  
+  cmp wreg, #1
+  pop_                   @ ( key )
+  if_0_ KEYEND
+    oneminus_
+    exit_do_ BYE  
+
  KEYEND:
-  pop {pc}
+  end_
 
 @ ( caddr -- ** )
 @ open a file that will be used for key input
 @ caddr points to null terminated file name
-Forthword_ DOINCLUDE, 0, "doinclude"
-    push {lr}
-    @ set file open mode to reading
-    zero_
-    swap_
-    bl OPENF     @ ( filedes )
-    @ if file descriptor > 0 then open is success
-    push_
-    bl ZEROGREATER
-    zerosense_
-    
-    beq.n DOINCLUDE_EXIT
-  	  bl IDLETIMEFETCH
-	    to_r_
-	    bl SLEEPOFF
-      @ push FFLAGS on tor
-      bl FFLAGS
-      hfetch_
-      to_r_
-      @ push on return stack the old defer key
-      bl KEYADDR
-      fetch_
-      to_r_
-      @ push old keyfile on return stack
-      bl KEYFILEADDR
-      fetch_
-      to_r_
-      bl KEYFILEADDR
-      bl STORE
-      @ defer key to keyfile for input
-      dolit32_ KEYFILE
-      bl KEYADDR
-      bl STORE
-      @ run interpreter
-      bl DOTASKS
-      @ close keyfile
-      bl KEYFILEADDR
-      fetch_
-      bl CLOSEF
-      @ pop tor into keyfile
-      r_from_
-      bl KEYFILEADDR
-      bl STORE
-      @ pop top of return into defer key
-      r_from_
-      bl KEYADDR
-      bl STORE
-      @ restore FFLAGS
-      r_from_
-      bl FFLAGS
-      bl HSTORE
-  		r_from_
-      pop_lr_
-	  	b IDLETIMESTORE
+Forthword_ DOINCLUDE, 0, "(include)"
+  push_lr_
+  @ set file open mode to reading
+  movs r1, #0
+  do_ open             @ ( filedes )
+  @ if file descriptor > 0 then open is success
+  push_                @ ( filedes filedes )
+  do_ ZEROGREATER
+  iszero_
+  if_0_ DOINCLUDE_EXIT
+
+  do_ IDLETIMEFETCH    @ ( filedes itime )
+  rpush_               @ ( filedes itime ) (R: itime )
+  do_ SLEEPOFF         @ ( filedes ? )
+
+  @ push FFLAGS on tor
+  do_ FFLAGS           @ ( filedes fflags# )
+  hmw_                 @ ( filedes fflags )
+  rpush_               @ ( filedes fflags ) (R: itime fflags )
+
+  @ push on return stack the old defer key
+  do_ KEYADDR          @ ( filedes KEYADDR )
+  x_w_                 @ ( filedes KEYADDR X:KEYADDR)
+  mw_                  @ ( filedes KEY )
+  rpush_               @ ( filedes KEY ) (R: itime fflags KEY)
+
+  @ defer key to keyfile for input
+  lit32_ KEYFILE       @ ( filedes KEYFILE )
+  mx_w_                @ ( KEYFILE )
+
+  @ push old keyfile on return stack
+  do_ KEYFILEADDR      @ ( filedes KEYFILEADDR ) (R: itime fflags KEY)
+  x_w_
+  mw_                  @ ( filedes KEYFILE ) (R: itime fflags KEY)
+  rpush_               @ ( filedes KEYFILE ) (R: itime fflags KEY KEYFILE)
+  pop_                 @ ( filedes )
+  mx_w_                @ ( filedes )
+
+
+  @ run interpreter
+  do_ DOTASKS
+
+  @ close keyfile
+  do_ KEYFILEADDR      @ ( KEYFILEADDR )
+  mw_                  @ ( KEYFILE )
+  do_ close            @ ( ? )
+
+  @ restore old keyfile descriptor
+  rpopy_               @  ( ? Y: KEYFILE ) ( R: itime fflags KEY )
+  bl KEYFILEADDR       @ ( KEYFILEADDR )
+  mw_y_                @ ( KEYFILEADDR )
+
+  @ restore old key function
+  rpopx_               @ ( KEYFILEADDR X:KEY ) ( R: itime fflags )
+  do_ KEYADDR          @ ( KEYADDR )
+  mw_x_                @ ( KEYADDR )
+
+  @ restore FFLAGS
+  rpopy_               @ ( KEYADDR Y:fflags ) ( R: itime )
+  do_ FFLAGS           @ ( FFLAGS )
+  hmw_y_               @ ( FFLAGS )
+  rpop_                @ ( itime ) ( R: )
+  exit_do_ IDLETIMESTORE
        
 DOINCLUDE_EXIT:
-    pop_
-    type_ "File not found!"
-    pop {pc}
+  pop_                 @ ( filedes )
+  type_ "File not found!"
+  end_
 
 @ ( C:filepath -- ** )
 @ open a file that will be used for key input
 Forthword_ INCLUDEF, 0, "include"
-    push {lr}
-    @ parse input for filename to include
-    bl PNAME     @ ( addr len )
-    @ add null to end of string
-    over_         
-    plus_
-    bl ZEROCSTORE
-    pop_lr_
-    b DOINCLUDE
+  @ parse input for filename to include
+  do_ PNAME     @ ( addr len )
+  @ add null to end of string
+  y_d0_         @ ( addr len ) Y: addr
+  x_0_
+  w_plus_y_     @ ( addr addr' )
+  cmw_x_        @ ( addr addr' )
+  pop_          @ ( addr )
+  end_do_ DOINCLUDE
 

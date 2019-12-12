@@ -13,7 +13,7 @@
 .set ASM,           14  @ simple ARM thumb assembler
 .set MATH_ADV,      16  @ advanced math routines 
 
-.set BUILD_LEVEL, ASM_BASE
+.set BUILD_LEVEL, INCLUDE
 
 @ minimum kernel build has minimum word set needed to be up and running without interpreter
 
