@@ -8,7 +8,7 @@
 Forthword_ POPRET, 0, "popret"
   mov wreg, lr
   oneminus_
-  end_
+  pop {pc}
 
 @ ( n1 n2 -- flag )
 @ flag is true if wreg and NOS are equal
