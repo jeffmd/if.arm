@@ -427,6 +427,14 @@ Forthword_ R1, INLINE_OPT, "r1"
   r1_
   end_
 
+@ ( -- r0 ) (R: n -- n+1 )
+@ get r0 and increment r0 by 4 on return stack
+Forthword_ R0PLUS, INLINE_OPT, "r0+"
+  r0_
+  adds r1, wreg, #4
+  str r1, [sp]
+  end_
+
 @ ( -- n1 ) (R: n1 n2 n3 -- n1 n2 n3 )
 @ put a copy of R2 in WR
 Forthword_ R2, INLINE_OPT, "r2"
@@ -1733,4 +1741,15 @@ Forthword_ Y_MINUS2, INLINE_OPT, "y-=2"
 Forthword_ Y_MINUS1, INLINE_OPT, "y-=1"
   y_minus1_
   end_
+
+@ ( -- lr )
+@ move link register into working register
+Forthword_ LR, INLINE_OPT, "lr"
+  mov wreg, lr
+  end_
+
+Forthword_ EXIT, 0, "exit"
+  pop {pc}
+  end_
+
 
