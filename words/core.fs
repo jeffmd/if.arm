@@ -1,6 +1,5 @@
 \ core.fs - core words
 
-
 \ ( "ccc<paren>" -- )
 \ Compiler
 \ skip everything up to the closing bracket on the same line
@@ -40,7 +39,7 @@
 ;
 
 ( -- ) ( C: x "<spaces>name" -- )
-\ create a dictionary entry and register in word list
+\ create a dictionary entry and register in current word list
 : rword
     (create)      ( nfa )
     y=w cur@      ( wid Y:nfa )
@@ -51,7 +50,7 @@
 
 ( -- icell )
 \ push instruction cell size 
-rword icell inlined
+rword icell
     pushlr,
     ] 2 [
     poppc,
@@ -76,9 +75,10 @@ rword icell* inlined
 
 ( -- dcell )
 \ push data stack cell size 
-rword dcell inlined
+rword dcell
+    pushlr,
     ] 4 [
-    bxlr,
+    poppc,
 
 ( n -- n+dcell )
 \ add data stack cell size to n
