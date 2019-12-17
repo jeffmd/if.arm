@@ -50,10 +50,9 @@
 
 ( -- icell )
 \ push instruction cell size 
-rword icell
-    pushlr,
-    ] 2 [
-    poppc,
+: icell
+    2
+;
 
 ( n -- n+icell )
 \ add instruction stack cell size to n
@@ -75,10 +74,9 @@ rword icell* inlined
 
 ( -- dcell )
 \ push data stack cell size 
-rword dcell
-    pushlr,
-    ] 4 [
-    poppc,
+: dcell
+    4
+;
 
 ( n -- n+dcell )
 \ add data stack cell size to n
