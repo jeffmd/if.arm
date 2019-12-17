@@ -31,7 +31,7 @@ Forthword_ DP, 0, "dp"
 
 @ ( offset -- )
 @ add offset to 16 bit (dictionary pointer) DP
-Forthword_ DPPLUS, 0, "dp+"
+Forthword_ DPPLUS, 0, "dp+="
   y_w_
   user_ ram_dp
   x_mw_
@@ -54,7 +54,7 @@ Forthword_ CP, 0, "cp"
 
 @ ( offset -- cp#)
 @ add offset to (code pointer) CP
-Forthword_ CPPLUS, 0, "cp+"
+Forthword_ CPPLUS, 0, "cp+="
   y_w_
   user_ ram_cp
   x_mw_
@@ -183,7 +183,7 @@ COPYSTRING_DONE:
 
 @ ( addr len len' -- )
 @ copies a counted string with flags to program ram
-Forthword_ STRINGPROGSTORE, 0, "@cp=$"
+Forthword_ STRINGPROGSTORE, 0, "@cp=s"
   push_
   do_ CP
   do_ COPYSTRING
@@ -194,7 +194,7 @@ Forthword_ STRINGPROGSTORE, 0, "@cp=$"
 
 @ ( addr len len' -- )
 @ copies a counted string with flags to dictionary ram
-Forthword_ STRINGDICTSTORE, 0, "@dp=$"
+Forthword_ STRINGDICTSTORE, 0, "@dp=s"
   push_
   do_ DP
   do_ COPYSTRING

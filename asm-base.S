@@ -55,7 +55,7 @@ Forthword_ GOTOC, 0, "goto,"
 
 @ compile branch at start address
 @ ( start dest -- )
-Forthword_ PGOTO, 0, "pgoto"
+Forthword_ GOTOS, 0, "gotos"
   push_                @ ( start dest dest )
   d1_                  @ ( start dest start )
   do_ RELDST           @ ( start reldst )
@@ -114,11 +114,16 @@ COMPILEXT_DO:
 
 @ branch 1 word if not zero
 @ ( -- )
-Forthword_ IFN0_COMPILE, 0, "ifn0,"
-  push_
-  @compile bne #00 : 0xD100
-  lit_ 0xD1
-  lsls wreg, #8
+Forthword_ IFNZ_C, 0, "ifnz,"
+  @compile bne.n #00 : 0xD100
+  lit_ 0xD100
+  end_do_ COMMA
+
+@ branch 1 word if zero
+@ ( -- )
+Forthword_ IFZ_C, 0, "ifz,"
+  @compile beq.n #00 : 0xD000
+  lit_ 0xD000
   end_do_ COMMA
 
 @ compile value as inlinned immediate 32 bit constant

@@ -1,11 +1,11 @@
 \ boot.fs - bootstrap the forth compiler
-\ header are (create) are created manually
+\ header and (create) are created manually
 \ use (create) to make : then define the rest manually
 
 \ header ( addr len wid -- nfa )
-\ 
+\ build header entry in dictionary 
 dp push         \ ( nfa nfa ) name field address
-pname header push y= $FF00 w|=y @dp=$ \ ( nfa ? )
+pname header push y= $FF00 w|=y @dp=s \ ( nfa ? )
   current @ @   \ ( nfa linkaddr ) get latest word
   @dp=          \ ( nfa ? ) set link field to prev word in vocab
   cp @dp= pop   \ ( nfa ) set code pointer field
@@ -18,7 +18,7 @@ pname header push y= $FF00 w|=y @dp=$ \ ( nfa ? )
     rpush       \ ( addr len wid ) (R: nfa wid )
     y=d0        \ ( addr len wid Y:len )
     $FF00 w|=y  \ ( addr len len|$FF00 )
-    @dp=$       \ ( ? )
+    @dp=s       \ ( ? )
     rpop @      \ ( linkaddr ) (R: nfa )
     @dp=        \ ( ? )
     rpop        \ ( nfa ) (R: )
@@ -27,6 +27,7 @@ pname header push y= $FF00 w|=y @dp=$ \ ( nfa ? )
   uwid
 
 \ (create) ( <input> -- nfa )
+\ create a dictionay entry along with entry for start of code
 pname (create) push current @ header \ ( nfa )
   push cp       \ ( nfa cp )
   @dp= pop      \ ( nfa )
