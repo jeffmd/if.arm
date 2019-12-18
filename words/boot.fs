@@ -5,7 +5,7 @@
 \ header ( addr len wid -- nfa )
 \ build header entry in dictionary 
 dp push         \ ( nfa nfa ) name field address
-pname header push y= $FF00 w|=y @dp=s \ ( nfa ? )
+pname header push y: $FF00 |=y @dp=s \ ( nfa ? )
   current @ @   \ ( nfa linkaddr ) get latest word
   @dp=          \ ( nfa ? ) set link field to prev word in vocab
   cp @dp= pop   \ ( nfa ) set code pointer field
@@ -17,7 +17,7 @@ pname header push y= $FF00 w|=y @dp=s \ ( nfa ? )
     pop         \ ( addr len wid )
     rpush       \ ( addr len wid ) (R: nfa wid )
     y=d0        \ ( addr len wid Y:len )
-    $FF00 w|=y  \ ( addr len len|$FF00 )
+    $FF00 |=y   \ ( addr len len|$FF00 )
     @dp=s       \ ( ? )
     rpop @      \ ( linkaddr ) (R: nfa )
     @dp=        \ ( ? )
@@ -58,11 +58,11 @@ pname (create) push current @ header \ ( nfa )
 \ ( n -- )
 \ set wid flags of current word
 : widf
-    y=w        \ ( n ) y; n
-    cur@ @ x=w \ ( nfa ) X: nfa
+    y=         \ ( n ) y; n
+    cur@ @ x=  \ ( nfa ) X: nfa
     h@x        \ ( flags )
-    w&=y       \ ( n&flags )
-    h@x=w      \ ( n&flags )
+    &=y        \ ( n&flags )
+    h@x=       \ ( n&flags )
   [
   ;opt uwid
 
@@ -74,7 +74,7 @@ pname (create) push current @ header \ ( nfa )
 \ define ; which is used when finishing the compiling of a word
 : ;
   \ change to interpret mode and override to compile [
-  [ pname [ findw nfa>xtf cxt ]
+  [ pname [ findw nfa>xtf xt, ]
   \ back in compile mode
     ;opt uwid
 [ ;opt uwid immediate

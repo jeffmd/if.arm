@@ -30,20 +30,20 @@
 
 \ store address of the next free dictionary cell
 : dp= ( addr -- )
-    y=w dp# @w=y
+    y= dp# @=y
 ;
 
 \ store address of the next free code cell
 : cp= ( addr -- )
-    y=w cp# @w=y
+    y= cp# @=y
 ;
 
 ( -- ) ( C: x "<spaces>name" -- )
 \ create a dictionary entry and register in current word list
 : rword
     (create)      ( nfa )
-    y=w cur@      ( wid Y:nfa )
-    @w=y          ( wid )
+    y= cur@       ( wid Y:nfa )
+    @=y           ( wid )
 ;
 
 \ inlinned assembly routines
@@ -122,7 +122,7 @@ rword dcell* inlined
 \ compiles xt as literal
 : [']
     '
-    w=,
+    w:,
 ; :ic
 
 
@@ -133,11 +133,11 @@ rword dcell* inlined
 : ['f]
     'f
     push d1
-    w=,
+    w:,
     \ compile literal of 'f push
-    [ 'f push push d1 w=, ]
+    [ 'f push push d1 w:, ]
     push
-    [ d0 w=, nip pop ]
-    cxt
-    d0 w=, nip pop
+    [ d0 w:, nip pop ]
+    xt,
+    d0 w:, nip pop
 ; :ic

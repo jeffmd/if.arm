@@ -77,22 +77,22 @@ Forthword_ D2, INLINE_OPT, "d2"
 
 @ ( n2 n1 -- n1 n1 )
 @   d0 WR
-@ d0=w
-Forthword_ D0_W, INLINE_OPT, "d0=w"
+@ d0=
+Forthword_ D0_W, INLINE_OPT, "d0="
   d0_w_
   end_
     
 @ ( n3 n2 n1 -- n1 n2 n1 )
 @   d1 d0 WR
-@ d1=w
-Forthword_ D1_W, INLINE_OPT, "d1=w"
+@ d1=
+Forthword_ D1_W, INLINE_OPT, "d1="
   d1_w_
   end_
     
 @ ( n4 n3 n2 n1 -- n1 n3 n2 n1 )
 @   d2 d1 d0 WR
-@ d2=w
-Forthword_ D2_W, INLINE_OPT, "d2=w"
+@ d2=
+Forthword_ D2_W, INLINE_OPT, "d2="
   d2_w_
   end_
     
@@ -325,7 +325,7 @@ Forthword_ DSP, INLINE_OPT, "dsp"
 
 @ ( addr -- i*x)
 @ set data stack pointer to addr
-Forthword_ DSP_W, INLINE_OPT, "dsp=w"
+Forthword_ DSP_W, INLINE_OPT, "dsp="
   dsp_w_
   end_
 
@@ -443,22 +443,22 @@ Forthword_ R2, INLINE_OPT, "r2"
 
 @ ( n1 -- n1) (R: n2 -- n1 )
 @   WR            R0
-@ r0=w
-Forthword_ R0_W, INLINE_OPT, "r0=w"
+@ r0=
+Forthword_ R0_W, INLINE_OPT, "r0="
   r0_w_
   end_
 
 @ ( n1 -- n1) (R: n3 n2 -- n1 n2 )
 @   WR            R1 R0
-@ r1=w
-Forthword_ R1_W, INLINE_OPT, "r1=w"
+@ r1=
+Forthword_ R1_W, INLINE_OPT, "r1="
   r1_w_
   end_
 
 @ ( n1 -- n1) (R: n4 n3 n2 -- n1 n3 n2 )
 @   WR            R2 R1 R0
-@ r2=w
-Forthword_ R2_W, INLINE_OPT, "r2=w"
+@ r2=
+Forthword_ R2_W, INLINE_OPT, "r2="
   r2_w_
   end_
 
@@ -639,7 +639,7 @@ Forthword_ RSP, INLINE_OPT, "rsp"
 @ ( addr  -- ) (R: -- x*y)
 @ set return stack pointer
 @ must be called
-Forthword_ RSP_W, INLINE_OPT, "rsp=w"
+Forthword_ RSP_W, INLINE_OPT, "rsp="
   @ keep the return address
   rsp_w_
   end_
@@ -648,55 +648,55 @@ Forthword_ RSP_W, INLINE_OPT, "rsp=w"
 
 @ ( n1 -- n1+y )
 @ w = w + y
-Forthword_ W_PLUS_Y, INLINE_OPT, "w+=y"
+Forthword_ W_PLUS_Y, INLINE_OPT, "+=y"
   w_plus_y_
   end_
 
 @ ( n1 -- n1+x )
 @ w = w + x
-Forthword_ W_PLUS_X, INLINE_OPT, "w+=x"
+Forthword_ W_PLUS_X, INLINE_OPT, "+=x"
   w_plus_x_
   end_
 
 @ ( n1 -- n1+a )
 @ w = w + a
-Forthword_ W_PLUS_A, INLINE_OPT, "w+=a"
+Forthword_ W_PLUS_A, INLINE_OPT, "+=a"
   w_plus_a_
   end_
 
 @ ( n1 -- n1+b )
 @ w = w + b
-Forthword_ W_PLUS_B, INLINE_OPT, "w+=b"
+Forthword_ W_PLUS_B, INLINE_OPT, "+=b"
   w_plus_b_
   end_
 
 @ ( n1|u1 -- n1-y|u1-y )
 @ w = w - y
-Forthword_ W_MINUS_Y, INLINE_OPT, "w-=y"
+Forthword_ W_MINUS_Y, INLINE_OPT, "-=y"
   w_minus_y_
   end_
 
 @ ( n1|u1 -- n1-x|u1-x )
 @ w = w - x
-Forthword_ W_MINUS_X, INLINE_OPT, "w-=x"
+Forthword_ W_MINUS_X, INLINE_OPT, "-=x"
   w_minus_x_
   end_
 
 @ ( n1|u1 -- n1-a|u1-a )
 @ w = w - a
-Forthword_ W_MINUS_A, INLINE_OPT, "w-=a"
+Forthword_ W_MINUS_A, INLINE_OPT, "-=a"
   w_minus_a_
   end_
 
 @ ( n1|u1 -- n1-b|u1-b )
 @ w = w - b
-Forthword_ W_MINUS_B, INLINE_OPT, "w-=b"
+Forthword_ W_MINUS_B, INLINE_OPT, "-=b"
   w_minus_b_
   end_
 
 @ ( n1 -- n1 Y:Y+n1 )
 @ y = y + w
-Forthword_ Y_PLUS_W, INLINE_OPT, "y+=w"
+Forthword_ Y_PLUS_W, INLINE_OPT, "y+="
   y_plus_w_
   end_
 
@@ -720,7 +720,7 @@ Forthword_ Y_PLUS_X, INLINE_OPT, "y+=x"
 
 @ ( n1 -- n1 Y:Y-n1 )
 @ y = y - w
-Forthword_ Y_MINUS_W, INLINE_OPT, "y-=w"
+Forthword_ Y_MINUS_W, INLINE_OPT, "y-="
   y_minus_w_
   end_
 
@@ -744,7 +744,7 @@ Forthword_ Y_MINUS_X, INLINE_OPT, "y-=x"
 
 @ ( n1 -- n1 X:X+n1 )
 @ x = x + w
-Forthword_ X_PLUS_W, INLINE_OPT, "x+=w"
+Forthword_ X_PLUS_W, INLINE_OPT, "x+="
   x_plus_w_
   end_
 
@@ -768,7 +768,7 @@ Forthword_ X_PLUS_Y, INLINE_OPT, "x+=y"
 
 @ ( n1 -- n1 X:X-n1 )
 @ x = x - w
-Forthword_ X_MINUS_W, INLINE_OPT, "x-=w"
+Forthword_ X_MINUS_W, INLINE_OPT, "x-="
   x_minus_w_
   end_
 
@@ -792,7 +792,7 @@ Forthword_ X_MINUS_Y, INLINE_OPT, "x-=y"
 
 @ ( n1 -- n1 A:A+n1 )
 @ a = a + n1
-Forthword_ A_PLUS_W, INLINE_OPT, "a+=w"
+Forthword_ A_PLUS_W, INLINE_OPT, "a+="
   a_plus_w_
   end_
 
@@ -816,7 +816,7 @@ Forthword_ A_PLUS_Y, INLINE_OPT, "a+=y"
 
 @ ( n1 -- n1 A:A-n1 )
 @ a = a - w
-Forthword_ A_MINUS_W, INLINE_OPT, "a-=w"
+Forthword_ A_MINUS_W, INLINE_OPT, "a-="
   a_minus_w_
   end_
 
@@ -840,7 +840,7 @@ Forthword_ A_MINUS_Y, INLINE_OPT, "a-=y"
 
 @ ( n1 -- n1 B:B+n1 )
 @ b = b + w
-Forthword_ B_PLUS_W, INLINE_OPT, "b+=w"
+Forthword_ B_PLUS_W, INLINE_OPT, "b+="
   b_plus_w_
   end_
 
@@ -863,7 +863,7 @@ Forthword_ B_PLUS_Y, INLINE_OPT, "b+=y"
 
 @ ( n1 -- n1 B:B-n1 )
 @ b = b - w
-Forthword_ B_MINUS_W, INLINE_OPT, "b-=w"
+Forthword_ B_MINUS_W, INLINE_OPT, "b-="
   b_minus_w_
   end_
 
@@ -925,73 +925,73 @@ Forthword_ NEG_B, INLINE_OPT, "-b"
 
 @ ( n1 -- n1 and Y )
 @ w = w and y
-Forthword_ W_AND_Y, INLINE_OPT, "w&=y"
+Forthword_ W_AND_Y, INLINE_OPT, "&=y"
   w_and_y_
   end_
 
 @ ( n1 -- n1 and X )
 @ w = w and x
-Forthword_ W_AND_X, INLINE_OPT, "w&=x"
+Forthword_ W_AND_X, INLINE_OPT, "&=x"
   w_and_x_
   end_
 
 @ ( n1 -- n1 and A )
 @ w = w and a
-Forthword_ W_AND_A, INLINE_OPT, "w&=a"
+Forthword_ W_AND_A, INLINE_OPT, "&=a"
   w_and_a_
   end_
 
 @ ( n1 -- n1 and B )
 @ w = w and b
-Forthword_ W_AND_B, INLINE_OPT, "w&=b"
+Forthword_ W_AND_B, INLINE_OPT, "&=b"
   w_and_b_
   end_
 
 @ ( n1 -- n1.or.Y )
 @ w = w or y
-Forthword_ W_OR_Y, INLINE_OPT, "w|=y"
+Forthword_ W_OR_Y, INLINE_OPT, "|=y"
   w_or_y_
   end_
 
 @ ( n1 -- n1.or.X )
 @ w = w or x
-Forthword_ W_OR_X, INLINE_OPT, "w|=x"
+Forthword_ W_OR_X, INLINE_OPT, "|=x"
   w_or_x_
   end_
 
 @ ( n1 -- n1.or.A )
 @ w = w or a
-Forthword_ W_OR_A, INLINE_OPT, "w|=a"
+Forthword_ W_OR_A, INLINE_OPT, "|=a"
   w_or_a_
   end_
 
 @ ( n1 -- n1.or.B )
 @ w = w or b
-Forthword_ W_OR_B, INLINE_OPT, "w|=b"
+Forthword_ W_OR_B, INLINE_OPT, "|=b"
   w_or_b_
   end_
 
 @ ( n1 -- n1.xor.Y)
 @ w = w xor y
-Forthword_ W_XOR_Y, INLINE_OPT, "w^=y"
+Forthword_ W_XOR_Y, INLINE_OPT, "^=y"
   w_xor_y_
   end_
 
 @ ( n1 -- n1.xor.X)
 @ w = w xor x
-Forthword_ W_XOR_X, INLINE_OPT, "w^=x"
+Forthword_ W_XOR_X, INLINE_OPT, "^=x"
   w_xor_x_
   end_
 
 @ ( n1 -- n1.xor.A)
 @ w = w xor a
-Forthword_ W_XOR_A, INLINE_OPT, "w^=a"
+Forthword_ W_XOR_A, INLINE_OPT, "^=a"
   w_xor_a_
   end_
 
 @ ( n1 -- n1.xor.B)
 @ w = w xor b
-Forthword_ W_XOR_B, INLINE_OPT, "w^=b"
+Forthword_ W_XOR_B, INLINE_OPT, "^=b"
   w_xor_b_
   end_
 
@@ -1258,25 +1258,25 @@ Forthword_ FETCH, INLINE_OPT, "@"
 
 @ ( a-addr -- a-addr A:n32 )
 @ read 1 cell (32 bits) from RAM address and put in A register
-Forthword_ A_MW, INLINE_OPT, "a=@w"
+Forthword_ A_MW, INLINE_OPT, "a=@"
   a_mw_
   end_
 
 @ ( a-addr -- a-addr B:n32 )
 @ read 1 cell (32 bits) from RAM address and put in B register
-Forthword_ B_MW, INLINE_OPT, "b=@w"
+Forthword_ B_MW, INLINE_OPT, "b=@"
   b_mw_
   end_
 
 @ ( a-addr -- a-addr X:n32 )
 @ read 1 cell (32 bits) from RAM address and put in X register
-Forthword_ X_MW, INLINE_OPT, "x=@w"
+Forthword_ X_MW, INLINE_OPT, "x=@"
   x_mw_
   end_
 
 @ ( a-addr -- a-addr Y:n32 )
 @ read 1 cell (32 bits) from RAM address and put in Y register
-Forthword_ Y_MW, INLINE_OPT, "y=@w"
+Forthword_ Y_MW, INLINE_OPT, "y=@"
   y_mw_
   end_
 
@@ -1288,25 +1288,25 @@ Forthword_ HMW, INLINE_OPT, "h@"
 
 @ ( a-addr -- a-addr A:n16 )
 @ read 1 cell (16 bits) from RAM address and put in A register
-Forthword_ A_HMW, INLINE_OPT, "a=h@w"
+Forthword_ A_HMW, INLINE_OPT, "a=h@"
   a_hmw_
   end_
 
 @ ( a-addr -- a-addr B:n16 )
 @ read 1 cell (16 bits) from RAM address and put in B register
-Forthword_ B_HMW, INLINE_OPT, "b=h@w"
+Forthword_ B_HMW, INLINE_OPT, "b=h@"
   b_hmw_
   end_
 
 @ ( a-addr -- a-addr X:n16 )
 @ read 1 cell (16 bits) from RAM address and put in X register
-Forthword_ X_HMW, INLINE_OPT, "x=h@w"
+Forthword_ X_HMW, INLINE_OPT, "x=h@"
   x_hmw_
   end_
 
 @ ( a-addr -- a-addr Y:n16 )
 @ read 1 cell (16 bits) from RAM address and put in Y register
-Forthword_ Y_HMW, INLINE_OPT, "y=h@w"
+Forthword_ Y_HMW, INLINE_OPT, "y=h@"
   y_hmw_
   end_
 
@@ -1318,111 +1318,111 @@ Forthword_ CMW, INLINE_OPT, "c@"
 
 @ ( a-addr -- a-addr A:n8 )
 @ read 1 cell (8 bits) from RAM address and put in A register
-Forthword_ A_CMW, INLINE_OPT, "a=c@w"
+Forthword_ A_CMW, INLINE_OPT, "a=c@"
   a_cmw_
   end_
 
 @ ( a-addr -- a-addr B:n8 )
 @ read 1 cell (8 bits) from RAM address and put in B register
-Forthword_ B_CMW, INLINE_OPT, "b=c@w"
+Forthword_ B_CMW, INLINE_OPT, "b=c@"
   b_cmw_
   end_
 
 @ ( a-addr -- a-addr X:n8 )
 @ read 1 cell (8 bits) from RAM address and put in X register
-Forthword_ X_CMW, INLINE_OPT, "x=c@w"
+Forthword_ X_CMW, INLINE_OPT, "x=c@"
   x_cmw_
   end_
 
 @ ( a-addr -- a-addr Y:n8 )
 @ read 1 cell (8 bits) from RAM address and put in Y register
-Forthword_ Y_CMW, INLINE_OPT, "y=c@w"
+Forthword_ Y_CMW, INLINE_OPT, "y=c@"
   y_cmw_
   end_
 
 @ ( addr Y:n -- )
 @ store a word from Y (32 bits) to RAM address
-Forthword_ MW_Y, INLINE_OPT, "@w=y"
+Forthword_ MW_Y, INLINE_OPT, "@=y"
   mw_y_
   end_
 
 @ ( addr X:n -- )
 @ store a word From X (32 bits) to RAM address
-Forthword_ MW_X, INLINE_OPT, "@w=x"
+Forthword_ MW_X, INLINE_OPT, "@=x"
   mw_x_
   end_
 
 @ ( addr A:n -- )
 @ store a word From A (32 bits) to RAM address
-Forthword_ MW_A, INLINE_OPT, "@w=a"
+Forthword_ MW_A, INLINE_OPT, "@=a"
   mw_a_
   end_
 
 @ ( addr B:n -- )
 @ store a word From B (32 bits) to RAM address
-Forthword_ MW_B, INLINE_OPT, "@w=b"
+Forthword_ MW_B, INLINE_OPT, "@=b"
   mw_b_
   end_
 
 @ ( a-addr -- a-addr Y:n16 )
 @ store a half word (16 bits) in Y register to RAM address
-Forthword_ HMW_Y, INLINE_OPT, "h@w=y"
+Forthword_ HMW_Y, INLINE_OPT, "h@=y"
   hmw_y_
   end_
 
 @ ( a-addr -- a-addr X:n16 )
 @ store a half word (16 bits) in X register to RAM address
-Forthword_ HMW_X, INLINE_OPT, "h@w=x"
+Forthword_ HMW_X, INLINE_OPT, "h@=x"
   hmw_x_
   end_
 
 @ ( a-addr -- a-addr A:n16 )
 @ store a half word (16 bits) in A register to RAM address
-Forthword_ HMW_A, INLINE_OPT, "h@w=a"
+Forthword_ HMW_A, INLINE_OPT, "h@=a"
   hmw_a_
   end_
 
 @ ( a-addr -- a-addr B:n16 )
 @ store a half word (16 bits) in B register to RAM address
-Forthword_ HMW_B, INLINE_OPT, "h@w=b"
+Forthword_ HMW_B, INLINE_OPT, "h@=b"
   hmw_b_
   end_
 
 @ ( a-addr -- )
 @ store a single byte from Y register to RAM address
-Forthword_ CMW_Y, INLINE_OPT, "c@w=y"
+Forthword_ CMW_Y, INLINE_OPT, "c@=y"
   cmw_y_
   end_
 
 @ ( a-addr -- )
 @ store a single byte from Y register to RAM address
-Forthword_ CMW_X, INLINE_OPT, "c@w=x"
+Forthword_ CMW_X, INLINE_OPT, "c@=x"
   cmw_x_
   end_
 
 @ ( n -- n ) A: n
 @ copy WR to A register
-Forthword_ A_W, INLINE_OPT, "a=w"
+Forthword_ A_W, INLINE_OPT, "a="
   a_w_
   end_
 
 @ ( n -- n ) B: n
 @ copy WR to B register
-Forthword_ B_W, INLINE_OPT, "b=w"
+Forthword_ B_W, INLINE_OPT, "b="
   b_w_
   end_
 
 @ ( n1 -- n1 ) X: n1
 @   WR
 @ copy WR register to X register
-Forthword_ X_W, INLINE_OPT, "x=w"
+Forthword_ X_W, INLINE_OPT, "x="
   x_w_
   end_
   
 @ ( n1 -- n1 ) Y: n1
 @   WR
 @ copy WR register to Y register
-Forthword_ Y_W, INLINE_OPT, "y=w"
+Forthword_ Y_W, INLINE_OPT, "y="
   y_w_
   end_
   
@@ -1459,7 +1459,7 @@ Forthword_ MA, INLINE_OPT, "@a"
 
 @ ( n -- )
 @ store a word to RAM address pointed to by areg
-Forthword_ MA_W, INLINE_OPT, "@a=w"
+Forthword_ MA_W, INLINE_OPT, "@a="
   ma_w_
   end_
 
@@ -1471,7 +1471,7 @@ Forthword_ HMA, INLINE_OPT, "h@a"
 
 @ ( h -- h )
 @ store a half word to RAM address pointed to by areg
-Forthword_ HMA_W, INLINE_OPT, "h@a=w"
+Forthword_ HMA_W, INLINE_OPT, "h@a="
   hma_w_
   end_
 
@@ -1483,7 +1483,7 @@ Forthword_ CMA, INLINE_OPT, "c@a"
 
 @ ( c -- )
 @ store a single byte to RAM address pointed to by areg
-Forthword_ CMA_W, INLINE_OPT, "c@a=w"
+Forthword_ CMA_W, INLINE_OPT, "c@a="
   cma_w_
   end_
 
@@ -1532,7 +1532,7 @@ Forthword_ MB, INLINE_OPT, "@b"
 
 @ ( n -- )
 @ store a word to RAM address pointed to by b register
-Forthword_ MB_W, INLINE_OPT, "@b=w"
+Forthword_ MB_W, INLINE_OPT, "@b="
   mb_w_
   end_
 
@@ -1544,7 +1544,7 @@ Forthword_ HMB, INLINE_OPT, "h@b"
 
 @ ( h -- )
 @ store a half word to RAM address pointed to by b reg
-Forthword_ HMB_W, INLINE_OPT, "h@b=w"
+Forthword_ HMB_W, INLINE_OPT, "h@b="
   hmb_w_
   end_
 
@@ -1556,7 +1556,7 @@ Forthword_ CMB, INLINE_OPT, "c@b"
 
 @ ( c -- )
 @ store a single byte to RAM address pointed to by B reg
-Forthword_ CMB_W, INLINE_OPT, "c@b=w"
+Forthword_ CMB_W, INLINE_OPT, "c@b="
   cmb_w_
   end_
 
@@ -1604,7 +1604,7 @@ Forthword_ MX, INLINE_OPT, "@x"
 
 @ ( n -- )
 @ store a word to RAM address pointed to by x register
-Forthword_ MX_W, INLINE_OPT, "@x=w"
+Forthword_ MX_W, INLINE_OPT, "@x="
   mx_w_
   end_
 
@@ -1616,7 +1616,7 @@ Forthword_ HMX, INLINE_OPT, "h@x"
 
 @ ( h -- )
 @ store a half word to RAM address pointed to by x reg
-Forthword_ HMX_W, INLINE_OPT, "h@x=w"
+Forthword_ HMX_W, INLINE_OPT, "h@x="
   hmx_w_
   end_
 
@@ -1628,7 +1628,7 @@ Forthword_ CMX, INLINE_OPT, "c@x"
 
 @ ( c -- )
 @ store a single byte to RAM address pointed to by X reg
-Forthword_ CMX_W, INLINE_OPT, "c@x=w"
+Forthword_ CMX_W, INLINE_OPT, "c@x="
   cmx_w_
   end_
 
@@ -1677,7 +1677,7 @@ Forthword_ MY, INLINE_OPT, "@y"
 
 @ ( n -- )
 @ store a word to RAM address pointed to by Y register
-Forthword_ MY_W, INLINE_OPT, "@y=w"
+Forthword_ MY_W, INLINE_OPT, "@y="
   my_w_
   end_
 
@@ -1689,7 +1689,7 @@ Forthword_ HMY, INLINE_OPT, "h@y"
 
 @ ( h -- )
 @ store a half word to RAM address pointed to by Y reg
-Forthword_ HMY_W, INLINE_OPT, "h@y=w"
+Forthword_ HMY_W, INLINE_OPT, "h@y="
   hmy_w_
   end_
 
@@ -1701,7 +1701,7 @@ Forthword_ CMY, INLINE_OPT, "c@y"
 
 @ ( c -- )
 @ store a single byte to RAM address pointed to by Y reg
-Forthword_ CMY_W, INLINE_OPT, "c@y=w"
+Forthword_ CMY_W, INLINE_OPT, "c@y="
   cmy_w_
   end_
   

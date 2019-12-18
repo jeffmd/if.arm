@@ -3,13 +3,24 @@
 
 ( n min max -- f)
 \ check if n is within min..max
+\ flag is 1 if min <= n <= max
 : within
-    over - >a - a u<
+    popy       ( n max Y:min )
+    -=y        ( n diff )
+    x=d0 x-=y  ( n diff X:n-min )
+    d0=x       ( n-min diff ) 
+    u<         ( flag )
 ;
 
 \ increment a cvar by one.  If val > max then set flag to true.
-: 1+c!mx ( maxval cvar -- flag )
-  nip>b >a ac@ 1+ dup b > if 0: then dup ac! 0=
+: 1+c@mx ( maxval cvar -- flag )
+  popy      ( cvar Y:maxval ) 
+  x= c@x    ( val X:cvar )
+  1+ push   ( val+1 val+1 )
+  y >       ( val+1 flag )
+  ==0
+  ifnz 0 then
+  push c@x= 0=
 ;
 
 ( c<name> -- )

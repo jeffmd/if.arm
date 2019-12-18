@@ -96,7 +96,7 @@ Forthword_ DOC, 0, "do,"
 @ compile rcall to xt at the current dictionary position (DP) if relative distance is in range
 @ otherwise do long call to xt.  If word flag indicates inlining then the word is inlined.
 @ ( xt flags -- )
-Forthword_ COMPILEXT, 0, "cxt"
+Forthword_ XT_C, 0, "xt,"
   push_lr_
   movs r1, #INLINE_OPT
   lsls r1, #8
@@ -131,42 +131,42 @@ Forthword_ IFZ_C, 0, "ifz,"
 Forthword_ DOLIT, 0, "(lit,)"
   @ compile xt -> W_MI
   do_ NFATOXTF             @ ( n xt flags )
-  do_ COMPILEXT            @ ( n ? )
+  do_ XT_C                 @ ( n ? )
   pop_                     @ ( n )
   @ store 32 bit val from wreg
   end_do_ DCOMMA
 
 @ compile top of stack as inlinned immediate 32 bit constant
 @ ( n -- )
-Forthword_ WLIT_C, 0, "w=,"
+Forthword_ WLIT_C, 0, "w:,"
   push_                    @ ( n n )
   lit32_ VE_W_MI           @ ( n VE_W_MI )
   end_do_ DOLIT
 
 @ compile Y register load inlinned immediate 32 bit constant
 @ ( n -- )
-Forthword_ YLIT_C, 0, "y=,"
+Forthword_ YLIT_C, 0, "y:,"
   push_                    @ ( n n )
   lit32_ VE_Y_MI           @ ( n VE_Y_MI )
   end_do_ DOLIT
 
 @ compile X register load inlinned immediate 32 bit constant
 @ ( n -- )
-Forthword_ XLIT_C, 0, "x=,"
+Forthword_ XLIT_C, 0, "x:,"
   push_                    @ ( n n )
   lit32_ VE_X_MI           @ ( n VE_X_MI )
   end_do_ DOLIT
 
 @ compile A register load inlinned immediate 32 bit constant
 @ ( n -- )
-Forthword_ ALIT_C, 0, "a=,"
+Forthword_ ALIT_C, 0, "a:,"
   push_                    @ ( n n )
   lit32_ VE_A_MI           @ ( n VE_A_MI )
   end_do_ DOLIT
 
 @ compile B register load inlinned immediate 32 bit constant
 @ ( n -- )
-Forthword_ BLIT_C, 0, "b=,"
+Forthword_ BLIT_C, 0, "b:,"
   push_                    @ ( n n )
   lit32_ VE_B_MI           @ ( n VE_B_MI )
   end_do_ DOLIT

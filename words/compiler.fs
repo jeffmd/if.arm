@@ -2,23 +2,23 @@
 
 \ force compile any word including immediate words
 : [compile]
-  'f cxt
+  'f xt,
 ; :ic
 
 
-\ read the following cell from the executing word and program it
-\ into the current dictionary position.
-: (program)  ( -- )
+\ read the following cell from the executing word and compile it
+\ into the current code position.
+: (word:,)  ( -- )
     r0+      ( raddr ) ( R: raddr+1 )
     1-       \ account for thumb address
     @        ( nfa )
     nfa>xtf  ( xt xtflags )
-    cxt
+    xt,
 ;
 
-\ program a word into pending new word
-: program: ( C: x "<spaces>name" -- )
-  ['f] (program) cxt
+\ compile a word into pending new word
+: word:, ( C: x "<spaces>name" -- )
+  ['f] (word:,) xt,
   find d,
 ; :ic
 
@@ -32,7 +32,7 @@
     rword
     pushlr,
     \ leave address after call on tos
-    program: popret
+    word:, popret
 ;
 
 
@@ -45,10 +45,10 @@
 
 ( -- c ) ( C: "<space>name" -- )
 \ skip leading space delimites, place the first character
-\ of the word on the stack
+\ of the next word in working register
 : [char]
     char
-    w=,
+    w:,
 ; immediate
 
 ( -- )
@@ -89,9 +89,9 @@
 \ ie: : name create .... does> .... ;
 : does>
     \ compile pop return to tos which is used as 'THIS' pointer
-    program: (does>)
-    program: lr
-    program: 1-
+    word:, (does>)
+    word:, lr
+    word:, 1-
 ; :ic
 
 ( -- xt )
@@ -134,7 +134,7 @@
     \ compile a rjmp at current CP that jumps back to mark
     cp              \ ( dest start )
     y=d0
-    d0=w
+    d0=
     y               \ ( start dest )
     gotos           \ ( ? )
     4 cp+=          \ advance CP
@@ -167,7 +167,7 @@
 : else
     markf         \ mark forward rjmp at end of true code
     d1 y=d0
-    d0=w d1=y     \ swap new mark with previouse mark
+    d0= d1=y      \ swap new mark with previouse mark
     rjmpf         \ rjmp from previous mark to false code starting here
 ; :ic
 
@@ -204,7 +204,7 @@
 : whilez
     [compile] ifz
     d1 y=d0
-    d0=w d1=y    \ swap new mark with previouse mark
+    d0= d1=y     \ swap new mark with previouse mark
 ; :ic
 
 ( f -- ) ( C: dest -- orig dest )
@@ -214,7 +214,7 @@
 : whilenz
     [compile] ifnz
     d1 y=d0
-    d0=w d1=y    \ swap new mark with previouse mark
+    d0= d1=y     \ swap new mark with previouse mark
 ; :ic
 
 ( --  ) ( C: orig dest -- )
@@ -253,12 +253,12 @@
 \ compile the XT of the word currently
 \ being defined into the dictionary
 : recurse
-  smudge nfa>xtf cxt  
+  smudge nfa>xtf xt,  
 ; :ic
 
 \ allocate or release n bytes of memory in RAM
 : allot ( n -- )
-    y=w here y+=w here# @w=y
+    y= here y+= here# @=y
 ;
 
 ( x -- ) ( C: x "<spaces>name" -- )
@@ -267,7 +267,7 @@
     push rword
     pushlr,
     pop
-    w=,
+    w:,
     poppc,
     clrcache
 ;
@@ -298,7 +298,7 @@
 \ String
 \ compiles a string to program RAM
 : slit
-    push program: (slit) pop     ( addr n)
+    push word:, (slit) pop     ( addr n)
     s,
 ; immediate
 
@@ -324,7 +324,7 @@
      [compile] s"             \ "
      push state ==0 pop
      ifnz
-       program: type
+       word:, type
      else
        type
      then
