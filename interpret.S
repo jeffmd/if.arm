@@ -19,7 +19,7 @@ Forthword_ MCMP, 0, "mcmp"
   y_d1_                    @ ( r-addr r-len f-addr f-len )  Y: r-len
   @ check if strings are same length
   w_xor_y_                 @ ( r-addr r-len f-addr flag )
-  if_0_ MCMP_SAMELEN
+  ifz_ MCMP_SAMELEN
 
   @ strings are not the same length
   nip3_                    @ ( ? )
@@ -35,7 +35,7 @@ MCMP_SAMELEN:
 
 MCMP_LOOP:
   y_iszero_                @ ( ? )
-  if_0_ MCMP_DONE
+  ifz_ MCMP_DONE
 
   hma_                     @ ( f-cc )
   x_w_                     @ ( f-cc ) X:f-cc 
@@ -43,7 +43,7 @@ MCMP_LOOP:
   y_minus1_                @ ( f-cc ) Y:Y-1
   @ program strings could be zero-padded at the last cell for 16bit alignment
   @ if count is even or > 1 then continue
-  if_not_0_ MCMP_CHECK
+  ifnz_ MCMP_CHECK
     movs r1, #255
     @ count was at 1
     @ count in Y is now at zero so add 1 to prevent underflow
@@ -56,7 +56,7 @@ MCMP_LOOP:
   @ then
 MCMP_CHECK:
   w_xor_x_                 @ ( flag )
-  if_not_0_ MCMP_NOMATCH
+  ifnz_ MCMP_NOMATCH
 
   b_plus2_                 @ (  0 B:B+2 )
   a_plus2_                 @ (  0 A:B+2 )
@@ -94,11 +94,11 @@ CSKIP_LOOP:
   cma_                   @ ( c' )
   a_plus1_
   cmp wreg, breg         @ ( c' )
-  if_not_0_ CSKIP_DONE
+  ifnz_ CSKIP_DONE
   y_minus1_              @ ( c' ) Y-1
 CSKIP_CHECK:
   y_iszero_              @ ( c' )
-  if_not_0_ CSKIP_LOOP
+  ifnz_ CSKIP_LOOP
 
 CSKIP_DONE:
   rpopb_
@@ -126,12 +126,12 @@ CSCAN_LOOP:
   cma_                 @ ( addr1 c' )
   a_plus1_
   cmp wreg, breg       @ ( addr1 n1 n' c' )
-  if_0_ CSCAN_DONE
+  ifz_ CSCAN_DONE
   y_minus1_            @ ( addr1 c' ) Y-1
 
 CSCAN_CHECK:
   y_iszero_            @ ( addr1 c' )
-  if_not_0_ CSCAN_LOOP
+  ifnz_ CSCAN_LOOP
 
 CSCAN_DONE:
   rpopb_
@@ -190,9 +190,9 @@ Forthword_ PARSE, 0, "parse"
 @ ( "<name>" -- c-addr len )
 @ In the SOURCE buffer parse whitespace delimited string. Returns string address within SOURCE.
 Forthword_ PNAME, 0, "pname"
-    do_ SKIPBL
-    bl_
-    end_do_ PARSE
+  do_ SKIPBL
+  bl_
+  end_do_ PARSE
 
 @ load registers W, A, B, X, Y from user storage area
 @ ( xt * -- w xt )
@@ -240,7 +240,7 @@ Forthword_ REC_WORD, 0, "recw"
   rpushy_             @ ( addr len ) (R: retaddr len addr )
   do_ FINDW           @ ( 0 | nfa )
   iszero_
-  if_not_0_ REC_WORD_FOUND
+  ifnz_ REC_WORD_FOUND
     rpopy_            @ ( 0 ) Y:addr (R: retaddr len )
     pushy_            @ ( addr 0 ) (R: retaddr len )
     rpopy_            @ ( addr 0 ) Y:len (R: retaddr ) 
@@ -270,7 +270,7 @@ CHECK_IMMEDIATE:
   lsls r1, #8
   tst wreg, r1
   @ flag is 0: always EXEC
-  if_0_ REC_WORD_EXECUTE
+  ifz_ REC_WORD_EXECUTE
 
 REC_WORD_CHECKSTATE:
     @ check state
@@ -278,7 +278,7 @@ REC_WORD_CHECKSTATE:
     do_ STATE          @ ( xt flag state )
     iszero_
     pop_               @ ( xt flag )
-    if_0_ REC_WORD_EXECUTE
+    ifz_ REC_WORD_EXECUTE
 .if BUILD_LEVEL >= ASM_BASE
       @ in compile mode so compile xt
       do_ XT_C         @ ( ? )
@@ -301,14 +301,14 @@ Forthword_ RECX, 0, "recx"
   @ test if its a word
   do_ REC_WORD            @ ( [addr len] flag )
   iszero_                 @ ( [addr len] flag )
-  if_not_0_ RECX_DONE
+  ifnz_ RECX_DONE
 
 .if BUILD_LEVEL > 4
   @ test if its a number
   pop_                   @ ( addr len )
   do_ REC_NUM            @ ( [addr len] flag )
   iszero_                @ ( [addr len] flag )
-  if_not_0_ RECX_DONE
+  ifnz_ RECX_DONE
 .endif
 
   @ not recognized so throw
@@ -334,7 +334,7 @@ INTERPRET_DO:
 
   @ ?while
   iszero_             @ ( addr len )
-  if_0_ INTERPRET_END
+  ifz_ INTERPRET_END
 
   do_ RECX            @ ( ? )
   do_ QSTACK          @ ( ? )
@@ -357,7 +357,7 @@ Forthword_ DOINTERPRET, 0, "(interp)"
   @ check to make sure no throws
   @ <if>
   iszero_
-  if_0_ DOINTERPRET_ok
+  ifz_ DOINTERPRET_ok
     do_ PROMPTERROR
     exit_do_ QUIT
 

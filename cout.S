@@ -60,7 +60,7 @@ Forthword_ BL, INLINE_OPT, "bl"
 Forthword_ TYPE, 0, "type"
   push_lr_
   iszero_
-  if_0_ TYPE_END
+  ifz_ TYPE_END
    
   rpusha_
   rpushb_
@@ -74,7 +74,7 @@ TYPE1:
   b_minus1_
 
 TYPE2:
-  if_not_0_ TYPE1
+  ifnz_ TYPE1
    
   rpopb_
   rpopa_

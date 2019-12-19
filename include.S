@@ -21,7 +21,7 @@ Forthword_ KEYFILE, 0, "keyfile"
   @ was one key read from the file?
   cmp wreg, #1
   pop_                   @ ( key )
-  if_0_ KEYEND
+  ifz_ KEYEND
     oneminus_
     exit_do_ BYE  
 
@@ -40,7 +40,7 @@ Forthword_ DOINCLUDE, 0, "(include)"
   push_                @ ( filedes filedes )
   do_ ZEROGREATER
   iszero_
-  if_0_ DOINCLUDE_EXIT
+  ifz_ DOINCLUDE_EXIT
 
   do_ IDLETIMEFETCH    @ ( filedes itime )
   rpush_               @ ( filedes itime ) (R: itime )

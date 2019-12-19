@@ -102,7 +102,7 @@ Forthword_ XT_C, 0, "xt,"
   lsls r1, #8
   tst wreg, r1
   @ if bit 0 of high byte flag is 0 then word is to be inlinned
-  if_not_0_ COMPILEXT_DO
+  ifnz_ COMPILEXT_DO
     pop_           @ ( xt )
     exit_do_ INLINE
 

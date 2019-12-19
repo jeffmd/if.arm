@@ -1619,12 +1619,12 @@ sysvar .req r4 @ system variables base pointer
 .endm
 
 @ if zero flag ==0 jump to addr
-.macro if_0_ addr
+.macro ifz_ addr
   beq.n \addr
 .endm
 
 @ if zero flag !=0 jump to addr
-.macro if_not_0_ addr
+.macro ifnz_ addr
   bne.n \addr
 .endm
 

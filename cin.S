@@ -78,20 +78,20 @@ ACCEPT_checkeol:
   @ check for EOL
   cmp wreg, #10
   @ <if>
-  if_not_0_ ACCEPT_checkreturn
+  ifnz_ ACCEPT_checkreturn
   exit_
 
 ACCEPT_checkreturn:
   cmp wreg, #13     @ ( k k 13 )
   @ <if>
-  if_not_0_ ACCEPT_checkdelete
+  ifnz_ ACCEPT_checkdelete
   exit_
 
 ACCEPT_checkdelete:
   @ check delete
   cmp wreg, #127      @ ( k k 8 )
   @ <if>
-  if_not_0_ ACCEPT_checkcontrol
+  ifnz_ ACCEPT_checkcontrol
   @ delete previous character
   @ check beginning of line
   @ if cursor is 0 then at begining of input
@@ -101,7 +101,7 @@ ACCEPT_checkdelete:
   @ <if>
   iszero_             @ ( k )
   pop_
-  if_not_0_ ACCEPT_dodelete
+  ifnz_ ACCEPT_dodelete
   @ at the beginning of the line, ignore this character
   zero_
   exit_
@@ -157,7 +157,7 @@ ACCEPT_checkmaxinput:
   w_minus_y_           @ ( tibsize-#tib )
   @ <if>
   iszero_              @ ( tibsize-#tib )
-  if_0_ ACCEPT_atmaxinput
+  ifz_ ACCEPT_atmaxinput
   zero_
   exit_
 
@@ -171,7 +171,7 @@ ACCEPT_atmaxinput:
 Forthword_ REFILLTIB, 0, "reftib"
     do_ ACCEPT           @ ( f )
     iszero_              @ ( f )
-    if_0_ REFILLTIB_exit
+    ifz_ REFILLTIB_exit
     push_
     do_ CR
     pop_

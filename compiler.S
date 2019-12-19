@@ -68,7 +68,7 @@ Forthword_ TAILOPT, 0, ";opt"
   @ optimize only if smudge is not zero
   do_ SMUDGE
   iszero_
-  if_not_0_ TAILOPT_OPT
+  ifnz_ TAILOPT_OPT
   exit_
 
 TAILOPT_OPT:
@@ -97,7 +97,7 @@ Forthword_ CLRCACHE, 0, "clrcache"
 Forthword_ UWID, 0, "uwid"
   do_ SMUDGE           @ (xt)
   iszero_
-  if_0_ UWID_end
+  ifz_ UWID_end
     @ wid.word = smudge
     y_w_               @ ( xt ) Y:xt
     do_ CURRENT        @ ( current )
@@ -153,12 +153,12 @@ Forthword_ COPYSTRING, 0, "copy$"
 COPYSTRING_LOOP:
   b_plus2_           @ ( s-addr len len' len' ) B:d-addr+2
   y_iszero_          @ len == 0 ?
-  if_0_ COPYSTRING_DONE
+  ifz_ COPYSTRING_DONE
   hmx_               @ ( s-addr len len' c2c1 )
   y_minus1_          @ ( s-addr len len' c2c1 ) Y:len-1
   @ program strings could be zero-padded at the last cell for 16bit alignment
   @ if count is even or > 1 then continue
-  if_not_0_ COPYSTRING_DO
+  ifnz_ COPYSTRING_DO
     movs r1, #255
     @ count was at 1
     @ count in Y is now at zero so add 1 to prevent underflow
@@ -223,7 +223,7 @@ CBU_BEGIN:
   y_plus2_           @ ( source destination val16 ) Y:Y+2
   cmp wreg, xreg    
   @ until
-  if_0_ CBU_DONE
+  ifz_ CBU_DONE
   hmb_w_             @ ( source destination val16 ) [B]:val16
   b_plus2_           @ ( source destination val16 ) B:B+2
   goto_ CBU_BEGIN

@@ -135,12 +135,12 @@ Forthword_ REC_NUM, 0, "rec@"
   @ try converting to a number
   do_ NUMBER             @ ( [n] f )
   iszero_
-  if_0_ REC_NONUMBER
+  ifz_ REC_NONUMBER
     rnip2_               @ ( n f ) (R: retaddr )
     do_ STATE            @ ( n state )
     iszero_
     pop_                 @ ( n )
-    if_0_ REC_NUMBER_OK
+    ifz_ REC_NUMBER_OK
       do_ LIT_COMP
       goto_ REC_NUMBER_DONE
 

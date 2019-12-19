@@ -35,7 +35,7 @@ Forthword_ DOCMDARG, 0, "docmdarg"
   lit_ 1               @ ( ARGC 1 )
   do_ GREATER          @ ( flag )
   iszero_
-  if_0_ DOCMDARG_EXIT
+  ifz_ DOCMDARG_EXIT
 
   do_ ARGVADDR         @ ( ARGVADDR )
   mw_                  @ ( ARGV )
@@ -75,7 +75,7 @@ Forthword_ QSTACK, 0, "?dsp"
   do_ DEPTH
   zeroless_
   iszero_
-  if_0_ QSTACKFIN
+  ifz_ QSTACKFIN
     slit_ " Stack Underflow!"
     do_ THROW
 

@@ -79,7 +79,7 @@ Forthword_ MCPY, 0, "mcpy"
 
 MCPY_LOOP:
   y_iszero_         @ ( count )
-  if_0_ MCPY_END
+  ifz_ MCPY_END
   hmx_              @ ( val )
   x_plus2_          @ ( val A:A+2 )
   hmb_w_            @ ( val )

@@ -37,7 +37,7 @@ Forthword_ NFA2LFA, 0, "nfa>lfa"
 Forthword_ NFATOXTF, 0, "nfa>xtf"
   push_lr_
   iszero_                     @ ( n )
-  beq.n NFATOXTF_EXIT
+  ifz_ NFATOXTF_EXIT
 
   y_hmw_                      @ ( nfa Y:xtflags )
   rpushy_                     @ ( nfa ) (R: xtflags)
@@ -67,7 +67,7 @@ Forthword_ FINDNFA, 0, "findnfa"
   push_lr_
   iszero_
   @ terminate if wid is empty
-  if_0_ FINDNFA_END
+  ifz_ FINDNFA_END
 
   @ <begin>
 FINDNFA_BEGIN:
@@ -76,7 +76,7 @@ FINDNFA_BEGIN:
 FINDNFA_BEGIN1:
   iszero_                     @ ( c-addr len nfa )
   @ terminate if 0 found
-  if_0_ FINDNFA_END
+  ifz_ FINDNFA_END
   rpush_                      @ ( c-addr len ) (R: nfa )
   y_d1_                       @ ( c-addr len nfa ) Y:c-addr
   x_d0_                       @ ( c-addr len nfa ) X:len
@@ -90,7 +90,7 @@ FINDNFA_BEGIN1:
   iszero_
   rpop_                       @ ( c-addr len nfa ) (R: )
   @ match found if flag is > 0
-  if_not_0_ FINDNFA_END
+  ifnz_ FINDNFA_END
     
   @ next try
   do_ NFA2LFA                @ ( c-addr len lfa )
@@ -124,7 +124,7 @@ Forthword_ CONTIDX_FETCH, 0 "contidx@"
   lit_ (MAX_CONTEXTS - 1) @ ( idx max )
   do_ GREATER         @ ( flag )
   iszero_
-  if_0_ 1f
+  ifz_ 1f
     lit_ (MAX_CONTEXTS - 1)  @ ( max )
     hmy_w_
     exit_
@@ -153,7 +153,7 @@ FINDW_BEGIN:
     do_ FINDWI        @ ( addr len idx nfa )
     iszero_
     @ end loop if word found
-    if_not_0_ FINDW_END
+    ifnz_ FINDW_END
 
   d0_                 @ ( addr len idx idx )
   @ decrement index

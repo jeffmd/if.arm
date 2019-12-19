@@ -3,44 +3,44 @@
 @ ( -- addr )
 @ flags address
 Forthword_ FFLAGS, 0, "fflags"
-    user_  fflags
-    end_
+  user_  fflags
+  end_
     
 @ ( -- addr )
 @ system state variable. 0 is interpret mode. Not 0 is compile mode
 @ is half word
 Forthword_ STATE, 0, "state"
-    user_ state
-    hmw_
-    end_
+  user_ state
+  hmw_
+  end_
 
 @ ( val -- state )
 @ state = val
 Forthword_ STATESTORE, 0, "state="
-    y_w_
-    user_ state
-    hmw_y_
-    end_
+  y_w_
+  user_ state
+  hmw_y_
+  end_
 
 @ ( --  )
 @ enter interpreter mode
 Forthword_ LBRACKET, IMMEDIATE_EN, "["
-    zero_
-    end_do_ STATESTORE
+  zero_
+  end_do_ STATESTORE
 
 @ ( --  )
 @ enter compile mode
 Forthword_ RBRACKET, 0, "]"
-    lit_ 1
-    end_do_ STATESTORE
+  lit_ 1
+  end_do_ STATESTORE
 
 
 @ ( -- pauseaddr )
 @ get pause defer
 Forthword_ PAUSE_FETCH, 0, "pause@"
-    user_ USER_PAUSE
-    mw_
-    end_
+  user_ USER_PAUSE
+  mw_
+  end_
 
 @ ( addr --  )
 @ set pause to addr
@@ -58,93 +58,93 @@ Forthword_ PAUSE_CLR, 0, "pause.clr"
 @ ( val -- char )
 @ convert low byte of val to a printable hex character
 Forthword_ NHEX, 0, "#h"
-    movs r1, #0x0F
-    ands wreg, r1
-    cmp wreg, #10
-    blo.n NHEX_NEXT
-    adds wreg, #7
+  movs r1, #0x0F
+  ands wreg, r1
+  cmp wreg, #10
+  blo.n NHEX_NEXT
+  adds wreg, #7
 
-    @ <then>
+  @ <then>
 NHEX_NEXT:
-    adds wreg, #48
-    end_
+  adds wreg, #48
+  end_
 
 @ ( n -- )
 @ simple 4 bit hex print
 Forthword_ PNIB, 0, ".h"
-    do_ NHEX
-    end_do_ EMIT
+  do_ NHEX
+  end_do_ EMIT
 
 @ ( n -- )
 @ simple 32 bit hex print
 Forthword_ PHEX, 0, ".$"
-    push_
-    lit_ '$
-    do_ EMIT
-    lit_ 28
+  push_
+  lit_ '$
+  do_ EMIT
+  lit_ 28
 PHEX_BEGIN:
-    y_d0_
-    push_
-    pushy_       @ ( n x n x )
-    rshift_
-    do_ PNIB
-    pop_
-    fourminus_
-    if_not_0_ PHEX_BEGIN
+  y_d0_
+  push_
+  pushy_       @ ( n x n x )
+  rshift_
+  do_ PNIB
+  pop_
+  fourminus_
+  ifnz_ PHEX_BEGIN
 
-    pop_
-    do_ PNIB
-    lit_ 32
-    end_do_ EMIT
+  pop_
+  do_ PNIB
+  lit_ 32
+  end_do_ EMIT
 
 @ ( -- )
 @ set terminate flag which indicates request to exit forth interpreter
 Forthword_ BYE, 0, "bye"
-    do_ FFLAGS
-    x_w_
-    lit_y_ 1 
-    hmx_
-    w_or_y_
-    hmx_w_
-    end_
+  do_ FFLAGS
+  x_w_
+  lit_y_ 1 
+  hmx_
+  w_or_y_
+  hmx_w_
+  end_
 
 @ ( -- )
 @ send the READY prompt to the command line
 Forthword_ PROMPTRDY, 0, ".>"
-    type_ "\n> "
-    end_
+  type_ "\n> "
+  end_
 
 @ ( -- )
 @ send the READY prompt to the command line
 Forthword_ PROMPTCOMPILE, 0, ".:"
-    type_ "\n: "
-    end_
+  type_ "\n: "
+  end_
 
 @ ( -- )
 @ send the OK prompt to the command line
 Forthword_ PROMPTOK, 0, ".ok"
-    type_ " ok"
-    end_
+  type_ " ok"
+  end_
 
 @ ( n -- )
 @ process the error prompt
 Forthword_ PROMPTERROR, 0, ".??"
-    type_ " ?? "
-    end_
+  type_ " ?? "
+  end_
 
 @ ( -- )
 @ check if a ready prompt is required
 Forthword_ QP_RD, 0, "?prd"
-    do_ STATE
-    @ output ready prompt if in interpret mode
-    @ <-if>
-    iszero_
-    if_not_0_ QP_RD_exit
-      exit_do_ PROMPTRDY
+  do_ STATE
+  @ output ready prompt if in interpret mode
+  @ <-if>
+  iszero_
+  ifnz_ QP_RD_exit
+    exit_do_ PROMPTRDY
 
 QP_RD_exit:
-    @ <then>
-    end_do_ PROMPTCOMPILE
+  @ <then>
+  end_do_ PROMPTCOMPILE
 
 
 @ ( -- flag )
@@ -155,7 +155,7 @@ Forthword_ DOREFILL, 0, "(refill)"
   do_ G_IN                 @ ( >inaddr )
   hmw_                     @ ( >in )
   iszero_                  @ ( )
-  if_0_ DOREFILL_do
+  ifz_ DOREFILL_do
     do_ INRESET
 
 DOREFILL_do:
@@ -179,7 +179,7 @@ DOTASKS1:
   do_ DOREFILL     @ ( flag )
   @ <if>
   iszero_
-  if_0_ DOTASK_N1
+  ifz_ DOTASK_N1
     @ there is something in the input buffer, try interpreting it
 .if BUILD_LEVEL >= INT_DICTIONARY
     do_ DOINTERPRET
@@ -192,7 +192,7 @@ DOTASK_N1:
   hmw_
   bittest_ TERMINATE_F
   @ <again>
-  if_0_ DOTASKS1
+  ifz_ DOTASKS1
   end_
 
 
@@ -229,7 +229,7 @@ Forthword_ USLEEP, 0, "usleep"
 Forthword_ SLEEP, 0, "sleep"
   do_ IDLETIMEFETCH
   iszero_
-  if_0_ NO_IDLESLEEP
+  ifz_ NO_IDLESLEEP
     exit_do_ USLEEP
 NO_IDLESLEEP:
   end_
@@ -285,4 +285,3 @@ Forthword_ QUIT, 0, "quit"
   @bl RP_STORE
   do_ RESET
   end_do_ DOTASKS
-

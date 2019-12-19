@@ -59,7 +59,7 @@ DIGITQ0:
   do_ BASEFETCH       @ ( n n base )
   do_ UGREATEREQUAL   @ ( n flag )
   iszero_
-  if_0_ PFA_DIGITQ_DONE
+  ifz_ PFA_DIGITQ_DONE
   zero_               @ ( n 0 )
   nip_                @ ( 0 )
   exit_
@@ -73,17 +73,17 @@ PFA_DIGITQ_DONE:
 @ set the BASE value depending on the character
 forthword_ SETBASE, 0, "setbase"
   cmp wreg, #'$
-  if_not_0_ PFA_SETBASE0
+  ifnz_ PFA_SETBASE0
   exit_do_ HEX
 
 PFA_SETBASE0:
   cmp wreg, #'%
-  if_not_0_ PFA_SETBASE1
+  ifnz_ PFA_SETBASE1
   exit_do_ BIN
 
 PFA_SETBASE1:
   cmp wreg, #'&
-  if_not_0_ PFA_SETBASE2
+  ifnz_ PFA_SETBASE2
   exit_do_ DECIMAL
 
 PFA_SETBASE2:        @ ( error)
@@ -116,7 +116,7 @@ forthword_ NUMBERSIGN, 0, "#-"
   d1_            @ ( addr len addr )
   cmw_           @ ( addr len char )
   cmp wreg, #'-
-  if_0_ NUMBERSIGN_HASSIGN
+  ifz_ NUMBERSIGN_HASSIGN
     zero_
     exit_
 
@@ -136,14 +136,14 @@ Forthword_ TO_NUMBER, 0, ">num"
 
 TO_NUMBER_AGAIN:
   iszero_
-  if_0_ TO_NUMBER_END
+  ifz_ TO_NUMBER_END
     push_                @ ( u addr len len )
     d1_                  @ ( u addr len addr )
     cmw_                 @ ( u addr len char )
     do_ DIGITQ           @ ( u adr len digit flag)
     iszero_
     pop_                 @ ( u adr len [digit] )
-    if_not_0_ TO_NUMBER_CONV
+    ifnz_ TO_NUMBER_CONV
       @ character is not a recognized number
       exit_
 
@@ -188,7 +188,7 @@ Forthword_ NUMBER, 0, "num"
   @ if zero: a single cell number is entered
   iszero_
   pop_                    @ ( n addr' )
-  if_0_ PFA_NUMBER_SIGN
+  ifz_ PFA_NUMBER_SIGN
 
   @ error in string to number conversion
   nip_                    @ ( addr' )  (R: base flagsign' )
@@ -200,7 +200,7 @@ PFA_NUMBER_SIGN:
   @ incorporate sign into number
   rpop_                   @ ( n flagsign' ) (R: base )
   iszero_
-  if_0_ PFA_NUMBER_TRUE
+  ifz_ PFA_NUMBER_TRUE
   d0_                     @ ( n n )
   neg_                    @ ( n -n )
   d0_w_                   @ ( -n -n )
