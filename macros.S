@@ -354,6 +354,14 @@ sysvar .req r4 @ system variables base pointer
     adds wreg, sysvar
 .endm
 
+.macro lit32_ val reg=wreg
+.balign 4
+  ldr \reg, [pc]
+.balign 2
+  b.n 1f
+  .word \val
+1:
+.endm
 
 .macro lit_ val reg=wreg
 .if \val < 256
@@ -366,8 +374,7 @@ sysvar .req r4 @ system variables base pointer
       adds \reg, #(\val & 255)
     .endif
   .else
-    do_ W_MI
-    .word \val
+    lit32_ \val \reg
   .endif
 .endif
 .endm
@@ -1694,34 +1701,25 @@ sysvar .req r4 @ system variables base pointer
   b.n \addr
 .endm
 
-@ load a 32 bit inline val into working register
-.macro lit32_ val
-  do_ W_MI
-  .word \val
-.endm
 
 @ load a 32 bit inline val into X register
 .macro lit32_x_ val
-  do_ X_MI
-  .word \val
+  lit32_ \val xreg
 .endm
 
 @ load a 32 bit inline val into Y register
 .macro lit32_y_ val
-  do_ Y_MI
-  .word \val
+  lit32_ \val yreg
 .endm
 
 @ load a 32 bit inline val into A register
 .macro lit32_a_ val
-  do_ A_MI
-  .word \val
+  lit32_ \val areg
 .endm
 
 @ load a 32 bit inline val into B register
 .macro lit32_b_ val
-  do_ B_MI
-  .word \val
+  lit32_ \val breg
 .endm
 
 .macro ascii_ str, flg=0

@@ -62,6 +62,17 @@ Forthword_ CPPLUS, 0, "cp+="
   mw_x_
   end_
 
+@ is cp word aligned
+@ ( -- flag )
+@ flag is zero if cp word aligned 
+Forthword_ CPWA, 0, "cpwa"
+  @if cp is not word aligned then add nop,
+  do_ CP
+  movs r1, #3
+  ands wreg, r1
+  end_
+
+
 @ ( -- )
 @ tail call optimize: change last branch with link (bl) into a branch (b)
 Forthword_ TAILOPT, 0, ";opt"

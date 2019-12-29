@@ -265,10 +265,9 @@
 \ create a constant in the dictionary
 : con
     push rword
-    pushlr,
     pop
     w:,
-    poppc,
+    bxlr,
     clrcache
 ;
 

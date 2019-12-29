@@ -107,6 +107,7 @@ FINDNFA_END:
 @ search root wordlists for the name from string addr/len
 Forthword_ FINDROOT, 0, "froot"
   @ put root wid on stack
+  push_lr_
   push_                     @ ( addr len len ) 
   lit32_ VE_WIPE            @ ( addr len VE_WIPE )
   end_goto_ FINDNFA_BEGIN1

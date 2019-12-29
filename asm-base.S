@@ -112,6 +112,54 @@ COMPILEXT_DO:
   do_ RELDST            @ ( distance )
   end_do_ DOC
 
+@ no operation
+@ ( -- )
+Forthword_ NOP_C, 0, "nop,"
+  @compile nop : 0x46C0
+  lit_ 0x46C0
+  end_do_ COMMA
+
+@ make instruction load register using [pc]
+@ reg is the register number
+@ offset is number of words to offset to pc
+@ ( reg offset -- ldr= )
+Forthword_ LDREQ, 0, "ldr="
+@ make 16 bit thumb instruction
+@ ldr reg, [pc, offset]
+@       reg  offset
+@ 0100 1xxx xxxxxxxx
+  y_w_            @ ( reg offset Y:offset) 
+  pop_            @ ( reg )
+  movs r1, #7
+  ands wreg, r1   @ ( b00000xxx )
+  movs r1, #0b01001000
+  orrs wreg, r1   @ ( b01001xxx )
+  movs r1, #8
+  lsls wreg, r1   @ ( b01001xxx00000000 )
+  movs r1, #0xff
+  ands yreg, r1
+  adds wreg, yreg @ ( b01001xxxxxxxxxxx )
+  end_
+
+@ compile litteral
+@ ( n reg -- )
+Forthword_ LIT_C, 0, "lit,"
+  push_          @ ( n reg reg )
+  @ check if CP is word aligned
+  do_ CPWA       @ ( n reg flag )
+  ifz_ LIT_C_LDR
+  @ not word aligned
+    do_ NOP_C    @ ( n reg ? )
+LIT_C_LDR:
+  zero_          @ ( n reg 0 )
+  do_ LDREQ      @ ( n ldr= )
+  do_ COMMA      @ ( n ? )
+  lit_ 1         @ ( n 1 )
+  do_ GOTOC      @ ( n ? )
+  pop_           @ ( n )
+LIT_C_END:
+  end_do_ DCOMMA
+
 @ branch 1 word if not zero
 @ ( -- )
 Forthword_ IFNZ_C, 0, "ifnz,"
@@ -126,47 +174,37 @@ Forthword_ IFZ_C, 0, "ifz,"
   lit_ 0xD000
   end_do_ COMMA
 
-@ compile value as inlinned immediate 32 bit constant
-@ ( n -- )
-Forthword_ DOLIT, 0, "(lit,)"
-  @ compile xt -> W_MI
-  do_ NFATOXTF             @ ( n xt flags )
-  do_ XT_C                 @ ( n ? )
-  pop_                     @ ( n )
-  @ store 32 bit val from wreg
-  end_do_ DCOMMA
-
 @ compile top of stack as inlinned immediate 32 bit constant
 @ ( n -- )
 Forthword_ WLIT_C, 0, "w:,"
   push_                    @ ( n n )
-  lit32_ VE_W_MI           @ ( n VE_W_MI )
-  end_do_ DOLIT
+  zero_
+  end_do_ LIT_C
 
 @ compile Y register load inlinned immediate 32 bit constant
 @ ( n -- )
 Forthword_ YLIT_C, 0, "y:,"
   push_                    @ ( n n )
-  lit32_ VE_Y_MI           @ ( n VE_Y_MI )
-  end_do_ DOLIT
+  lit_ 3                   @ ( n yreg )
+  end_do_ LIT_C
 
 @ compile X register load inlinned immediate 32 bit constant
 @ ( n -- )
 Forthword_ XLIT_C, 0, "x:,"
   push_                    @ ( n n )
-  lit32_ VE_X_MI           @ ( n VE_X_MI )
-  end_do_ DOLIT
+  lit_ 2                   @ ( n xreg )
+  end_do_ LIT_C
 
 @ compile A register load inlinned immediate 32 bit constant
 @ ( n -- )
 Forthword_ ALIT_C, 0, "a:,"
   push_                    @ ( n n )
-  lit32_ VE_A_MI           @ ( n VE_A_MI )
-  end_do_ DOLIT
+  lit_ 5                   @ ( n areg )
+  end_do_ LIT_C
 
 @ compile B register load inlinned immediate 32 bit constant
 @ ( n -- )
 Forthword_ BLIT_C, 0, "b:,"
   push_                    @ ( n n )
-  lit32_ VE_B_MI           @ ( n VE_B_MI )
-  end_do_ DOLIT
+  lit_ 6                   @ ( n breg )
+  end_do_ LIT_C
