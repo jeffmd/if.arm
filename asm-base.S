@@ -19,6 +19,13 @@ Forthword_ BXLR_C, 0, "bxlr,"
   do_ COMMA
   end_do_ CLRCACHE
 
+@ no operation
+@ ( -- )
+Forthword_ NOP_C, 0, "nop,"
+  @compile nop : 0x46C0
+  lit_ 0x46C0
+  end_do_ COMMA
+
 @ calc relative distance in half word alignment
 @ ( dest start  -- distance )
 Forthword_ RELDST, 0, "reldst"
@@ -112,12 +119,25 @@ COMPILEXT_DO:
   do_ RELDST            @ ( distance )
   end_do_ DOC
 
-@ no operation
-@ ( -- )
-Forthword_ NOP_C, 0, "nop,"
-  @compile nop : 0x46C0
-  lit_ 0x46C0
-  end_do_ COMMA
+@ ( val reg -- mvi )
+@ make instruction for move immediate into register
+Forthword_ MVI, 0, "mvi"
+@ make 16 bit thumb instruction
+@ movs reg, val
+@       reg    val
+@ 0010 0xxx xxxxxxxx 
+  popy_            @ ( reg Y:val)
+  movs r1, #255
+  ands yreg, r1   @ ( Y:bxxxxxxxx )
+  movs r1, #7
+  ands wreg, r1   @ ( b00000xxx )
+  movs r1, #0b00100000
+  orrs wreg, r1   @ ( b00100xxx )
+  movs r1, #8
+  lsls wreg, r1   @ ( b00100xxx00000000 )
+  adds wreg, yreg @ ( b00100xxxxxxxxxxx )
+  end_
+
 
 @ make instruction load register using [pc]
 @ reg is the register number
@@ -141,9 +161,9 @@ Forthword_ LDREQ, 0, "ldr="
   adds wreg, yreg @ ( b01001xxxxxxxxxxx )
   end_
 
-@ compile litteral
+@ compile 32 bit litteral
 @ ( n reg -- )
-Forthword_ LIT_C, 0, "lit,"
+Forthword_ LIT32_C, 0, "lit32,"
   push_          @ ( n reg reg )
   @ check if CP is word aligned
   do_ CPWA       @ ( n reg flag )
@@ -159,6 +179,18 @@ LIT_C_LDR:
   pop_           @ ( n )
 LIT_C_END:
   end_do_ DCOMMA
+
+@ compile litteral
+@ ( n reg -- )
+Forthword_ LIT_C, 0, "lit,"
+  push_lr_
+  y_d0_          @ ( n reg Y:n )
+  cmp yreg, #255
+  bgt LIT_C_32
+    do_ MVI
+    exit_do_ COMMA
+LIT_C_32:
+  end_do_ LIT32_C
 
 @ branch 1 word if not zero
 @ ( -- )

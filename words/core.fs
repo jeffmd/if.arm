@@ -49,10 +49,10 @@
 \ inlinned assembly routines
 
 ( -- icell )
-\ push instruction cell size 
-: icell
-    2
-;
+\ instruction cell size 
+rword icell inlined
+    ] 2 [
+    bxlr,
 
 ( n -- n+icell )
 \ add instruction stack cell size to n
@@ -74,9 +74,9 @@ rword icell* inlined
 
 ( -- dcell )
 \ push data stack cell size 
-: dcell
-    4
-;
+rword dcell inlined
+    ] 4 [
+    bxlr,
 
 ( n -- n+dcell )
 \ add data stack cell size to n
