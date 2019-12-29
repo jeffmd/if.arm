@@ -10,10 +10,10 @@
 .set COMPILER,       8  @ support routines for compiling
 .set ASM_BASE,       9  @ asm routines used by compiler
 .set INCLUDE,       12  @ include file support
-.set ASM,           14  @ simple ARM thumb assembler
-.set MATH_ADV,      16  @ advanced math routines 
+.set MATH_ADV,      14  @ advanced math routines 
+.set ASM,           16  @ simple ARM thumb assembler
 
-.set BUILD_LEVEL, INCLUDE
+.set BUILD_LEVEL, MATH_ADV
 
 @ minimum kernel build has minimum word set needed to be up and running without interpreter
 
