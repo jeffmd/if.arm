@@ -14,7 +14,7 @@ if : $(OBJS)
 if.o : $(INCS)
 
 lst: if
-	objdump -h -x -D -S if > lst.txt
+	objdump -D -S if > lst.txt
 
 clean:
 	rm -vf if *.o
