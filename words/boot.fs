@@ -10,7 +10,7 @@ pname header push y: $FF00 |=y @dp=s \ ( nfa ? )
   @dp=          \ ( nfa ? ) set link field to prev word in vocab
   cp @dp= pop   \ ( nfa ) set code pointer field
   smudge=       \ ( ? )
-  pushlr, 
+  _pushlr , 
   ]
     push dp     \ ( addr len wid nfa )
     rpush       \ ( addr len wid nfa ) (R: nfa )
@@ -32,7 +32,7 @@ pname (create) push current @ header \ ( nfa )
   push cp       \ ( nfa cp )
   @dp= pop      \ ( nfa )
   smudge=       \ ( ? )
-  pushlr, 
+  _pushlr , 
   ]
     pname push current @ header push cp @dp= pop
   [
@@ -43,9 +43,9 @@ pname (create) push current @ header \ ( nfa )
 \ used to define a new word
 (create) :
   smudge=
-  pushlr,
+  _pushlr ,
   ]
-    (create) smudge= pushlr, ]
+    (create) smudge= _pushlr , ]
   [
   ;opt
   uwid

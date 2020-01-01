@@ -30,7 +30,7 @@
 \ is used in conjunction with does>
 : create
     rword
-    pushlr,
+    _pushlr ,
     \ leave address after call on tos
     word:, popret
 ;
@@ -90,7 +90,7 @@
 : does>
     \ compile pop return to tos which is used as 'THIS' pointer
     word:, (does>)
-    word:, lr
+    word:, _lr
     word:, 1-
 ; :ic
 
@@ -145,7 +145,7 @@
 \ start conditional branch
 \ part of: ifz...[else]...then
 : ifz
-   ifz,
+   _ifz ,
    markf
 ; :ic
 
@@ -154,7 +154,7 @@
 \ start conditional branch
 \ part of: ifnz...[else]...then
 : ifnz
-   ifnz,
+   _ifnz ,
    markf
 ; :ic
 
@@ -179,7 +179,6 @@
     rjmpf
 ; :ic
 
-
 ( -- ) ( C: -- dest )
 \ Compiler
 \ put the destination address for the backward branch:
@@ -187,7 +186,6 @@
 : begin
     markb
 ; :ic
-
 
 ( -- ) ( C: dest -- )
 \ Compiler
@@ -226,14 +224,13 @@
   rjmpf
 ; :ic
 
-
 ( f -- ) ( C: dest -- )
 \ Compiler
 \ finish begin with conditional branch,
 \ leaves the loop if true flag at runtime
 \ part of: begin...untilz
 : untilz
-    ifz,
+    _ifz ,
     rjmpb
 ; :ic
 
@@ -243,7 +240,7 @@
 \ leaves the loop if true flag at runtime
 \ part of: begin...untilnz
 : untilnz
-    ifnz,
+    _ifnz ,
     rjmpb
 ; :ic
 
@@ -267,7 +264,7 @@
     push rword
     pop
     w:,
-    bxlr,
+    _bxlr ,
     clrcache
 ;
 

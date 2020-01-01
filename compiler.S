@@ -85,7 +85,8 @@ Forthword_ TAILOPT, 0, ";opt"
 TAILOPT_OPT:
   @ don't optimize tail call, just compile a ret.
 .if BUILD_LEVEL >= ASM_BASE
-  end_do_ POPPC_C          @ ( )
+  do_ POPPC          @ ( poppc )
+  end_do_ COMMA
 .else
   end_
 .endif

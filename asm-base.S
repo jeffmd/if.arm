@@ -2,29 +2,28 @@
 
 @ ( -- )
 @ compile assembler pop {pc}
-Forthword_ POPPC_C, 0, "poppc,"
+Forthword_ POPPC, 0, "_poppc"
   lit_ 0xbd00
-  end_do_ COMMA
+  end_
 
 @ ( -- )
 @ compile assembler push {lr}
-Forthword_ PUSHLR_C, 0, "pushlr,"
+Forthword_ PUSHLR, 0, "_pushlr"
   lit_ 0xb500
-  end_do_ COMMA
+  end_
 
 @ ( -- )
 @ compile assembler bx lr
-Forthword_ BXLR_C, 0, "bxlr,"
+Forthword_ BXLR, 0, "_bxlr"
   lit_ 0x4770
-  do_ COMMA
-  end_do_ CLRCACHE
+  end_
 
 @ no operation
 @ ( -- )
-Forthword_ NOP_C, 0, "nop,"
+Forthword_ NOP, 0, "_nop"
   @compile nop : 0x46C0
   lit_ 0x46C0
-  end_do_ COMMA
+  end_
 
 @ calc relative distance in half word alignment
 @ ( dest start  -- distance )
@@ -42,7 +41,7 @@ Forthword_ RELDST, 0, "reldst"
 @ build assembler instruction b - unconditional short branch
 @ ( reldist -- branchinst )
 @ reldist: relative distance as 2's compliment
-Forthword_ BRANCH, 0, "b.n"
+Forthword_ BRANCH, 0, "_b.n"
   @ 1110 0XXX XXXX XXXX
   movs r1, #7
   lsls r1, #8
@@ -169,7 +168,8 @@ Forthword_ LIT32_C, 0, "lit32,"
   do_ CPWA       @ ( n reg flag )
   ifz_ LIT_C_LDR
   @ not word aligned
-    do_ NOP_C    @ ( n reg ? )
+    do_ NOP      @ ( n reg ? )
+    do_ COMMA
 LIT_C_LDR:
   zero_          @ ( n reg 0 )
   do_ LDREQ      @ ( n ldr= )
@@ -194,17 +194,17 @@ LIT_C_32:
 
 @ branch 1 word if not zero
 @ ( -- )
-Forthword_ IFNZ_C, 0, "ifnz,"
+Forthword_ IFNZ, 0, "_ifnz"
   @compile bne.n #00 : 0xD100
   lit_ 0xD100
-  end_do_ COMMA
+  end_
 
 @ branch 1 word if zero
 @ ( -- )
-Forthword_ IFZ_C, 0, "ifz,"
+Forthword_ IFZ, 0, "_ifz"
   @compile beq.n #00 : 0xD000
   lit_ 0xD000
-  end_do_ COMMA
+  end_
 
 @ compile top of stack as inlinned immediate 32 bit constant
 @ ( n -- )

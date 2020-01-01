@@ -1150,6 +1150,46 @@ sysvar .req r4 @ system variables base pointer
   lsls breg, #2
 .endm
 
+@ *=x
+.macro w_mul_x_
+  muls wreg, xreg
+.endm
+
+@ *=y
+.macro w_mul_y_
+  muls wreg, yreg
+.endm
+
+@ *=a
+.macro w_mul_a_
+  muls wreg, areg
+.endm
+
+@ *=b
+.macro w_mul_b_
+  muls wreg, breg
+.endm
+
+@ x*=
+.macro x_mul_w_
+  muls xreg, wreg
+.endm
+
+@ y*=
+.macro y_mul_w_
+  muls yreg, wreg
+.endm
+
+@ a*=
+.macro a_mul_w_
+  muls areg, wreg
+.endm
+
+@ b*=
+.macro b_mul_w_
+  muls breg, wreg
+.endm
+
 @ ==0
 .macro iszero_
     cmp wreg, #0
