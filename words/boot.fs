@@ -4,37 +4,37 @@
 
 \ header ( addr len wid -- nfa )
 \ build header entry in dictionary 
-dp push         \ ( nfa nfa ) name field address
-pname header push y: $FF00 |=y @dp=s \ ( nfa ? )
+dp d=           \ ( nfa nfa ) name field address
+pname header d= y: $FF00 |=y @dp=s \ ( nfa ? )
   current @ @   \ ( nfa linkaddr ) get latest word
   @dp=          \ ( nfa ? ) set link field to prev word in vocab
-  cp @dp= pop   \ ( nfa ) set code pointer field
+  cp @dp= =d    \ ( nfa ) set code pointer field
   smudge=       \ ( ? )
   _pushlr , 
   ]
-    push dp     \ ( addr len wid nfa )
-    rpush       \ ( addr len wid nfa ) (R: nfa )
-    pop         \ ( addr len wid )
-    rpush       \ ( addr len wid ) (R: nfa wid )
+    d= dp       \ ( addr len wid nfa )
+    r=          \ ( addr len wid nfa ) (R: nfa )
+    =d          \ ( addr len wid )
+    r=          \ ( addr len wid ) (R: nfa wid )
     y=d0        \ ( addr len wid Y:len )
     $FF00 |=y   \ ( addr len len|$FF00 )
     @dp=s       \ ( ? )
-    rpop @      \ ( linkaddr ) (R: nfa )
+    =r @        \ ( linkaddr ) (R: nfa )
     @dp=        \ ( ? )
-    rpop        \ ( nfa ) (R: )
+    =r          \ ( nfa ) (R: )
   [
   ;opt
   uwid
 
 \ (create) ( <input> -- nfa )
 \ create a dictionay entry along with entry for start of code
-pname (create) push current @ header \ ( nfa )
-  push cp       \ ( nfa cp )
-  @dp= pop      \ ( nfa )
+pname (create) d= current @ header \ ( nfa )
+  d= cp         \ ( nfa cp )
+  @dp= =d       \ ( nfa )
   smudge=       \ ( ? )
   _pushlr , 
   ]
-    pname push current @ header push cp @dp= pop
+    pname d= current @ header d= cp @dp= =d
   [
   ;opt
   uwid

@@ -4,53 +4,53 @@
 
 @ ( n -- ? n  )
 @ restore top of data stack once
-Forthword_ PUT1, INLINE_OPT, "put1"
+Forthword_ PUT1, INLINE_OPT, "d+1"
   put1_
   end_  
   
 @ ( n -- ? ? n )
 @ restore top of data stack twice
-Forthword_ PUT2, INLINE_OPT, "put2"
+Forthword_ PUT2, INLINE_OPT, "d+2"
   put2_
   end_  
   
 @ ( n -- ? ? ? n)
 @ restore top of data stack three times
-Forthword_ PUT3, INLINE_OPT, "put3"
+Forthword_ PUT3, INLINE_OPT, "d+3"
   put2_
   end_  
   
 @ ( n -- n n )
-@ duplicate wreg
-Forthword_ DPUSH, INLINE_OPT, "push"
+@ push wreg onto data stack
+Forthword_ DPUSH, INLINE_OPT, "d="
   push_
   end_
 
 @ ( n1 n2 -- n1 a  n2 )
 @   d0 WR    d1 d0 WR
 @ push register A onto top of data stack
-Forthword_ DPUSHA, INLINE_OPT, "pusha"
+Forthword_ DPUSHA, INLINE_OPT, "d=a"
   pusha_
   end_
 
 @ ( n1 n2 -- n1 b  n2 )
 @   d0 WR    d1 d0 WR
 @ push register B onto top of data stack
-Forthword_ DPUSHB, INLINE_OPT, "pushb"
+Forthword_ DPUSHB, INLINE_OPT, "d=b"
   pushb_
   end_
 
 @ ( n1 n2 -- n1 x  n2 )
 @   d0 WR    d1 d0 WR
 @ push register X onto top of data stack
-Forthword_ DPUSHX, INLINE_OPT, "pushx"
+Forthword_ DPUSHX, INLINE_OPT, "d=x"
   pushx_
   end_
 
 @ ( n1 n2 -- n1 y  n2 )
 @   d0 WR    d1 d0 WR
 @ push register Y onto top of data stack
-Forthword_ DPUSHY, INLINE_OPT, "pushy"
+Forthword_ DPUSHY, INLINE_OPT, "d=y"
   pushy_
   end_
 
@@ -266,54 +266,54 @@ Forthword_ D2_Y, INLINE_OPT, "d2=y"
 
 @ ( n1 n2 -- n2)
 @ drop NOS, one before wreg.
-Forthword_ NIP, INLINE_OPT, "nip"
+Forthword_ NIP, INLINE_OPT, "d-1"
   nip_
   end_
 
 @ ( n1 n2 n3 -- n3)
 @ drop NOS, one before wreg.
-Forthword_ NIP2, INLINE_OPT, "nip2"
+Forthword_ NIP2, INLINE_OPT, "d-2"
   nip2_
   end_
 
 @ ( n1 n2 n3 n4 -- n4)
 @ drop NOS, one before wreg.
-Forthword_ NIP3, INLINE_OPT, "nip3"
+Forthword_ NIP3, INLINE_OPT, "d-3"
   nip3_
   end_
 
 @ ( n1 n2 -- n1)
 @   d0 WR    WR
 @ pop top of data stack into WR
-Forthword_ DPOP, INLINE_OPT, "pop"
+Forthword_ DPOP, INLINE_OPT, "=d"
   pop_
   end_
 
 @ ( n1 n2 n3 -- n1 n3 ) A: n2
 @   d1 d0 WR    d0 WR
 @ pop top of data stack into register A
-Forthword_ DPOPA, INLINE_OPT, "popa"
+Forthword_ DPOPA, INLINE_OPT, "a=d"
   popa_
   end_
 
 @ ( n1 n2 n3 -- n1 n3 ) B: n2
 @   d1 d0 WR    d0 WR
 @ pop top of data stack into register B
-Forthword_ DPOPB, INLINE_OPT, "popb"
+Forthword_ DPOPB, INLINE_OPT, "b=d"
   popb_
   end_
 
 @ ( n1 n2 n3 -- n1 n3 ) X: n2
 @   d1 d0 WR    d0 WR
 @ pop top of data stack into register X
-Forthword_ DPOPX, INLINE_OPT, "popx"
+Forthword_ DPOPX, INLINE_OPT, "x=d"
   popx_
   end_
 
 @ ( n1 n2 n3 -- n1 n3 ) Y: n2
 @   d1 d0 WR    d0 WR
 @ pop top of data stack into register Y
-Forthword_ DPOPY, INLINE_OPT, "popy"
+Forthword_ DPOPY, INLINE_OPT, "y=d"
   popy_
   end_
 
@@ -333,85 +333,85 @@ Forthword_ DSP_W, INLINE_OPT, "dsp="
 
 @ ( n1 -- n2 ) (R: n2 --)
 @ pop top of return stack into WR
-Forthword_ RPOP, INLINE_OPT, "rpop"
+Forthword_ RPOP, INLINE_OPT, "=r"
   rpop_
   end_
 
 @ ( -- ) (R: n2 --) A: n2
 @ pop top of return stack into A
-Forthword_ RPOPA, INLINE_OPT, "rpopa"
+Forthword_ RPOPA, INLINE_OPT, "a=r"
   rpopa_
   end_
 
 @ ( -- ) (R: n2 --) B: n2
 @ pop top of return stack into B
-Forthword_ RPOPB, INLINE_OPT, "rpopb"
+Forthword_ RPOPB, INLINE_OPT, "b=r"
   rpopb_
   end_
 
 @ ( -- ) (R: n2 --) X: n2
 @ pop top of return stack into X
-Forthword_ RPOPX, INLINE_OPT, "rpopx"
+Forthword_ RPOPX, INLINE_OPT, "x=r"
   rpopx_
   end_
 
 @ ( -- ) (R: n2 --) Y: n2
 @ pop top of return stack into Y
-Forthword_ RPOPY, INLINE_OPT, "rpopy"
+Forthword_ RPOPY, INLINE_OPT, "y=r"
   rpopy_
   end_
 
 @ ( -- ) (R: n -- )
 @ Drop TOR
-Forthword_ RNIP, INLINE_OPT, "rnip"
+Forthword_ RNIP, INLINE_OPT, "r-1"
   rnip_
   end_
 
 @ ( -- ) (R: n2 n1 -- )
 @ remove 2 top cells of return stack
-Forthword_ RNIP2, INLINE_OPT, "rnip2"
+Forthword_ RNIP2, INLINE_OPT, "r-2"
   rnip2_
   end_
 
 @ ( -- ) (R: n3 n2 n1 -- )
 @ remove 3 top cells of return stack
-Forthword_ RNIP3, INLINE_OPT, "rnip3"
+Forthword_ RNIP3, INLINE_OPT, "r-3"
   rnip3_
   end_
 
 @ ( n -- n ) (R: -- n )
 @ push WR on top of return stack
-Forthword_ RPUSH, INLINE_OPT, "rpush"
+Forthword_ RPUSH, INLINE_OPT, "r="
   rpush_
   end_
 
 @ ( -- ) (R: -- a)
 @ push A on top of return stack
-Forthword_ RPUSHA, INLINE_OPT, "rpusha"
+Forthword_ RPUSHA, INLINE_OPT, "r=a"
   rpusha_
   end_
 
 @ ( -- ) (R: -- b)
 @ push B on top of return stack
-Forthword_ RPUSHB, INLINE_OPT, "rpushb"
+Forthword_ RPUSHB, INLINE_OPT, "r=b"
   rpushb_
   end_
 
 @ ( -- ) (R: -- x)
 @ push X on top of return stack
-Forthword_ RPUSHX, INLINE_OPT, "rpushx"
+Forthword_ RPUSHX, INLINE_OPT, "r=x"
   rpushx_
   end_
 
 @ ( -- ) (R: -- y)
 @ push Y on top of return stack
-Forthword_ RPUSHY, INLINE_OPT, "rpushy"
+Forthword_ RPUSHY, INLINE_OPT, "r=y"
   rpushy_
   end_
 
 @ ( -- ) (R: -- sp)
 @ push datastack pointer on top of return stack
-Forthword_ RPUSHDP, INLINE_OPT, "rpushdsp"
+Forthword_ RPUSHDP, INLINE_OPT, "r=dsp;"
   rpushdsp_
   end_
 
@@ -1441,18 +1441,6 @@ Forthword_ CMW_X, INLINE_OPT, "c@=x"
   cmw_x_
   end_
 
-@ ( n -- n ) A: n
-@ copy WR to A register
-Forthword_ A_W, INLINE_OPT, "a="
-  a_w_
-  end_
-
-@ ( n -- n ) B: n
-@ copy WR to B register
-Forthword_ B_W, INLINE_OPT, "b="
-  b_w_
-  end_
-
 @ ( n1 -- n1 ) X: n1
 @   WR
 @ copy WR register to X register
@@ -1467,19 +1455,6 @@ Forthword_ Y_W, INLINE_OPT, "y="
   y_w_
   end_
   
-
-@ ( -- n )
-@ copy A register to WR
-Forthword_ A_, INLINE_OPT, "a"
-  a_
-  end_
-
-@ ( -- n )
-@ copy B register to WR
-Forthword_ B_, INLINE_OPT, "b"
-  b_
-  end_
-
 @ ( -- n )
 @ copy X register to WR
 Forthword_ X_, INLINE_OPT, "x"
@@ -1490,79 +1465,6 @@ Forthword_ X_, INLINE_OPT, "x"
 @ copy the Y register to WR
 Forthword_ Y_, INLINE_OPT, "y"
   y_
-  end_
-
-@ ( -- n )
-@ Read a word (32bit) from memory pointed to by register A
-Forthword_ MA, INLINE_OPT, "@a"
-  ma_
-  end_
-
-@ ( n -- )
-@ store a word to RAM address pointed to by areg
-Forthword_ MA_W, INLINE_OPT, "@a="
-  ma_w_
-  end_
-
-@ ( -- n )
-@ Read a half word (32bit) from memory pointed to by register A
-Forthword_ HMA, INLINE_OPT, "h@a"
-  hma_
-  end_
-
-@ ( h -- h )
-@ store a half word to RAM address pointed to by areg
-Forthword_ HMA_W, INLINE_OPT, "h@a="
-  hma_w_
-  end_
-
-@ ( -- n )
-@ Read a byte from memory pointed to by register A
-Forthword_ CMA, INLINE_OPT, "c@a"
-  cma_
-  end_
-
-@ ( c -- )
-@ store a single byte to RAM address pointed to by areg
-Forthword_ CMA_W, INLINE_OPT, "c@a="
-  cma_w_
-  end_
-
-@ ( -- )
-@ a = a + 4
-Forthword_ A_PLUS4, INLINE_OPT, "a+=4"
-  a_plus4_
-  end_
-
-@ ( -- )
-@ a = a + 2
-Forthword_ A_PLUS2, INLINE_OPT, "a+=2"
-  a_plus2_
-  end_
-
-
-@ ( -- )
-@ a = a + 1
-Forthword_ A_PLUS1, INLINE_OPT, "a+=1"
-  a_plus1_
-  end_
-
-@ ( -- )
-@ a = a -4
-Forthword_ A_MINUS4, INLINE_OPT, "a-=4"
-  a_minus4_
-  end_
-
-@ ( -- )
-@ a = a - 2
-Forthword_ A_MINUS2, INLINE_OPT, "a-=2"
-  a_minus2_
-  end_
-
-@ ( -- )
-@ a = a - 1
-Forthword_ A_MINUS1, INLINE_OPT, "a-=1"
-  a_minus1_
   end_
 
 @ ( -- n )
@@ -1601,42 +1503,6 @@ Forthword_ CMB_W, INLINE_OPT, "c@b="
   cmb_w_
   end_
 
-@ ( -- )
-@ update register B with post increment 4+ from last memory operation
-Forthword_ B_PLUS4, INLINE_OPT, "b+=4"
-  b_plus4_
-  end_
-
-@ ( -- )
-@ update register B with post increment 2+ from last memory operation
-Forthword_ B_PLUS2, INLINE_OPT, "b+=2"
-  b_plus2_
-  end_
-
-@ ( -- )
-@ update register B with post increment 1+ from last memory operation
-Forthword_ B_PLUS1, INLINE_OPT, "b+=1"
-  b_plus1_
-  end_
-
-@ ( -- )
-@ update register B with decrement 4
-Forthword_ B_MINUS4, INLINE_OPT, "b-=4"
-  b_minus4_
-  end_
-
-@ ( -- )
-@ update register B with decrement 2
-Forthword_ B_MINUS2, INLINE_OPT, "b-=2"
-  b_minus2_
-  end_
-
-@ ( -- )
-@ update register B with decrement 1
-Forthword_ B_MINUS1, INLINE_OPT, "b-=1"
-  b_minus1_
-  end_
-
 @ ( -- n )
 @ Read a word (32bit) from memory pointed to by register X
 Forthword_ MX, INLINE_OPT, "@x"
@@ -1671,43 +1537,6 @@ Forthword_ CMX, INLINE_OPT, "c@x"
 @ store a single byte to RAM address pointed to by X reg
 Forthword_ CMX_W, INLINE_OPT, "c@x="
   cmx_w_
-  end_
-
-@ ( -- )
-@ update register X with post increment 4+ from last memory operation
-Forthword_ X_PLUS4, INLINE_OPT, "x+=4"
-  x_plus4_
-  end_
-
-@ ( -- )
-@ update register X with post increment 2+ from last memory operation
-Forthword_ X_PLUS2, INLINE_OPT, "x+=2"
-  x_plus2_
-  end_
-
-
-@ ( -- )
-@ update register X with post increment 1+ from last memory operation
-Forthword_ X_PLUS1, INLINE_OPT, "x+=1"
-  x_plus1_
-  end_
-
-@ ( -- )
-@ update register X with decrement 4
-Forthword_ X_MINUS4, INLINE_OPT, "x-=4"
-  x_minus4_
-  end_
-
-@ ( -- )
-@ update register X with decrement 2
-Forthword_ X_MINUS2, INLINE_OPT, "x-=2"
-  x_minus2_
-  end_
-
-@ ( -- )
-@ update register X with decrement 1
-Forthword_ X_MINUS1, INLINE_OPT, "x-=1"
-  x_minus1_
   end_
 
 @ ( -- n )
@@ -1746,42 +1575,6 @@ Forthword_ CMY_W, INLINE_OPT, "c@y="
   cmy_w_
   end_
   
-@ ( -- )
-@ y = y + 4
-Forthword_ Y_PLUS4, INLINE_OPT, "y+=4"
-  y_plus4_
-  end_
-
-@ ( -- )
-@ y = y + 2
-Forthword_ Y_PLUS2, INLINE_OPT, "y+=2"
-  y_plus2_
-  end_
-
-
-@ ( -- )
-@ y = y + 1
-Forthword_ Y_PLUS1, INLINE_OPT, "y+=1"
-  y_plus1_
-  end_
-
-@ ( -- )
-@ y = y - 4
-Forthword_ Y_MINUS4, INLINE_OPT, "y-=4"
-  y_minus4_
-  end_
-
-@ ( -- )
-@ y = y - 2
-Forthword_ Y_MINUS2, INLINE_OPT, "y-=2"
-  y_minus2_
-  end_
-
-@ ( -- )
-@ y = y - 1
-Forthword_ Y_MINUS1, INLINE_OPT, "y-=1"
-  y_minus1_
-  end_
 
 @ ( -- lr )
 @ move link register into working register

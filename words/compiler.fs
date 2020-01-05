@@ -39,7 +39,7 @@
 \ copy the first character of the next word onto the stack
 : char  ( "<spaces>name" -- c )
     pname
-    pop
+    =d
     c@
 ;
 
@@ -60,26 +60,26 @@
     \ change call at XT to code after (does>)
     \ code at XT is 'bl POPRET'
     \ want to change POPRET address to return address
-    rpop                      ( retaddr )
+    =r                        ( retaddr )
     \ remove thumb flag - will be using for memory access
-    1- push                   ( retaddr-1 retaddr-1 )
+    1- d=                     ( retaddr-1 retaddr-1 )
     \ get address of bl POPRET
     \ get current word and then get its XT being compiled
     cur@ @                    ( retaddr nfa )
     nfa>xtf                   ( retaddr xt flags )
     \ temp save cp on return stack
-    cp rpush                  ( retaddr xt flags ) ( R: cp )
+    cp r=                     ( retaddr xt flags ) ( R: cp )
     \  skip over push {lr}    
     d0 icell+                 ( retaddr xt xt+2 )
     \ set cp to xt+2
-    cp= pop icell+            ( retaddr xt+2 )
+    cp= =d icell+             ( retaddr xt+2 )
     \ modify the bl
     \ calc displacement
     reldst                    ( dst )
     \ compile a bl instruction
     do,                       ( ? )
     \ restore cp
-    rpop cp=                  ( ? ) ( R: )
+    =r cp=                    ( ? ) ( R: )
 ;
 
 ( -- )
@@ -106,7 +106,7 @@
 \ place marker. Places current code position for forward
 \ jump resolve on stack and advances CP
 : markf
-    cp push        ( start start )
+    cp d=          ( start start )
     4 cp+=         ( start ? ) \ advance DP to allow branch/jmp
 ;
 
@@ -123,7 +123,7 @@
 \ Compiler
 \ place marker for destination of backward branch
 : markb
-    cp push          ( dest )
+    cp d=            ( dest )
 ;
 
 ( dest -- )
@@ -261,8 +261,8 @@
 ( x -- ) ( C: x "<spaces>name" -- )
 \ create a constant in the dictionary
 : con
-    push rword
-    pop
+    d= rword
+    =d
     w:,
     _bxlr ,
     clrcache
@@ -287,14 +287,14 @@
 
 \ compiles a string from RAM to program RAM
 : s, ( addr len -- )
-    push @cp=s
+    d= @cp=s
 ;
 
 ( C: addr len -- )
 \ String
 \ compiles a string to program RAM
 : slit
-    push word:, (slit) pop     ( addr n)
+    d= word:, (slit) =d     ( addr n)
     s,
 ; immediate
 
@@ -305,7 +305,7 @@
 \ at runtime leaves ( -- ram-addr count) on stack
 : s"
     [char] " parse        ( addr n)
-    push state ==0 pop
+    d= state ==0 =d
     ifnz  \ skip if not in compile mode
       [compile] slit
     then
@@ -318,7 +318,7 @@
 \ dictionary to be printed at runtime
 : ."
      [compile] s"             \ "
-     push state ==0 pop
+     d= state ==0 =d
      ifnz
        word:, type
      else

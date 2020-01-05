@@ -4,9 +4,9 @@
 \ Compiler
 \ skip everything up to the closing bracket on the same line
 : (
-    push          \ ( ?  ? )
+    d=            \ ( ?  ? )
     $29 parse     \ ( ?  addr u )
-    nip pop       \ ( ? )
+    d-1 =d        \ ( ? )
 ; immediate
 
 
@@ -112,8 +112,8 @@ rword dcell* inlined
 
 \ search dictionary for name, returns XT
 : '  ( "<spaces>name" -- XT )
-    'f
-    pop
+    'f  ( XT XTflags )
+    =d  ( XT )
 ;
 
 ( -- ) ( C: "<space>name" -- )
@@ -132,12 +132,12 @@ rword dcell* inlined
 \ and xt and flag are compiled as two literals
 : ['f]
     'f
-    push d1
+    d= d1
     w:,
     \ compile literal of 'f push
-    [ 'f push push d1 w:, ]
-    push
-    [ d0 w:, nip pop ]
+    [ 'f d= d= d1 w:, ]
+    d=
+    [ d0 w:, d-1 =d ]
     xt,
-    d0 w:, nip pop
+    d0 w:, d-1 =d
 ; :ic

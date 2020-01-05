@@ -9,9 +9,9 @@
 .set INT_NUMBER,     5  @ number interpreter
 .set COMPILER,       8  @ support routines for compiling
 .set ASM_BASE,       9  @ asm routines used by compiler
+.set ASM,           10  @ simple ARM thumb assembler
 .set INCLUDE,       12  @ include file support
 .set MATH_ADV,      14  @ advanced math routines 
-.set ASM,           16  @ simple ARM thumb assembler
 
 .set BUILD_LEVEL, MATH_ADV
 
@@ -107,6 +107,10 @@ CPSTART:
 
 .set VE_HEAD, 0
 
+.if BUILD_LEVEL >= ASM
+  .include "asm.S"
+.endif
+
 .if BUILD_LEVEL >= CORE_INLINE
   .include "core-inline.S"
 .endif
@@ -125,10 +129,6 @@ CPSTART:
 
 .if BUILD_LEVEL >= ASM_BASE
   .include "asm-base.S"
-.endif
-
-.if BUILD_LEVEL >= ASM
-  .include "asm.S"
 .endif
 
 .if BUILD_LEVEL >= INCLUDE
