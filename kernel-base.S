@@ -78,21 +78,21 @@ Forthword_ PNIB, 0, ".h"
 @ ( n -- )
 @ simple 32 bit hex print
 Forthword_ PHEX, 0, ".$"
-  push_
+  d_w_
   lit_ '$
   do_ EMIT
   lit_ 28
 PHEX_BEGIN:
   y_d0_
-  push_
-  pushy_       @ ( n x n x )
+  d_w_
+  d_y_       @ ( n x n x )
   rshift_
   do_ PNIB
-  pop_
+  w_d_
   fourminus_
   ifnz_ PHEX_BEGIN
 
-  pop_
+  w_d_
   do_ PNIB
   lit_ 32
   end_do_ EMIT
@@ -165,7 +165,7 @@ DOREFILL_do:
 @ ( -- )
 @ Fetch pause vector and EXEC it. may make a context/task switch
 Forthword_ DOPAUSE, 0, "(pause)"
-  push_
+  d_w_
   do_ SLEEP @@ temp fix for cpu hogging
   do_ PAUSE_FETCH
   end_do_ EXEC

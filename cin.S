@@ -17,7 +17,7 @@ Forthword_ SHARPTIB, 0, "#tib"
 @ address and current length of the input buffer
 Forthword_ STIB, 0, "stib"
   user_  ram_tib
-  push_
+  d_w_
   user_ ram_sharptib
   hmw_
   end_
@@ -46,7 +46,7 @@ Forthword_ STDIN, 0, "stdin"
 @ fetch key from deffered routine, should leave a single character
 @ on wreg if a key was pressed. If no key pressed then -1 is on wreg.
 Forthword_ KEY, 0, "key"
-  push_
+  d_w_
   do_ KEYADDR
   mw_
   end_do_ EXEC
@@ -95,12 +95,12 @@ ACCEPT_checkdelete:
   @ delete previous character
   @ check beginning of line
   @ if cursor is 0 then at begining of input
-  push_
+  d_w_
   do_ SHARPTIB
   hmw_                @ ( k #tib )
   @ <if>
   iszero_             @ ( k )
-  pop_
+  w_d_
   ifnz_ ACCEPT_dodelete
   @ at the beginning of the line, ignore this character
   zero_
@@ -109,11 +109,11 @@ ACCEPT_checkdelete:
 ACCEPT_dodelete:
   movs r1, #8
   ands wreg, r1
-  push_             @ ( k k )
+  d_w_              @ ( k k )
   do_ EMIT          @ ( k ? )
   bl_               @ ( k bl )
   do_ EMIT          @ ( k ? )
-  pop_              @ ( k )
+  w_d_              @ ( k )
   do_ EMIT          @ ( ? )
   @ decrease cursor position by one
   true_             @ ( true )
@@ -134,7 +134,7 @@ ACCEPT_checkcontrol:
 
 ACCEPT_echo:
   @ emit the key
-  push_                @ ( k k )
+  d_w_                @ ( k k )
   do_ EMIT             @ ( k ? )
   @ now store the key in the input buffer
   do_ STIB             @ ( k tibaddr #tib)
@@ -142,7 +142,7 @@ ACCEPT_echo:
   w_plus_y_            @ ( k tibaddr tibaddr+#tib )
   x_d1_                @ ( k tibaddr tibaddr+#tib ) X: k
   cmw_x_               @ ( k tibaddr tibaddr+#tib )
-  nip2_                @ ( tibaddr+#tib )
+  d_m2_                @ ( tibaddr+#tib )
 
   do_ SHARPTIB         @ ( #tibaddr )
   y_hmw_
@@ -172,9 +172,9 @@ Forthword_ REFILLTIB, 0, "reftib"
     do_ ACCEPT           @ ( f )
     iszero_              @ ( f )
     ifz_ REFILLTIB_exit
-    push_
+    d_w_
     do_ CR
-    pop_
+    w_d_
     
 REFILLTIB_exit:
     end_

@@ -4,54 +4,54 @@
 
 @ ( n -- ? n  )
 @ restore top of data stack once
-Forthword_ PUT1, INLINE_OPT, "d+1"
-  put1_
+Forthword_ D_P1, INLINE_OPT, "d+1"
+  d_p1_
   end_  
   
 @ ( n -- ? ? n )
 @ restore top of data stack twice
-Forthword_ PUT2, INLINE_OPT, "d+2"
-  put2_
+Forthword_ D_P2, INLINE_OPT, "d+2"
+  d_p2_
   end_  
   
 @ ( n -- ? ? ? n)
 @ restore top of data stack three times
-Forthword_ PUT3, INLINE_OPT, "d+3"
-  put2_
+Forthword_ D_P3, INLINE_OPT, "d+3"
+  d_p3_
   end_  
   
 @ ( n -- n n )
 @ push wreg onto data stack
-Forthword_ DPUSH, INLINE_OPT, "d="
-  push_
+Forthword_ D_W, INLINE_OPT, "d="
+  d_w_
   end_
 
 @ ( n1 n2 -- n1 a  n2 )
 @   d0 WR    d1 d0 WR
 @ push register A onto top of data stack
-Forthword_ DPUSHA, INLINE_OPT, "d=a"
-  pusha_
+Forthword_ D_A, INLINE_OPT, "d=a"
+  d_a_
   end_
 
 @ ( n1 n2 -- n1 b  n2 )
 @   d0 WR    d1 d0 WR
 @ push register B onto top of data stack
-Forthword_ DPUSHB, INLINE_OPT, "d=b"
-  pushb_
+Forthword_ D_B, INLINE_OPT, "d=b"
+  d_b_
   end_
 
 @ ( n1 n2 -- n1 x  n2 )
 @   d0 WR    d1 d0 WR
 @ push register X onto top of data stack
-Forthword_ DPUSHX, INLINE_OPT, "d=x"
-  pushx_
+Forthword_ D_X, INLINE_OPT, "d=x"
+  d_x_
   end_
 
 @ ( n1 n2 -- n1 y  n2 )
 @   d0 WR    d1 d0 WR
 @ push register Y onto top of data stack
-Forthword_ DPUSHY, INLINE_OPT, "d=y"
-  pushy_
+Forthword_ D_Y, INLINE_OPT, "d=y"
+  d_y_
   end_
 
 @ ( n2 n1 -- n2 n2 )
@@ -266,55 +266,55 @@ Forthword_ D2_Y, INLINE_OPT, "d2=y"
 
 @ ( n1 n2 -- n2)
 @ drop NOS, one before wreg.
-Forthword_ NIP, INLINE_OPT, "d-1"
-  nip_
+Forthword_ D_M1, INLINE_OPT, "d-1"
+  d_m1_
   end_
 
 @ ( n1 n2 n3 -- n3)
-@ drop NOS, one before wreg.
-Forthword_ NIP2, INLINE_OPT, "d-2"
-  nip2_
+@ drop 2 cells from stack.
+Forthword_ D_M2, INLINE_OPT, "d-2"
+  d_m2_
   end_
 
 @ ( n1 n2 n3 n4 -- n4)
-@ drop NOS, one before wreg.
-Forthword_ NIP3, INLINE_OPT, "d-3"
-  nip3_
+@ drop three cells from data stack.
+Forthword_ D_M3, INLINE_OPT, "d-3"
+  d_m3_
   end_
 
 @ ( n1 n2 -- n1)
 @   d0 WR    WR
 @ pop top of data stack into WR
-Forthword_ DPOP, INLINE_OPT, "=d"
-  pop_
+Forthword_ W_D, INLINE_OPT, "=d"
+  w_d_
   end_
 
 @ ( n1 n2 n3 -- n1 n3 ) A: n2
 @   d1 d0 WR    d0 WR
 @ pop top of data stack into register A
-Forthword_ DPOPA, INLINE_OPT, "a=d"
-  popa_
+Forthword_ A_D, INLINE_OPT, "a=d"
+  a_d_
   end_
 
 @ ( n1 n2 n3 -- n1 n3 ) B: n2
 @   d1 d0 WR    d0 WR
 @ pop top of data stack into register B
-Forthword_ DPOPB, INLINE_OPT, "b=d"
-  popb_
+Forthword_ B_D, INLINE_OPT, "b=d"
+  b_d_
   end_
 
 @ ( n1 n2 n3 -- n1 n3 ) X: n2
 @   d1 d0 WR    d0 WR
 @ pop top of data stack into register X
-Forthword_ DPOPX, INLINE_OPT, "x=d"
-  popx_
+Forthword_ X_D, INLINE_OPT, "x=d"
+  x_d_
   end_
 
 @ ( n1 n2 n3 -- n1 n3 ) Y: n2
 @   d1 d0 WR    d0 WR
 @ pop top of data stack into register Y
-Forthword_ DPOPY, INLINE_OPT, "y=d"
-  popy_
+Forthword_ Y_D, INLINE_OPT, "y=d"
+  y_d_
   end_
 
 @ (  -- addr )
@@ -333,86 +333,86 @@ Forthword_ DSP_W, INLINE_OPT, "dsp="
 
 @ ( n1 -- n2 ) (R: n2 --)
 @ pop top of return stack into WR
-Forthword_ RPOP, INLINE_OPT, "=r"
-  rpop_
+Forthword_ W_R, INLINE_OPT, "=r"
+  w_r_
   end_
 
 @ ( -- ) (R: n2 --) A: n2
 @ pop top of return stack into A
-Forthword_ RPOPA, INLINE_OPT, "a=r"
-  rpopa_
+Forthword_ A_R, INLINE_OPT, "a=r"
+  a_r_
   end_
 
 @ ( -- ) (R: n2 --) B: n2
 @ pop top of return stack into B
-Forthword_ RPOPB, INLINE_OPT, "b=r"
-  rpopb_
+Forthword_ B_R, INLINE_OPT, "b=r"
+  b_r_
   end_
 
 @ ( -- ) (R: n2 --) X: n2
 @ pop top of return stack into X
-Forthword_ RPOPX, INLINE_OPT, "x=r"
-  rpopx_
+Forthword_ X_R, INLINE_OPT, "x=r"
+  x_r_
   end_
 
 @ ( -- ) (R: n2 --) Y: n2
 @ pop top of return stack into Y
-Forthword_ RPOPY, INLINE_OPT, "y=r"
-  rpopy_
+Forthword_ Y_R, INLINE_OPT, "y=r"
+  y_r_
   end_
 
 @ ( -- ) (R: n -- )
 @ Drop TOR
-Forthword_ RNIP, INLINE_OPT, "r-1"
-  rnip_
+Forthword_ R_M1, INLINE_OPT, "r-1"
+  r_m1_
   end_
 
 @ ( -- ) (R: n2 n1 -- )
 @ remove 2 top cells of return stack
-Forthword_ RNIP2, INLINE_OPT, "r-2"
-  rnip2_
+Forthword_ R_M2, INLINE_OPT, "r-2"
+  r_m2_
   end_
 
 @ ( -- ) (R: n3 n2 n1 -- )
 @ remove 3 top cells of return stack
-Forthword_ RNIP3, INLINE_OPT, "r-3"
-  rnip3_
+Forthword_ R_M3, INLINE_OPT, "r-3"
+  r_m3_
   end_
 
 @ ( n -- n ) (R: -- n )
 @ push WR on top of return stack
-Forthword_ RPUSH, INLINE_OPT, "r="
-  rpush_
+Forthword_ R_W, INLINE_OPT, "r="
+  r_w_
   end_
 
 @ ( -- ) (R: -- a)
 @ push A on top of return stack
-Forthword_ RPUSHA, INLINE_OPT, "r=a"
-  rpusha_
+Forthword_ R_A, INLINE_OPT, "r=a"
+  r_a_
   end_
 
 @ ( -- ) (R: -- b)
 @ push B on top of return stack
-Forthword_ RPUSHB, INLINE_OPT, "r=b"
-  rpushb_
+Forthword_ R_B, INLINE_OPT, "r=b"
+  r_b_
   end_
 
 @ ( -- ) (R: -- x)
 @ push X on top of return stack
-Forthword_ RPUSHX, INLINE_OPT, "r=x"
-  rpushx_
+Forthword_ R_X, INLINE_OPT, "r=x"
+  r_x_
   end_
 
 @ ( -- ) (R: -- y)
 @ push Y on top of return stack
-Forthword_ RPUSHY, INLINE_OPT, "r=y"
-  rpushy_
+Forthword_ R_Y, INLINE_OPT, "r=y"
+  r_y_
   end_
 
 @ ( -- ) (R: -- sp)
 @ push datastack pointer on top of return stack
-Forthword_ RPUSHDP, INLINE_OPT, "r=dsp;"
-  rpushdsp_
+Forthword_ R_DSP, INLINE_OPT, "r=dsp;"
+  r_dsp_
   end_
 
 @ ( -- n) (R: n -- n )
@@ -1070,7 +1070,7 @@ Forthword_ NOT_B, INLINE_OPT, "!b"
 @ flag is true if n1 is not equal to n2
 Forthword_ NOTEQUAL, INLINE_OPT, "!="
   y_d0_
-  nip_
+  d_m1_
   w_xor_y_
   end_
 

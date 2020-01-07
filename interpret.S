@@ -3,13 +3,13 @@
 @ ( -- )
 @ ignore remaining text to end of line
 Forthword_ COMMENT, IMMEDIATE_EN, "\\"
-  push_      @ preserve WR
+  d_w_       @ preserve WR
   do_ STIB
   y_w_
-  nip_
+  d_m1_
   do_ G_IN  @ skip to end of input buffer
   hmw_y_
-  pop_      
+  w_d_      
   end_
 
 @ ( r-addr r-len f-addr f-len --  f)
@@ -22,16 +22,16 @@ Forthword_ MCMP, 0, "mcmp"
   ifz_ MCMP_SAMELEN
 
   @ strings are not the same length
-  nip3_                    @ ( ? )
+  d_m3_                    @ ( ? )
   zero_                    @ ( 0 )
   exit_
 
 MCMP_SAMELEN:
-  rpusha_                  @ ( ? ) (R: a)
-  rpushb_                  @ ( ? ) (R: a b)
-  popa_                    @ ( r-addr r-len flag ) A: f-addr
-  nip_                     @ ( r-addr flag ) 
-  popb_                    @ ( flag ) B:r-addr
+  r_a_                     @ ( ? ) (R: a)
+  r_b_                     @ ( ? ) (R: a b)
+  a_d_                     @ ( r-addr r-len flag ) A: f-addr
+  d_m1_                    @ ( r-addr flag ) 
+  b_d_                     @ ( flag ) B:r-addr
 
 MCMP_LOOP:
   y_iszero_                @ ( ? )
@@ -71,8 +71,8 @@ MCMP_NOMATCH:
 MCMP_DONE:
   @ strings are the same
   not_                     @ ( ! )
-  rpopb_                   @ ( ) B:b ( R: a)
-  rpopa_                   @ ( ) B:b ( R: a)
+  b_r_                     @ ( ) B:b ( R: a)
+  a_r_                     @ ( ) B:b ( R: a)
   end_
 
 @ ( addr1 n1 c -- n2 )
@@ -80,14 +80,14 @@ MCMP_DONE:
 @ pointing to the 1st non-c character
 @ n1 is max number of characters to search
 Forthword_ CSKIP, 0, "cskip"
-  rpusha_
-  rpushb_
+  r_a_
+  r_b_
   b_w_                   @ ( addr1 n1 c ) B: c
   a_d1_                  @ ( addr1 n1 c ) A: addr1
   d0_                    @ ( addr1 n1 n1 )
   y_w_                   @ ( addr1 n1 n1 ) Y: n1
   x_w_                   @ ( addr1 n1 n1 ) X: n1
-  nip2_                  @ ( n1 )
+  d_m2_                  @ ( n1 )
   goto_ CSKIP_CHECK
 
 CSKIP_LOOP:
@@ -101,8 +101,8 @@ CSKIP_CHECK:
   ifnz_ CSKIP_LOOP
 
 CSKIP_DONE:
-  rpopb_
-  rpopa_
+  b_r_
+  a_r_
   x_                     @ ( n1 )
   w_minus_y_             @ ( n1-n' )
   end_
@@ -112,14 +112,14 @@ CSKIP_DONE:
 @ n1 is max number of characters to search
 @ char at n2 is first c character
 Forthword_ CSCAN, 0, "cscan"
-  rpusha_
-  rpushb_
+  r_a_
+  r_b_
   b_w_                 @ ( addr1 n1 c ) B: c
   a_d1_                @ ( addr1 n1 c ) A: addr1
   d0_                  @ ( addr1 n1 n1 )
   y_w_                 @ ( addr1 n1 n1 ) Y: n1 
   x_w_                 @ ( addr1 n1 n1 ) X: n1
-  nip_                 @ ( addr1 n1 )
+  d_m1_                @ ( addr1 n1 )
   goto_ CSCAN_CHECK
 
 CSCAN_LOOP:
@@ -134,8 +134,8 @@ CSCAN_CHECK:
   ifnz_ CSCAN_LOOP
 
 CSCAN_DONE:
-  rpopb_
-  rpopa_
+  b_r_
+  a_r_
   x_                   @ ( addr1 n1 )
   w_minus_y_           @ ( addr1 n1-n' )
   end_
@@ -144,7 +144,7 @@ CSCAN_DONE:
 @ Adjust the source addr using >in.
 Forthword_ SRCIN, 0, "srcin"
   do_ STIB             @ ( srcaddr len )
-  push_                @ ( srcaddr len len)
+  d_w_                 @ ( srcaddr len len)
   do_ G_IN             @ ( srcaddr len ginaddr )
   hmw_                 @ ( srcaddr len gin)
   end_do_ SLASHSTRING  @ ( srcaddr' len' )
@@ -163,7 +163,7 @@ Forthword_ UPDIN, 0, "updin"
 @ skip space in input source.
 Forthword_ SKIPBL, 0, "skipbl"
   do_ SRCIN            @ ( srcaddr len )
-  push_                @ ( srcaddr len len )
+  d_w_                 @ ( srcaddr len len )
   bl_                  @ ( srcaddr len c )
   do_ CSKIP            @ ( n2 )
 
@@ -174,10 +174,10 @@ Forthword_ SKIPBL, 0, "skipbl"
 @ in input buffer parse ccc delimited string by the delimiter char.
 Forthword_ PARSE, 0, "parse"
   push_lr_
-  rpush_           @ ( c ) (R: c )
+  r_w_             @ ( c ) (R: c )
   do_ SRCIN        @ ( addr len )
-  push_            @ ( addr len len )
-  rpop_            @ ( addr len c ) (R: )
+  d_w_             @ ( addr len len )
+  w_r_             @ ( addr len c ) (R: )
   do_ CSCAN        @ ( addr' len'' )
   oneplus_         @ ( addr' len''+1 )
   # skip terminating delimeter in input buffer
@@ -198,7 +198,7 @@ Forthword_ PNAME, 0, "pname"
 @ ( xt * -- w xt )
 forthword_ REGL, 0, "regl"
   d0_                  @ ( xt xt )
-  push_                @ ( xt xt xt)
+  d_w_                 @ ( xt xt xt)
   user_ WR             @ ( xt xt WR )
   y_mw_                @ ( xt xt WR ) Y:[WR]
   d1_y_                @ ( w xt WR )
@@ -210,13 +210,13 @@ forthword_ REGL, 0, "regl"
   x_mw_                @ ( w xt RX ) X:[RX]
   fourplus_            @ ( w xt RY )
   y_mw_                @ ( w xt RY ) Y:[RY]
-  pop_                 @ ( w xt )
+  w_d_                 @ ( w xt )
   end_
 
 @ save registers W, A, B, X, Y
 @ ( n -- )
 forthword_ REGS, 0, "regs"
-  pushy_               @ ( y n )
+  d_y_                 @ ( y n )
   y_w_                 @ ( y n ) Y:n
   user_ WR             @ ( y WR )
   mw_y_                @ [WR]=n
@@ -227,7 +227,7 @@ forthword_ REGS, 0, "regs"
   fourplus_            @ ( y RX )
   mw_x_                @ [RB]=x
   fourplus_            @ ( y RY )
-  popy_                @ ( RY )
+  y_d_                 @ ( RY )
   mw_y_                @ [RY]=y
   end_
 
@@ -235,20 +235,20 @@ forthword_ REGS, 0, "regs"
 @ recognize a word in the dictionary
 Forthword_ REC_WORD, 0, "recw"
   push_lr_            @ ( addr len ) (R: retaddr )
-  rpush_              @ ( addr len ) (R: retaddr len )
+  r_w_                @ ( addr len ) (R: retaddr len )
   y_d0_               @ ( addr len Y:addr )
-  rpushy_             @ ( addr len ) (R: retaddr len addr )
+  r_y_                @ ( addr len ) (R: retaddr len addr )
   do_ FINDW           @ ( 0 | nfa )
   iszero_
   ifnz_ REC_WORD_FOUND
-    rpopy_            @ ( 0 ) Y:addr (R: retaddr len )
-    pushy_            @ ( addr 0 ) (R: retaddr len )
-    rpopy_            @ ( addr 0 ) Y:len (R: retaddr ) 
-    pushy_            @ ( addr len 0 )
+    y_r_              @ ( 0 ) Y:addr (R: retaddr len )
+    d_y_              @ ( addr 0 ) (R: retaddr len )
+    y_r_              @ ( addr 0 ) Y:len (R: retaddr ) 
+    d_y_              @ ( addr len 0 )
     exit_
 
 REC_WORD_FOUND:
-  rnip2_            @ ( nfa ) (R: retaddr )
+  r_m2_             @ ( nfa ) (R: retaddr )
   do_ NFATOXTF      @ ( xt flag )
   @ check if compile only word
   @sbrc tosh, COMPILE_ONLY_FB
@@ -274,10 +274,10 @@ CHECK_IMMEDIATE:
 
 REC_WORD_CHECKSTATE:
     @ check state
-    push_              @ ( xt flag flag )
+    d_w_               @ ( xt flag flag )
     do_ STATE          @ ( xt flag state )
     iszero_
-    pop_               @ ( xt flag )
+    w_d_               @ ( xt flag )
     ifz_ REC_WORD_EXECUTE
 .if BUILD_LEVEL >= ASM_BASE
       @ in compile mode so compile xt
@@ -305,7 +305,7 @@ Forthword_ RECX, 0, "recx"
 
 .if BUILD_LEVEL > 4
   @ test if its a number
-  pop_                   @ ( addr len )
+  w_d_                   @ ( addr len )
   do_ REC_NUM            @ ( [addr len] flag )
   iszero_                @ ( [addr len] flag )
   ifnz_ RECX_DONE
@@ -313,7 +313,7 @@ Forthword_ RECX, 0, "recx"
 
   @ not recognized so throw
   do_ CR                 @ ( addr len ? )
-  pop_                   @ ( addr len )
+  w_d_                   @ ( addr len )
   @ print unrecognized word
   do_ TYPE               @ ( ? )
     
@@ -343,7 +343,7 @@ INTERPRET_DO:
   goto_ INTERPRET_DO
 
 INTERPRET_END:
-  pop_                @ ( addr )
+  w_d_                @ ( addr )
   end_
 
 @ ( -- )
@@ -351,7 +351,7 @@ INTERPRET_END:
 Forthword_ DOINTERPRET, 0, "(interp)"
   @ input buffer has something so try to interpret it
   @ setup exception handling in case of error
-  push_
+  d_w_
   lit32_ INTERPRET
   do_ CATCH
   @ check to make sure no throws
@@ -369,5 +369,3 @@ DOINTERPRET_ok:
   y_plus1_
   hmw_y_                @ [>inaddr]+=1
   end_do_ PROMPTOK
-
-

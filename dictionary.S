@@ -26,7 +26,7 @@ Forthword_ NFA2LFA, 0, "nfa>lfa"
   do_ STRINGLEN               @ ( nfa+2 len+flags )
   @ mask out flags in len, allow up to 31 characters
   movs r1, #31
-  popy_                       @ ( len+flags ) Y:nfa+2
+  y_d_                        @ ( len+flags ) Y:nfa+2
   ands wreg, r1               @ ( len )
   w_plus_y_                   @ ( nfa+2+len )
   @ align to half word boundry
@@ -40,12 +40,12 @@ Forthword_ NFATOXTF, 0, "nfa>xtf"
   ifz_ NFATOXTF_EXIT
 
   y_hmw_                      @ ( nfa Y:xtflags )
-  rpushy_                     @ ( nfa ) (R: xtflags)
+  r_y_                        @ ( nfa ) (R: xtflags)
   do_ NFA2LFA                 @ ( lfa )
   fourplus_   @ lfa>xt        @ ( xtlink )
   mw_                         @ ( xt )
-  push_                       @ ( xt xt )
-  rpop_                       @ ( xt xtflags )
+  d_w_                        @ ( xt xt )
+  w_r_                        @ ( xt xtflags )
 
 NFATOXTF_EXIT:
   end_
@@ -77,29 +77,29 @@ FINDNFA_BEGIN1:
   iszero_                     @ ( c-addr len nfa )
   @ terminate if 0 found
   ifz_ FINDNFA_END
-  rpush_                      @ ( c-addr len ) (R: nfa )
+  r_w_                        @ ( c-addr len ) (R: nfa )
   y_d1_                       @ ( c-addr len nfa ) Y:c-addr
   x_d0_                       @ ( c-addr len nfa ) X:len
-  pushy_                      @ ( c-addr len c-addr nfa )
-  pushx_                      @ ( c-addr len c-addr len nfa )
+  d_y_                        @ ( c-addr len c-addr nfa )
+  d_x_                        @ ( c-addr len c-addr len nfa )
   do_ STRINGLEN               @ ( c-addr len c-addr len f-addr len )
   movs r1, #31
   ands wreg, r1               @ ( c-addr len c-addr len f-addr 0:len )
   do_ MCMP                    @ ( c-addr len flag )
 
   iszero_
-  rpop_                       @ ( c-addr len nfa ) (R: )
+  w_r_                        @ ( c-addr len nfa ) (R: )
   @ match found if flag is > 0
   ifnz_ FINDNFA_END
     
   @ next try
-  do_ NFA2LFA                @ ( c-addr len lfa )
+  do_ NFA2LFA                 @ ( c-addr len lfa )
   @ <repeat>
   goto_ FINDNFA_BEGIN
 
 FINDNFA_END:
   @ we found the string
-  nip2_                     @ ( nfa )
+  d_m2_                       @ ( nfa )
   end_
 
 
@@ -108,7 +108,7 @@ FINDNFA_END:
 Forthword_ FINDROOT, 0, "froot"
   @ put root wid on stack
   push_lr_
-  push_                     @ ( addr len len ) 
+  d_w_                      @ ( addr len len ) 
   lit32_ VE_WIPE            @ ( addr len VE_WIPE )
   end_goto_ FINDNFA_BEGIN1
 
@@ -121,7 +121,7 @@ Forthword_ CONTIDX_FETCH, 0 "contidx@"
   y_w_                @ ( contidx ) Y:contidx
   hmw_                @ ( idx )
   x_w_            
-  push_               @ ( idx idx ) X:idx
+  d_w_                @ ( idx idx ) X:idx
   lit_ (MAX_CONTEXTS - 1) @ ( idx max )
   do_ GREATER         @ ( flag )
   iszero_
@@ -139,18 +139,18 @@ Forthword_ CONTIDX_FETCH, 0 "contidx@"
 Forthword_ FINDW, 0, "findw"
   @ loop through context slots to find a word
   @ start with last slot
-  push_               @ ( addr len len )
+  d_w_                @ ( addr len len )
   do_ CONTIDX_FETCH   @ ( addr len idx )
   @ get context index and use as counter
-  push_               @ ( addr len idx idx )
+  d_w_                @ ( addr len idx idx )
 
 FINDW_BEGIN:
   iszero_
-  bmi.n FINDW_LAST      @ ( addr len idx idx )
+  bmi.n FINDW_LAST    @ ( addr len idx idx )
     y_d2_
     x_d1_
-    pushy_
-    pushx_            @ ( addr len idx addr len idx )
+    d_y_
+    d_x_              @ ( addr len idx addr len idx )
     do_ FINDWI        @ ( addr len idx nfa )
     iszero_
     @ end loop if word found
@@ -163,12 +163,12 @@ FINDW_BEGIN:
   goto_ FINDW_BEGIN
 
 FINDW_LAST:
-  d1_                       @ ( addr len idx len )
-  nip2_                     @ ( addr len )
+  d1_                 @ ( addr len idx len )
+  d_m2_               @ ( addr len )
   exit_do_ FINDROOT
 
 FINDW_END:
-  nip3_               @ ( nfa )
+  d_m3_               @ ( nfa )
   end_
 
 @ ( -- )
@@ -192,4 +192,3 @@ Forthword_ ONLY, IMMEDIATE_EN, "only"
   fourplus_                    @ ( CONTEXT+4 )
   mw_y_
   end_
-    

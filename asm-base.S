@@ -33,7 +33,7 @@ Forthword_ RELDST, 0, "reldst"
   @ account for 3 stage pipeline
   fourplus_            @ ( dest start+4 )
   y_w_                 @ ( dest start+4 ) Y:start+4
-  pop_                 @ ( dest )
+  w_d_                 @ ( dest )
   w_minus_y_           @ ( dest-start+4 ) 
   twoslash_            @ ( dist/2 )
   end_
@@ -62,11 +62,11 @@ Forthword_ GOTOC, 0, "goto,"
 @ compile branch at start address
 @ ( start dest -- )
 Forthword_ GOTOS, 0, "gotos"
-  push_                @ ( start dest dest )
+  d_w_                 @ ( start dest dest )
   d1_                  @ ( start dest start )
   do_ RELDST           @ ( start reldst )
   do_ BRANCH           @ ( start branchinst )
-  popy_                @ ( branchinst ) Y:start
+  y_d_                 @ ( branchinst ) Y:start
   hmy_w_
   end_                 @ ( branchinst )
 
@@ -81,7 +81,7 @@ Forthword_ DOC, 0, "do,"
   @ split the 23-bit two’s complement half-word offset specifed by the
   @ label into two 11-bit halves, ignoring bit 0 (which must be 0),
   @ and creates two THUMB instructions
-  push_                    @ ( dist dist )
+  d_w_                     @ ( dist dist )
   @ get top 11 bits
   asrs wreg, #11           @ ( dist xxxdist )
   @ make high address bl instruction mask
@@ -92,7 +92,7 @@ Forthword_ DOC, 0, "do,"
   lsls r1,#8
   bics wreg, r1             @ ( dist 0xF0dist )
   do_ COMMA                 @ ( dist ?)
-  pop_                      @ ( dist )
+  w_d_                      @ ( dist )
   @ make low address bl instruction mask
   movs r1, #0xF8
   lsls r1, #8
@@ -109,7 +109,7 @@ Forthword_ XT_C, 0, "xt,"
   tst wreg, r1
   @ if bit 0 of high byte flag is 0 then word is to be inlinned
   ifnz_ COMPILEXT_DO
-    pop_           @ ( xt )
+    w_d_           @ ( xt )
     exit_do_ INLINE
 
 COMPILEXT_DO:
@@ -125,16 +125,16 @@ Forthword_ MVI, 0, "mvi"
 @ movs reg, val
 @       reg    val
 @ 0010 0xxx xxxxxxxx 
-  popy_            @ ( reg Y:val)
+  y_d_             @ ( reg Y:val)
   movs r1, #255
-  ands yreg, r1   @ ( Y:bxxxxxxxx )
+  ands yreg, r1    @ ( Y:bxxxxxxxx )
   movs r1, #7
-  ands wreg, r1   @ ( b00000xxx )
+  ands wreg, r1    @ ( b00000xxx )
   movs r1, #0b00100000
-  orrs wreg, r1   @ ( b00100xxx )
+  orrs wreg, r1    @ ( b00100xxx )
   movs r1, #8
-  lsls wreg, r1   @ ( b00100xxx00000000 )
-  adds wreg, yreg @ ( b00100xxxxxxxxxxx )
+  lsls wreg, r1    @ ( b00100xxx00000000 )
+  adds wreg, yreg  @ ( b00100xxxxxxxxxxx )
   end_
 
 
@@ -148,7 +148,7 @@ Forthword_ LDREQ, 0, "ldr="
 @       reg  offset
 @ 0100 1xxx xxxxxxxx
   y_w_            @ ( reg offset Y:offset) 
-  pop_            @ ( reg )
+  w_d_            @ ( reg )
   movs r1, #7
   ands wreg, r1   @ ( b00000xxx )
   movs r1, #0b01001000
@@ -163,7 +163,7 @@ Forthword_ LDREQ, 0, "ldr="
 @ compile 32 bit litteral
 @ ( n reg -- )
 Forthword_ LIT32_C, 0, "lit32,"
-  push_          @ ( n reg reg )
+  d_w_           @ ( n reg reg )
   @ check if CP is word aligned
   do_ CPWA       @ ( n reg flag )
   ifz_ LIT_C_LDR
@@ -176,7 +176,7 @@ LIT_C_LDR:
   do_ COMMA      @ ( n ? )
   lit_ 1         @ ( n 1 )
   do_ GOTOC      @ ( n ? )
-  pop_           @ ( n )
+  w_d_           @ ( n )
 LIT_C_END:
   end_do_ DCOMMA
 
@@ -209,34 +209,34 @@ Forthword_ IFZ, 0, "_ifz"
 @ compile top of stack as inlinned immediate 32 bit constant
 @ ( n -- )
 Forthword_ WLIT_C, 0, "w:,"
-  push_                    @ ( n n )
+  d_w_                    @ ( n n )
   zero_
   end_do_ LIT_C
 
 @ compile Y register load inlinned immediate 32 bit constant
 @ ( n -- )
 Forthword_ YLIT_C, 0, "y:,"
-  push_                    @ ( n n )
+  d_w_                     @ ( n n )
   lit_ 3                   @ ( n yreg )
   end_do_ LIT_C
 
 @ compile X register load inlinned immediate 32 bit constant
 @ ( n -- )
 Forthword_ XLIT_C, 0, "x:,"
-  push_                    @ ( n n )
+  d_w_                     @ ( n n )
   lit_ 2                   @ ( n xreg )
   end_do_ LIT_C
 
 @ compile A register load inlinned immediate 32 bit constant
 @ ( n -- )
 Forthword_ ALIT_C, 0, "a:,"
-  push_                    @ ( n n )
+  d_w_                     @ ( n n )
   lit_ 5                   @ ( n areg )
   end_do_ LIT_C
 
 @ compile B register load inlinned immediate 32 bit constant
 @ ( n -- )
 Forthword_ BLIT_C, 0, "b:,"
-  push_                    @ ( n n )
+  d_w_                     @ ( n n )
   lit_ 6                   @ ( n breg )
   end_do_ LIT_C

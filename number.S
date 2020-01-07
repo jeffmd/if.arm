@@ -54,14 +54,14 @@ Forthword_ DIGITQ, 0, "digit?"
   exit_
 
 DIGITQ0:
-  push_               @ ( n n )
-  push_               @ ( n n n )
+  d_w_                @ ( n n )
+  d_w_                @ ( n n n )
   do_ BASEFETCH       @ ( n n base )
   do_ UGREATEREQUAL   @ ( n flag )
   iszero_
   ifz_ PFA_DIGITQ_DONE
   zero_               @ ( n 0 )
-  nip_                @ ( 0 )
+  d_m1_               @ ( 0 )
   exit_
 
 PFA_DIGITQ_DONE:
@@ -95,13 +95,13 @@ PFA_SETBASE2:        @ ( error)
 @ ( addr len -- addr' len' )
 @ skip a numeric prefix character
 forthword_ PRAEFIX, 0, "praefix"
-  push_            @ ( addr len len )
+  d_w_             @ ( addr len len )
   d1_              @ ( addr len addr )
   cmw_             @ ( addr len c )
   cmp wreg, #0x30
   blo.n PFA_PRAEFIX0
   @ no praefix
-  pop_             @ ( addr len )
+  w_d_             @ ( addr len )
   exit_
 
 PFA_PRAEFIX0:
@@ -112,7 +112,7 @@ PFA_PRAEFIX0:
 @ (addr len -- addr len flag) Numeric IO
 @ check for - sign
 forthword_ NUMBERSIGN, 0, "#-"
-  push_          @ ( addr len len )
+  d_w_           @ ( addr len len )
   d1_            @ ( addr len addr )
   cmw_           @ ( addr len char )
   cmp wreg, #'-
@@ -122,11 +122,11 @@ forthword_ NUMBERSIGN, 0, "#-"
 
 NUMBERSIGN_HASSIGN:
   push_lr_
-  rpush_           @ ( addr len char ) (R: retaddr char )
+  r_w_             @ ( addr len char ) (R: retaddr char )
   lit_ 1           @ ( addr len 1 )
   do_ SLASHSTRING  @ ( addr len )
-  push_            @ ( addr len len )
-  rpop_            @ ( addr len char ) (R: retaddr )
+  d_w_             @ ( addr len len )
+  w_r_             @ ( addr len char ) (R: retaddr )
   end_
 
 @ ( u1 c-addr1 len1 -- u2 c-addr2 len2 )
@@ -137,12 +137,12 @@ Forthword_ TO_NUMBER, 0, ">num"
 TO_NUMBER_AGAIN:
   iszero_
   ifz_ TO_NUMBER_END
-    push_                @ ( u addr len len )
+    d_w_                 @ ( u addr len len )
     d1_                  @ ( u addr len addr )
     cmw_                 @ ( u addr len char )
     do_ DIGITQ           @ ( u adr len digit flag)
     iszero_
-    pop_                 @ ( u adr len [digit] )
+    w_d_                 @ ( u adr len [digit] )
     ifnz_ TO_NUMBER_CONV
       @ character is not a recognized number
       exit_
@@ -165,13 +165,13 @@ TO_NUMBER_END:
 @ convert a string at addr to a number
 Forthword_ NUMBER, 0, "num"
   push_lr_
-  push_                   @ ( addr len len )
+  d_w_                    @ ( addr len len )
   do_ BASEFETCH           @ ( addr len base )
-  rpush_                  @ ( addr len base ) (R: base)
-  pop_                    @ ( addr len )
+  r_w_                    @ ( addr len base ) (R: base)
+  w_d_                    @ ( addr len )
   do_ NUMBERSIGN          @ ( addr len flag )
-  rpush_                  @ ( addr len flag ) (R: base flagsign)
-  pop_                    @ ( addr len )
+  r_w_                    @ ( addr len flag ) (R: base flagsign)
+  w_d_                    @ ( addr len )
   do_ PRAEFIX             @ ( addr' len' )
   do_ NUMBERSIGN          @ ( addr len flagsign2 )
   y_r0_                   @ ( addr len flagsign2 Y:flagsign ) (R: base flagsign)
@@ -187,18 +187,18 @@ Forthword_ NUMBER, 0, "num"
   @ check length of the remaining string.
   @ if zero: a single cell number is entered
   iszero_
-  pop_                    @ ( n addr' )
+  w_d_                    @ ( n addr' )
   ifz_ PFA_NUMBER_SIGN
 
   @ error in string to number conversion
-  nip_                    @ ( addr' )  (R: base flagsign' )
-  rnip_                   @ ( addr' ) (R: base )
+  d_m1_                   @ ( addr' )  (R: base flagsign' )
+  r_m1_                   @ ( addr' ) (R: base )
   zero_                   @ ( 0 ) (R: base )
   goto_ PFA_NUMBER_DONE
 
 PFA_NUMBER_SIGN:
   @ incorporate sign into number
-  rpop_                   @ ( n flagsign' ) (R: base )
+  w_r_                    @ ( n flagsign' ) (R: base )
   iszero_
   ifz_ PFA_NUMBER_TRUE
   d0_                     @ ( n n )
@@ -209,9 +209,8 @@ PFA_NUMBER_TRUE:
   true_                   @ ( n true ) (R: base )
 
 PFA_NUMBER_DONE:
-  push_                   @ ( n flag flag )
-  rpop_                   @ ( n flag base ) (R: )
+  d_w_                    @ ( n flag flag )
+  w_r_                    @ ( n flag base ) (R: )
   do_ BASESTORE           @ ( n flag ? )
-  pop_                    @ ( n flag )
+  w_d_                    @ ( n flag )
   end_
-

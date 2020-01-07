@@ -3,7 +3,7 @@
 @ ( n1 n2 -- n1|n2 )
 @ compare two values leave the smaller one
 Forthword_ MIN, 0, "min"
-  popy_
+  y_d_
   cmp yreg, wreg
   bge.n 1f
   y_
@@ -13,7 +13,7 @@ Forthword_ MIN, 0, "min"
 @ ( n1 n2 -- n1|n2 )
 @ compare two values, leave the bigger one
 Forthword_ MAX, 0, "max"
-  popy_
+  y_d_
   cmp yreg, wreg
   blt.n 1f
   y_

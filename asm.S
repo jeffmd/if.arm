@@ -9,12 +9,12 @@ Forthword_ OPRSRD, 0, "_oprsrd"
   @ shift left Op 6 bits
   lsls wreg, #6    @ ( Rd Rs op000000 )
   @ mask Rs with 7
-  popy_            @ ( Rd op000000 Y:Rs )
+  y_d_             @ ( Rd op000000 Y:Rs )
   movs r1, #0x7
   ands yreg, r1    @ ( Rd op000000 Y:00000xxx )
   lsls yreg, #3    @ ( Rd op000000 Y:00xxx000 )
   w_or_y_          @ ( Rd opxxx000 ) 
-  popx_            @ ( opxxx000 X:Rd )
+  x_d_             @ ( opxxx000 X:Rd )
   movs r1, #0x7
   ands xreg, r1    @ ( opxxx000 X:00000xxx )
   w_or_x_          @ ( opRsRd ) 
@@ -26,7 +26,7 @@ Forthword_ OPRSRD, 0, "_oprsrd"
 @ |      op      |   val5   |  Rs |  Rd |
 @ buil arm thumb assembler instruction    
 Forthword_ OPVALRSRD, 0, "_opvalrsrd"
-  popy_              @ ( Rd Rs op ) Y:val5
+  y_d_               @ ( Rd Rs op ) Y:val5
   movs r1, #31
   ands yreg, r1      @ ( Rd Rs op ) Y:val5&31
   lsls wreg, #5      @ ( Rd Rs op:00000 )
@@ -39,7 +39,7 @@ Forthword_ OPVALRSRD, 0, "_opvalrsrd"
 @ |        op         | val3|  Rs |  Rd |
 @ build arm thumb assembler instruction  
 Forthword_ OPVRRSRD, 0, "_opvrrsrd"
-  popy_            @ ( Rd Rs op ) Y:val3
+  y_d_             @ ( Rd Rs op ) Y:val3
   movs r1, #7
   ands yreg, r1    @ ( Rd Rs op ) Y:val3&7
   lsls wreg, #3    @ ( Rd Rs op:000 )
@@ -94,26 +94,14 @@ OPHIRSRD_END:
 Forthword_ OPRDVAL, 0, "_oprdval"
   lsls wreg, #3         @ ( val8 Rd op000 )
   @ mask val with 255
-  popx_                 @ ( Rd opxxx X:val8 )
+  x_d_                  @ ( Rd opxxx X:val8 )
   movs r1, #0xFF
   ands xreg, r1         @ ( Rd opxxx X:bxxxxxxxx )
   @ mask Rd with 7
-  popy_                 @ ( op Y:Rd )
+  y_d_                  @ ( op Y:Rd )
   movs r1, #0x7
   ands yreg, r1         @ ( op Y:b00000xxx )
   w_or_y_               @ ( opRd )
   lsls wreg, #8         @ ( opRd00000000 )
   w_or_x_               @ ( opRdval )
   end_
-
-@ ( Rd val8 Op -- )
-@ instruction bit pattern
-@  15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-@ |       Op     |  Rd  |     val8      |
-@ move, cmp, add, sub operations with immediate
-Forthword_ MCASI, 0, "_mcasi"
-  @ flip Rd and val8 around
-  movs r1, #4
-  orrs wreg, r1
-  end_do_ OPRDVAL
-

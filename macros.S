@@ -103,77 +103,77 @@ sysvar .req r4 @ system variables base pointer
 
 @ push registers on return stack
 
-@ rpush
-.macro rpush_ @ put copy of w on return stack
+@ r=
+.macro r_w_ @ put copy of w on return stack
     push {wreg}
 .endm
 
-@ rpusha
-.macro rpusha_ @ put copy of A on return stack
+@ r=a
+.macro r_a_ @ put copy of A on return stack
     push {areg}
 .endm
 
-@ rpushb
-.macro rpushb_ @ put copy of B on return stack
+@ r=b
+.macro r_b_ @ put copy of B on return stack
     push {breg}
 .endm
 
-@ rpushx
-.macro rpushx_ @ put copy of X on return stack
+@ r=x
+.macro r_x_ @ put copy of X on return stack
     push {xreg}
 .endm
 
-@ rpushb
-.macro rpushy_ @ put copy of Y on return stack
+@ r=y
+.macro r_y_ @ put copy of Y on return stack
     push {yreg}
 .endm
 
-@ rpushdsp
-.macro rpushdsp_ @ put copy of data stack pointer on return stack
+@ r=dsp
+.macro r_dsp_ @ put copy of data stack pointer on return stack
     push {dsp}
 .endm
 
 @ pop value from return stack into register
 
-@ rpop
-.macro rpop_
+@ =r
+.macro w_r_
   pop {wreg}
 .endm
 
-@ rpopa
-.macro rpopa_
+@ a=r
+.macro a_r_
   pop {areg}
 .endm
 
-@ rpopb
-.macro rpopb_
+@ b=r
+.macro b_r_
   pop {breg}
 .endm
 
-@ rpopx
-.macro rpopx_
+@ x=r
+.macro x_r_
   pop {xreg}
 .endm
 
-@ rpopy
-.macro rpopy_
+@ y=r
+.macro y_r_
   pop {yreg}
 .endm
 
-@ rpopdsp
-.macro rpopdsp_
+@ dsp=r
+.macro dsp_r_
   pop {dsp}
 .endm
 
-.macro rnip_
+.macro r_m1_
     add sp, #4
 .endm
 
-.macro rnip2_ 
+.macro r_m2_ 
     add sp, #8
 .endm
 
-.macro rnip3_ 
+.macro r_m3_ 
     add sp, #12
 .endm
 
@@ -552,89 +552,89 @@ sysvar .req r4 @ system variables base pointer
 
 @ make room on data stack
 
-.macro put1_ @ move stack pointer down one cell
+.macro d_p1_ @ move stack pointer down one cell
    subs dsp, #4
 .endm
 
-.macro put2_ @ move stack pointer down two cells
+.macro d_p2_ @ move stack pointer down two cells
    subs dsp, #8
 .endm
 
-.macro put3_ @ move stack pointer down three cells
+.macro d_p3_ @ move stack pointer down three cells
    subs dsp, #12
 .endm
 
 @ push register onto data stack
 
-@ push
-.macro push_ 
-  put1_
+@ d=
+.macro d_w_ 
+  d_p1_
   d0_w_
 .endm
 
-@ pusha
-.macro pusha_ 
-  put1_
+@ d=a
+.macro d_a_ 
+  d_p1_
   d0_a_
 .endm
 
-@ pushb
-.macro pushb_ 
-  put1_
+@ d=b
+.macro d_b_ 
+  d_p1_
   d0_b_
 .endm
 
-@ pushx
-.macro pushx_ 
-  put1_
+@ d=x
+.macro d_x_ 
+  d_p1_
   d0_x_
 .endm
 
-@ pushy
-.macro pushy_ 
-  put1_
+@ d=y
+.macro d_y_ 
+  d_p1_
   d0_y_
 .endm
 
 @ pop value from data stack into register
 
-@ pop
-.macro pop_
+@ =d
+.macro w_d_
   ldmia dsp!, {wreg}
 .endm
 
-@ popa
-.macro popa_
+@ a=d
+.macro a_d_
   ldmia dsp!, {areg}
 .endm
 
-@ popb
-.macro popb_
+@ b=d
+.macro b_d_
   ldmia dsp!, {breg}
 .endm
 
-@ popx
-.macro popx_
+@ x=d
+.macro x_d_
   ldmia dsp!, {xreg}
 .endm
 
-@ popy
-.macro popy_
+@ y=d
+.macro y_d_
   ldmia dsp!, {yreg}
 .endm
 
-@ nip
-.macro nip_
+@ d-1
+.macro d_m1_
   adds dsp, #4
 .endm
 
-@ nip2
-.macro nip2_
+@ d-2
+.macro d_m2_
   adds dsp, #8
 .endm
 
-@ nip3
-.macro nip3_
+@ d-3
+.macro d_m3_
   adds dsp, #12
 .endm
 

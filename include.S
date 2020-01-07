@@ -14,13 +14,13 @@ Forthword_ KEYFILE, 0, "keyfile"
   do_ KEYFILEADDR        @ ( KEYFILEADDR )
   mw_                    @ ( KEYFILEDES )
   y_0_                   @ ( KEYFILEDES ) Y:0
-  pushy_                 @ ( 0 KEYFILEDES )
+  d_y_                   @ ( 0 KEYFILEDES )
   movs r1, dsp           @ dsp points to buffer that read will write to
   movs r2, #1
   do_ read               @ ( key count ) 
   @ was one key read from the file?
   cmp wreg, #1
-  pop_                   @ ( key )
+  w_d_                   @ ( key )
   ifz_ KEYEND
     oneminus_
     exit_do_ BYE  
@@ -37,25 +37,25 @@ Forthword_ DOINCLUDE, 0, "(include)"
   movs r1, #0
   do_ open             @ ( filedes )
   @ if file descriptor > 0 then open is success
-  push_                @ ( filedes filedes )
+  d_w_                 @ ( filedes filedes )
   do_ ZEROGREATER
   iszero_
   ifz_ DOINCLUDE_EXIT
 
   do_ IDLETIMEFETCH    @ ( filedes itime )
-  rpush_               @ ( filedes itime ) (R: itime )
+  r_w_                 @ ( filedes itime ) (R: itime )
   do_ SLEEPOFF         @ ( filedes ? )
 
   @ push FFLAGS on tor
   do_ FFLAGS           @ ( filedes fflags# )
   hmw_                 @ ( filedes fflags )
-  rpush_               @ ( filedes fflags ) (R: itime fflags )
+  r_w_                 @ ( filedes fflags ) (R: itime fflags )
 
   @ push on return stack the old defer key
   do_ KEYADDR          @ ( filedes KEYADDR )
   x_w_                 @ ( filedes KEYADDR X:KEYADDR)
   mw_                  @ ( filedes KEY )
-  rpush_               @ ( filedes KEY ) (R: itime fflags KEY)
+  r_w_                 @ ( filedes KEY ) (R: itime fflags KEY)
 
   @ defer key to keyfile for input
   lit32_ KEYFILE       @ ( filedes KEYFILE )
@@ -65,8 +65,8 @@ Forthword_ DOINCLUDE, 0, "(include)"
   do_ KEYFILEADDR      @ ( filedes KEYFILEADDR ) (R: itime fflags KEY)
   x_w_
   mw_                  @ ( filedes KEYFILE ) (R: itime fflags KEY)
-  rpush_               @ ( filedes KEYFILE ) (R: itime fflags KEY KEYFILE)
-  pop_                 @ ( filedes )
+  r_w_                 @ ( filedes KEYFILE ) (R: itime fflags KEY KEYFILE)
+  w_d_                 @ ( filedes )
   mx_w_                @ ( filedes )
 
 
@@ -79,24 +79,24 @@ Forthword_ DOINCLUDE, 0, "(include)"
   do_ close            @ ( ? )
 
   @ restore old keyfile descriptor
-  rpopy_               @  ( ? Y: KEYFILE ) ( R: itime fflags KEY )
+  y_r_                 @  ( ? Y: KEYFILE ) ( R: itime fflags KEY )
   bl KEYFILEADDR       @ ( KEYFILEADDR )
   mw_y_                @ ( KEYFILEADDR )
 
   @ restore old key function
-  rpopx_               @ ( KEYFILEADDR X:KEY ) ( R: itime fflags )
+  x_r_                 @ ( KEYFILEADDR X:KEY ) ( R: itime fflags )
   do_ KEYADDR          @ ( KEYADDR )
   mw_x_                @ ( KEYADDR )
 
   @ restore FFLAGS
-  rpopy_               @ ( KEYADDR Y:fflags ) ( R: itime )
+  y_r_                 @ ( KEYADDR Y:fflags ) ( R: itime )
   do_ FFLAGS           @ ( FFLAGS )
   hmw_y_               @ ( FFLAGS )
-  rpop_                @ ( itime ) ( R: )
+  w_r_                 @ ( itime ) ( R: )
   exit_do_ IDLETIMESTORE
        
 DOINCLUDE_EXIT:
-  pop_                 @ ( filedes )
+  w_d_                 @ ( filedes )
   type_ "File not found!"
   end_
 
@@ -110,6 +110,5 @@ Forthword_ INCLUDEF, 0, "include"
   x_0_
   w_plus_y_     @ ( addr addr' )
   cmw_x_        @ ( addr addr' )
-  pop_          @ ( addr )
+  w_d_          @ ( addr )
   end_do_ DOINCLUDE
-

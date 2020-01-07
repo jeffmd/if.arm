@@ -36,7 +36,7 @@ Forthword_ EMIT_ON, 0, "emit.on"
 @ ( c -- )
 @ fetch the emit vector and EXEC it. Will emit a character from wreg
 Forthword_ EMIT, 0, "emit"
-  push_
+  d_w_
   do_ EMITADDR
   mw_
   end_do_ EXEC
@@ -62,22 +62,22 @@ Forthword_ TYPE, 0, "type"
   iszero_
   ifz_ TYPE_END
    
-  rpusha_
-  rpushb_
-  popa_
+  r_a_
+  r_b_
+  a_d_
   b_w_
 
 TYPE1:
   cma_
-  a_plus1_
   do_ EMIT
+  a_plus1_
   b_minus1_
 
 TYPE2:
   ifnz_ TYPE1
    
-  rpopb_
-  rpopa_
+  b_r_
+  a_r_
 
 TYPE_END:
   end_

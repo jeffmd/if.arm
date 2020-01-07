@@ -31,7 +31,7 @@ Forthword_ HERE, 0, "here"
 Forthword_ DOCMDARG, 0, "docmdarg"
   do_ ARGCADDR         @ ( ARGCADDR )
   mw_                  @ ( ARGC )
-  push_                @ ( ARGC ARGC )
+  d_w_                 @ ( ARGC ARGC )
   lit_ 1               @ ( ARGC 1 )
   do_ GREATER          @ ( flag )
   iszero_
@@ -53,12 +53,12 @@ DOCMDARG_EXIT:
 @ gives the number of seconds and microseconds since the Epoch
 Forthword_ TIME, 0, "time"
   zero_              @ ( 0 )
-  push_              @ ( 0 0 )
-  push_              @ ( 0 0 0 )
+  d_w_               @ ( 0 0 )
+  d_w_               @ ( 0 0 0 )
   dsp_               @ ( 0 0 DSP )
   movs r1, #0
   do_ gettimeofday   @ ( seconds usecs ? )
-  pop_               @ ( seconds usecs )
+  w_d_               @ ( seconds usecs )
   end_
     
 @ ( -- n )
@@ -91,22 +91,22 @@ Forthword_ HANDLER, 0, "handler"
 @ setup handler to catch exceptions and then EXEC XT.
 Forthword_ CATCH, 0, "catch"
   push_lr_
-  rpushdsp_           @ ( xt ) (R: callerret DSP )
-  push_               @ ( xt xt ) 
+  r_dsp_              @ ( xt ) (R: callerret DSP )
+  d_w_                @ ( xt xt ) 
   do_ HANDLER         @ ( xt haddr )
   y_w_                @ ( xt haddr Y:haddr )
   mw_                 @ ( xt hxt )
-  rpush_              @ ( xt hxt ) (R: callerret DSP hxt )
+  r_w_                @ ( xt hxt ) (R: callerret DSP hxt )
   rsp_                @ ( xt RSP ) (R: callerret DSP hxt)
   @ @haddr = rsp
   my_w_               @ ( xt RSP )
-  pop_                @ ( xt )
+  w_d_                @ ( xt )
   do_ EXEC
   @ restore handler
-  rpopy_              @ ( ? Y:hxt) (R: callerret DSP )
+  y_r_                @ ( ? Y:hxt) (R: callerret DSP )
   do_ HANDLER         @ ( haddr )
   mw_y_               @ ( haddr )
-  rnip_               @ ( haddr ) (R: callerret)
+  r_m1_               @ ( haddr ) (R: callerret)
   zero_               @ ( 0 )
   end_
 
@@ -119,9 +119,9 @@ Forthword_ THROW, 0, "throw"
   x_w_               @ ( haddr X:haddr )
   mw_                @ ( RP_handler )
   rsp_w_             @ ( RP_handler ) (R: callerret DSP hxt)
-  rpop_              @ ( hxt ) (R: callerret DSP )
+  w_r_               @ ( hxt ) (R: callerret DSP )
   mx_w_              @ ( hxt )
-  rpopdsp_           @ ( DSP )(R: callerret )
+  dsp_r_             @ ( DSP )(R: callerret )
   lit_ 1             @ ( 1 )
   end_
 

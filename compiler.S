@@ -155,7 +155,7 @@ Forthword_ DPSTORE, 0, "@dp="
 @ ( s-addr len len' d-addr -- d-addr+len)
 @ copies a counted string with flags from s-addr to d-addr
 Forthword_ COPYSTRING, 0, "copy$"
-  rpushb_            @ ( s-addr len len' d-addr ) (R: b )
+  r_b_               @ ( s-addr len len' d-addr ) (R: b )
   b_w_               @ ( s-addr len len' d-addr ) B:d-addr
   d0_                @ ( s-addr len len' len' )
   y_d1_              @ ( s-addr len len' len' ) Y:len
@@ -189,14 +189,14 @@ COPYSTRING_DO:
 
 COPYSTRING_DONE:
   b_                 @ ( s-addr len len' s-addr+len )
-  nip3_              @ ( s-addr+len )
-  rpopb_             @ ( s-addr+len ) B:b (R: )
+  d_m3_              @ ( s-addr+len )
+  b_r_               @ ( s-addr+len ) B:b (R: )
   end_
 
 @ ( addr len len' -- )
 @ copies a counted string with flags to program ram
 Forthword_ STRINGPROGSTORE, 0, "@cp=s"
-  push_
+  d_w_
   do_ CP
   do_ COPYSTRING
   y_w_
@@ -207,7 +207,7 @@ Forthword_ STRINGPROGSTORE, 0, "@cp=s"
 @ ( addr len len' -- )
 @ copies a counted string with flags to dictionary ram
 Forthword_ STRINGDICTSTORE, 0, "@dp=s"
-  push_
+  d_w_
   do_ DP
   do_ COPYSTRING
   y_w_
@@ -224,7 +224,7 @@ Forthword_ STRINGDICTSTORE, 0, "@dp=s"
 @ count is the number of bytes copied
 Forthword_ COPY_HWORD_UNTIL, 0, "copy.hword.until"
   @ fetch from ram and check if equal to match byte
-  rpusha_            @ ( source destination term ) (R: A )
+  r_a_               @ ( source destination term ) (R: A )
   x_w_               @ ( source destination term ) X: term
   b_d0_              @ ( source destination match ) B: destination
   y_d1_              @ ( source destination match ) Y: source
@@ -242,10 +242,10 @@ CBU_BEGIN:
 
 CBU_DONE:
   y_d0_              @ ( source destination byte ) Y: destination
-  nip2_              @ ( byte )
+  d_m2_              @ ( byte )
   b_                 @ ( destination+count )
   w_minus_y_         @ ( count )
-  rpopa_             @ ( count ) (R: ) A:A
+  a_r_               @ ( count ) (R: ) A:A
   end_
 
 
@@ -254,10 +254,9 @@ CBU_DONE:
 Forthword_ INLINE, 0, "inline"
   @ find the bx lr instruction, want count to bx lr
   @ count will be number of half words to inline
-  push_                    @ ( start start )
+  d_w_                     @ ( start start )
   do_ CP                   @ ( start CP )
-  push_                    @ ( start CP CP )
+  d_w_                     @ ( start CP CP )
   lit_ 0x4770              @ ( start CP 0x4770 )
   do_ COPY_HWORD_UNTIL     @ ( count )
   end_do_ CPPLUS
-

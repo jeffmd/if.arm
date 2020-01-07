@@ -63,7 +63,7 @@ forthword_ ZEROLESS, INLINE_OPT, "0<"
 Forthword_ BTOW, 0, "btow"
   y_w_        @ ( len Y:len )
   y_twoslash_ @ ( len Y:len/2 )
-  pushy_      @ ( len/2 len )
+  d_y_        @ ( len/2 len )
   y_twostar_  @ ( len/2 len Y:len' )
   w_minus_y_  @ ( len/2 rem )
   end_
@@ -72,9 +72,9 @@ Forthword_ BTOW, 0, "btow"
 @ count is the number of bytes to copy and must be a multiple of two
 @ copy ram using half words.  Assumes no overlap.
 Forthword_ MCPY, 0, "mcpy"
-  rpushb_
-  popb_             @ ( start count ) B:dest
-  popx_             @ ( count ) X:start
+  r_b_
+  b_d_              @ ( start count ) B:dest
+  x_d_              @ ( count ) X:start
   y_w_              @ ( count Y:count )
 
 MCPY_LOOP:
@@ -88,5 +88,5 @@ MCPY_LOOP:
   goto_ MCPY_LOOP
 
 MCPY_END:
-  rpopb_
+  b_r_
   end_
