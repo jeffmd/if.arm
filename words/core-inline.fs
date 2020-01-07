@@ -1,5 +1,35 @@
 \ core-inline.fs - core inlined words
 
+( n -- ? n  )
+\ restore top of data stack once
+rword d+1 inlined
+  _dsp d= 4 _subsi ,
+  _bxlr ,
+
+( n -- ? ? n  )
+\ restore top of data stack twice
+rword d+2 inlined
+  _dsp d= 8 _subsi ,
+  _bxlr ,
+
+( n -- ? ? ? n  )
+\ restore top of data stack three times
+rword d+3 inlined
+  _dsp d= 12 _subsi ,
+  _bxlr ,
+
+( n1 n2 n3 -- n3)
+\ drop top of data stack twice
+rword d-2 inlined
+  _dsp d= 8 _addsi ,
+  _bxlr ,
+
+( n1 n2 n3 n4 -- n4)
+\ drop top of data stack three times
+rword d-3 inlined
+  _dsp d= 12 _addsi ,
+  _bxlr ,
+
 ( -- a )
 \ working register = a
 rword a inlined

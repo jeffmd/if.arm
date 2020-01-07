@@ -2,24 +2,6 @@
 
 @@@@@@@@@@@@@ Parameter Stack  Manipulation @@@@@@@@@@@@@@
 
-@ ( n -- ? n  )
-@ restore top of data stack once
-Forthword_ D_P1, INLINE_OPT, "d+1"
-  d_p1_
-  end_  
-  
-@ ( n -- ? ? n )
-@ restore top of data stack twice
-Forthword_ D_P2, INLINE_OPT, "d+2"
-  d_p2_
-  end_  
-  
-@ ( n -- ? ? ? n)
-@ restore top of data stack three times
-Forthword_ D_P3, INLINE_OPT, "d+3"
-  d_p3_
-  end_  
-  
 @ ( n -- n n )
 @ push wreg onto data stack
 Forthword_ D_W, INLINE_OPT, "d="
@@ -268,18 +250,6 @@ Forthword_ D2_Y, INLINE_OPT, "d2=y"
 @ drop NOS, one before wreg.
 Forthword_ D_M1, INLINE_OPT, "d-1"
   d_m1_
-  end_
-
-@ ( n1 n2 n3 -- n3)
-@ drop 2 cells from stack.
-Forthword_ D_M2, INLINE_OPT, "d-2"
-  d_m2_
-  end_
-
-@ ( n1 n2 n3 n4 -- n4)
-@ drop three cells from data stack.
-Forthword_ D_M3, INLINE_OPT, "d-3"
-  d_m3_
   end_
 
 @ ( n1 n2 -- n1)
