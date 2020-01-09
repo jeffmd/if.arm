@@ -71,25 +71,25 @@ rword _r2 inlined
 \ move immediate into register
 ( Rd val8 -- )
 : _movsi
-  d= 4 _oprdval
+  d= 4 _oprdv8
 ;
 
 \ compare immediate with register
 ( Rd val8 -- )
 : _cmpsi
-  d= 5 _oprdval
+  d= 5 _oprdv8
 ;
 
 \ add immediate to register
 ( Rd val8 -- )
 : _addsi
-  d= 6 _oprdval
+  d= 6 _oprdv8
 ;
 
 \ subtract immediate from register
 ( Rd val8 -- )
 : _subsi
-  d= 7 _oprdval
+  d= 7 _oprdv8
 ;
 
 \ and source Rs with destination Rd
@@ -208,21 +208,21 @@ rword _r2 inlined
 \ Rd = Rs << val5
 ( Rd Rs val5 -- )
 : _lslsi
-  d= $0 _opvalrsrd
+  d= $0 _opv5rsrd
 ;
 
 \ logical shift right Rs by immediate val5 bits and put result in Rd
 \ Rd = Rs >> val5
 ( Rd Rs val5 -- )
 : _lsrsi
-  d= $1 _opvalrsrd
+  d= $1 _opv5rsrd
 ;
 
 \ arithmetic shift right Rs by immediate val5 bits and put result in Rd
 \ Rd = Rs >> val5
 ( Rd Rs val5 -- asrsi )
 : _asrsi
-  d= $2 _opvalrsrd
+  d= $2 _opv5rsrd
 ;
 
 \ add registers
@@ -256,36 +256,55 @@ rword _r2 inlined
 \ store 32bit value in Rd to memory location pointed to by Rs + immediate offset
 ( Rd Rs offset -- )
 : _str
-  d= %01100 _opvalrsrd
+  d= %01100 _opv5rsrd
 ;
 
 \ store 8bit value in Rd to memory location pointed to by Rs + immediate offset
 ( Rd Rs offset -- )
 : _strb
-  d= %01110 _opvalrsrd
+  d= %01110 _opv5rsrd
 ;
 
 \ load Rd with 32bit value from memory pointed to by Rs + immediate offset
 ( Rd Rs offset -- )
 : _ldr
-  d= %01101 _opvalrsrd
+  d= %01101 _opv5rsrd
 ;
 
 \ load Rd with 8bit value from memory pointed to by Rs + immediate offset
 ( Rd Rs offset -- )
 : _ldrb
-  d= %01111 _opvalrsrd
+  d= %01111 _opv5rsrd
 ;
 
 \ store 16bit value in Rd to memory location pointed to by Rs + immediate offset
 ( Rd Rs offset -- )
 : _strh
-  d= %10000 _opvalrsrd
+  d= %10000 _opv5rsrd
 ;
 
 \ load Rd with 16bit value from memory pointed to by Rs + immediate offset
 ( Rd Rs offset -- )
 : _ldrh
-  d= %10001 _opvalrsrd
+  d= %10001 _opv5rsrd
 ;
 
+\ store 32bit value in Rd to memory location pointed to by SP + immediate offset
+( Rd offset -- )
+: _strsp
+  d= %10010 _oprdv8
+;
+
+\ load Rd with 32bit value from memory pointed to by SP + immediate offset
+( Rd Rs offset -- )
+: _ldrsp
+  d= %10011 _oprdv8
+;
+
+\ load Rs with 32bit value poped from Rd stack
+( Rd Rs -- )
+: _ldmia!
+  y=
+  1 [ _w d= _y _lsls , ]
+  d= %11001 _oprdv8
+;

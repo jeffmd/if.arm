@@ -30,6 +30,196 @@ rword d-3 inlined
   _dsp d= 12 _addsi ,
   _bxlr ,
 
+( n1 n2 -- n1 a n2 )
+\ push register A onto top of data stack
+rword d=a inlined
+  _dsp d= 4 _subsi ,
+  _a d= _dsp d= 0 _str ,
+  _bxlr ,
+
+( n1 n2 -- n1 b n2 )
+\ push register B onto top of data stack
+rword d=b inlined
+  _dsp d= 4 _subsi ,
+  _b d= _dsp d= 0 _str ,
+  _bxlr ,
+
+( n1 n2 -- n1 x n2 )
+\ push register X onto top of data stack
+rword d=x inlined
+  _dsp d= 4 _subsi ,
+  _x d= _dsp d= 0 _str ,
+  _bxlr ,
+
+( n1 n2 -- n1 y n2 )
+\ push register Y onto top of data stack
+rword d=y inlined
+  _dsp d= 4 _subsi ,
+  _y d= _dsp d= 0 _str ,
+  _bxlr ,
+
+( n1 n2 n3 -- n1 n3 A:n2 )
+\ pop top of data stack into register A
+rword a=d inlined
+  _dsp d= _a _ldmia! ,
+  _bxlr ,
+
+( n1 n2 n3 -- n1 n3 B:n2 )
+\ pop top of data stack into register B
+rword b=d inlined
+  _dsp d= _b _ldmia! ,
+  _bxlr ,
+
+( n1 n2 n3 -- n1 n3 X:n2 )
+\ pop top of data stack into register X
+rword x=d inlined
+  _dsp d= _x _ldmia! ,
+  _bxlr ,
+
+( n1 n2 n3 -- n1 n3 Y:n2 )
+\ pop top of data stack into register Y
+\ rword y=d inlined
+\  _dsp d= _y _ldmia! ,
+\  _bxlr ,
+
+( n2 n1 -- n2 n1 X:n2 )
+\ d0 WR
+rword x=d0 inlined
+  _x d= _dsp d= 0 _ldr ,
+  _bxlr ,
+
+( n2 n1 -- n2 n1 A:n2 )
+\ d0 WR
+rword a=d0 inlined
+  _a d= _dsp d= 0 _ldr ,
+  _bxlr ,
+
+( n2 n1 -- n2 n1 B:n2 )
+\ d0 WR
+rword b=d0 inlined
+  _b d= _dsp d= 0 _ldr ,
+  _bxlr ,
+
+( n3 n2 n1 -- n3 n2 n1 X:n3 )
+\ d1 d0 WR
+rword x=d1 inlined
+  _x d= _dsp d= 4 _ldr ,
+  _bxlr ,
+
+( n3 n2 n1 -- n3 n2 n1 Y:n3 )
+\ d1 d0 WR
+rword y=d1 inlined
+  _y d= _dsp d= 4 _ldr ,
+  _bxlr ,
+
+( n3 n2 n1 -- n3 n2 n1 A:n3 )
+\ d1 d0 WR
+rword a=d1 inlined
+  _a d= _dsp d= 4 _ldr ,
+  _bxlr ,
+
+( n3 n2 n1 -- n3 n2 n1 B:n3 )
+\ d1 d0 WR
+rword b=d1 inlined
+  _b d= _dsp d= 4 _ldr ,
+  _bxlr ,
+
+( n4 n3 n2 n1 -- n4 n3 n2 n1 X:n4 )
+\ d2 d1 d0 WR
+rword x=d2 inlined
+  _x d= _dsp d= 8 _ldr ,
+  _bxlr ,
+
+( n4 n3 n2 n1 -- n4 n3 n2 n1 Y:n4 )
+\ d2 d1 d0 WR
+rword y=d2 inlined
+  _y d= _dsp d= 8 _ldr ,
+  _bxlr ,
+
+( n4 n3 n2 n1 -- n4 n3 n2 n1 A:n4 )
+\ d2 d1 d0 WR
+rword a=d2 inlined
+  _a d= _dsp d= 8 _ldr ,
+  _bxlr ,
+
+( n4 n3 n2 n1 -- n4 n3 n2 n1 B:n4 )
+\ d2 d1 d0 WR
+rword b=d2 inlined
+  _b d= _dsp d= 8 _ldr ,
+  _bxlr ,
+
+(  ? n2 -- n1 n2 X:n1 )
+\ d0 WR
+rword d0=x inlined
+  _x d= _dsp d= 0 _str ,
+  _bxlr ,
+
+(  ? n2 -- n1 n2 Y:n1 )
+\ d0 WR
+rword d0=y inlined
+  _y d= _dsp d= 0 _str ,
+  _bxlr ,
+
+(  ? n2 -- n1 n2 A:n1 )
+\ d0 WR
+rword d0=a inlined
+  _a d= _dsp d= 0 _str ,
+  _bxlr ,
+
+(  ? n2 -- n1 n2 B:n1 )
+\ d0 WR
+rword d0=b inlined
+  _b d= _dsp d= 0 _str ,
+  _bxlr ,
+
+(  ?  ? n2 -- n1 ? n2 X:n1 )
+\ d1 d0 WR
+rword d1=x inlined
+  _x d= _dsp d= 4 _str ,
+  _bxlr ,
+
+(  ?  ? n2 -- n1 ? n2 Y:n1 )
+\ d1 d0 WR
+rword d1=y inlined
+  _y d= _dsp d= 4 _str ,
+  _bxlr ,
+
+(  ?  ? n2 -- n1 ? n2 A:n1 )
+\ d1 d0 WR
+rword d1=a inlined
+  _a d= _dsp d= 4 _str ,
+  _bxlr ,
+
+(  ?  ? n2 -- n1 ? n2 B:n1 )
+\ d1 d0 WR
+rword d1=b inlined
+  _b d= _dsp d= 4 _str ,
+  _bxlr ,
+
+(  ?  ?  ? n2 -- n1 ? ? n2 X:n1 )
+\ d2 d1 d0 WR
+rword d2=x inlined
+  _x d= _dsp d= 8 _str ,
+  _bxlr ,
+
+(  ?  ?  ? n2 -- n1 ? ? n2 Y:n1 )
+\ d2 d1 d0 WR
+rword d2=y inlined
+  _y d= _dsp d= 8 _str ,
+  _bxlr ,
+
+(  ?  ?  ? n2 -- n1 ? ? n2 A:n1 )
+\ d2 d1 d0 WR
+rword d2=a inlined
+  _a d= _dsp d= 8 _str ,
+  _bxlr ,
+
+(  ?  ?  ? n2 -- n1 ? ? n2 B:n1 )
+\ d2 d1 d0 WR
+rword d2=b inlined
+  _b d= _dsp d= 8 _str ,
+  _bxlr ,
+
 ( -- a )
 \ working register = a
 rword a inlined
@@ -232,4 +422,28 @@ rword c@a inlined
 \ store a single byte to RAM address pointed to by areg
 rword c@a= inlined
   _w d= _a d= 0 _strb ,
+  _bxlr ,
+
+( n Y:n2 -- n<<n2 )
+\ left shift working register by value in Y register
+rword <<y inlined
+  _w d= _y _lsls ,
+  _bxlr ,
+
+( n Y:n2 -- n>>n2 )
+\ right shift working register by value in Y register
+rword >>y inlined
+  _w d= _y _lsrs ,
+  _bxlr ,
+
+( n X:n2 -- n<<n2 )
+\ left shift working register by value in X register
+rword <<x inlined
+  _w d= _x _lsls ,
+  _bxlr ,
+
+( n X:n2 -- n>>n2 )
+\ right shift working register by value in X register
+rword >>x inlined
+  _w d= _x _lsrs ,
   _bxlr ,

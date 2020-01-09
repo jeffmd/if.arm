@@ -8,34 +8,6 @@ Forthword_ D_W, INLINE_OPT, "d="
   d_w_
   end_
 
-@ ( n1 n2 -- n1 a  n2 )
-@   d0 WR    d1 d0 WR
-@ push register A onto top of data stack
-Forthword_ D_A, INLINE_OPT, "d=a"
-  d_a_
-  end_
-
-@ ( n1 n2 -- n1 b  n2 )
-@   d0 WR    d1 d0 WR
-@ push register B onto top of data stack
-Forthword_ D_B, INLINE_OPT, "d=b"
-  d_b_
-  end_
-
-@ ( n1 n2 -- n1 x  n2 )
-@   d0 WR    d1 d0 WR
-@ push register X onto top of data stack
-Forthword_ D_X, INLINE_OPT, "d=x"
-  d_x_
-  end_
-
-@ ( n1 n2 -- n1 y  n2 )
-@   d0 WR    d1 d0 WR
-@ push register Y onto top of data stack
-Forthword_ D_Y, INLINE_OPT, "d=y"
-  d_y_
-  end_
-
 @ ( n2 n1 -- n2 n2 )
 @   d0 WR
 @ w=d0
@@ -49,7 +21,13 @@ Forthword_ D0, INLINE_OPT, "d0"
 Forthword_ D1, INLINE_OPT, "d1"
   d1_
   end_
-  
+
+@ ( n2 n1 -- n2 n1 Y:n2 )
+@   d0 WR
+Forthword_ Y_D0, INLINE_OPT, "y=d0"
+  y_d0_
+  end_
+
 @ ( n4 n3 n2 n1 -- n4 n3 n2 n4 )
 @   d2 d1 d0 WR
 @ w=d2
@@ -77,175 +55,7 @@ Forthword_ D1_W, INLINE_OPT, "d1="
 Forthword_ D2_W, INLINE_OPT, "d2="
   d2_w_
   end_
-    
-@ ( n2 n1 -- n2 n1 ) A: n2
-@   d0 WR
-@ a=d0
-Forthword_ A_D0, INLINE_OPT, "a=d0"
-  a_d0_
-  end_
-  
-@ ( n2 n1 -- n2 n1 ) B: n2
-@   d0 WR
-@ b=d0
-Forthword_ B_D0, INLINE_OPT, "b=d0"
-  b_d0_
-  end_
-  
-@ ( n2 n1 -- n2 n1 ) X: n2
-@   d0 WR
-@ x=d0
-Forthword_ X_D0, INLINE_OPT, "x=d0"
-  x_d0_
-  end_
-  
-@ ( n2 n1 -- n2 n1 ) Y: n2
-@   d0 WR
-@ y=d0
-Forthword_ Y_D0, INLINE_OPT, "y=d0"
-  y_d0_
-  end_
-   
-@ ( n3 n2 n1 -- n3 n2 n1 ) A: n3
-@   d1 d0 WR
-@ a=d1
-Forthword_ A_D1, INLINE_OPT, "a=d1"
-  a_d1_
-  end_
-  
-@ ( n3 n2 n1 -- n3 n2 n1 ) B: n3
-@   d1 d0 WR
-@ b=d1
-Forthword_ B_D1, INLINE_OPT, "b=d1"
-  b_d1_
-  end_
-  
-@ ( n3 n2 n1 -- n3 n2 n1 ) X: n3
-@   d1 d0 WR
-@ x=d1
-Forthword_ X_D1, INLINE_OPT, "x=d1"
-  x_d1_
-  end_
-  
-@ ( n3 n2 n1 -- n3 n2 n1 ) Y: n3
-@   d1 d0 WR
-@ y=d1
-Forthword_ Y_D1, INLINE_OPT, "y=d1"
-  y_d1_
-  end_
-  
-@ ( n4 n3 n2 n1 -- n4 n3 n2 n1 ) A: n4
-@   d2 d1 d0 WR
-@ a=d2
-Forthword_ A_D2, INLINE_OPT, "a=d2"
-  a_d2_
-  end_
-  
-@ ( n4 n3 n2 n1 -- n4 n3 n2 n1 ) B: n4
-@   d2 d1 d0 WR
-@ b=d2
-Forthword_ B_D2, INLINE_OPT, "b=d2"
-  b_d2_
-  end_
-
-@ ( n4 n3 n2 n1 -- n4 n3 n2 n1 ) X: n4
-@   d2 d1 d0 WR
-@ x=d2
-Forthword_ X_D2, INLINE_OPT, "x=d2"
-  x_d2_
-  end_
-  
-@ ( n4 n3 n2 n1 -- n4 n3 n2 n1 ) Y: n4
-@   d2 d1 d0 WR
-@ y=d2
-Forthword_ Y_D2, INLINE_OPT, "y=d2"
-  y_d2_
-  end_
-  
-@ ( ?  n2 -- n1 n2 ) A: n1
-@   d0 WR
-@ d0=a
-Forthword_ D0_A, INLINE_OPT, "d0=a"
-  d0_a_
-  end_
-  
-@ ( ?  n2 -- n1 n2 ) B: n1
-@   d0 WR
-@ d0=b
-Forthword_ D0_B, INLINE_OPT, "d0=b"
-  d0_b_
-  end_
-  
-@ ( ?  n2 -- n1 n2 ) X: n1
-@   d0 WR
-@ d0=x
-Forthword_ D0_X, INLINE_OPT, "d0=x"
-  d0_x_
-  end_
-  
-@ ( ?  n2 -- n1 n2 ) Y: n1
-@   d0 WR
-@ d0=y
-Forthword_ D0_Y, INLINE_OPT, "d0=y"
-  d0_y_
-  end_
-  
-@ ( ?  ?  n1 -- n2 ? n1 ) A: n2
-@   d1 d0 WR
-@ d1=a
-Forthword_ D1_A, INLINE_OPT, "d1=a"
-  d1_a_
-  end_
-  
-@ ( ?  ?  n1 -- n2 ?  n1 ) B: n2
-@   d1 d0 WR
-@ d1=b
-Forthword_ D1_B, INLINE_OPT, "d1=b"
-  d1_b_
-  end_
-  
-@ ( ?  ?  n1 -- n2 ?  n1 ) X: n2
-@   d1 d0 WR
-@ d1=x
-Forthword_ D1_X, INLINE_OPT, "d1=x"
-  d1_x_
-  end_
-  
-@ ( ?  ?  n1 -- n2 ?  n1 ) Y: n2
-@   d1 d0 WR
-@ d1=y
-Forthword_ D1_Y, INLINE_OPT, "d1=y"
-  d1_y_
-  end_
-  
-@ ( ?  ?  ?  n1 -- n2 ?  ? n1 ) A: n2
-@   d2 d1 d0 WR
-@ d2=a
-Forthword_ D2_A, INLINE_OPT, "d2=a"
-  d2_a_
-  end_
-  
-@ ( ?  ?  ?  n1 -- n2 ?  ? n1 ) B: n2
-@   d2 d1 d0 WR
-@ d2=b
-Forthword_ D2_B, INLINE_OPT, "d2=b"
-  d2_b_
-  end_
-  
-@ ( ?  ?  ?  n1 -- n2 ?  ? n1 ) X: n2
-@   d2 d1 d0 WR
-@ d2=x
-Forthword_ D2_X, INLINE_OPT, "d2=x"
-  d2_x_
-  end_
-  
-@ ( ?  ?  ?  n1 -- n2 ?  ? n1 ) Y: n2
-@   d2 d1 d0 WR    d2 d1 d0 WR
-@ d2=y
-Forthword_ D2_Y, INLINE_OPT, "d2=y"
-  d2_y_
-  end_
-
+       
 @ ( n1 n2 -- n2)
 @ drop NOS, one before wreg.
 Forthword_ D_M1, INLINE_OPT, "d-1"
@@ -257,27 +67,6 @@ Forthword_ D_M1, INLINE_OPT, "d-1"
 @ pop top of data stack into WR
 Forthword_ W_D, INLINE_OPT, "=d"
   w_d_
-  end_
-
-@ ( n1 n2 n3 -- n1 n3 ) A: n2
-@   d1 d0 WR    d0 WR
-@ pop top of data stack into register A
-Forthword_ A_D, INLINE_OPT, "a=d"
-  a_d_
-  end_
-
-@ ( n1 n2 n3 -- n1 n3 ) B: n2
-@   d1 d0 WR    d0 WR
-@ pop top of data stack into register B
-Forthword_ B_D, INLINE_OPT, "b=d"
-  b_d_
-  end_
-
-@ ( n1 n2 n3 -- n1 n3 ) X: n2
-@   d1 d0 WR    d0 WR
-@ pop top of data stack into register X
-Forthword_ X_D, INLINE_OPT, "x=d"
-  x_d_
   end_
 
 @ ( n1 n2 n3 -- n1 n3 ) Y: n2
@@ -1248,19 +1037,6 @@ Forthword_ ISZERO, INLINE_OPT, "==0"
   iszero_
   end_  
   
-@ ( n1 n2 -- n3)
-@ logically shift n1 left n2 times
-forthword_ LSHIFT, INLINE_OPT, "<<"
-  lshift_
-  end_
-
-@ ( n1 n2 -- n3)
-@ logically shift n1 right n2 times
-forthword_ RSHIFT, INLINE_OPT, ">>"
-  rshift_
-  end_
-
-
 @ ( a-addr -- n32 )
 @ read 1 cell (32 bits) from RAM address
 Forthword_ FETCH, INLINE_OPT, "@"

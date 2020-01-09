@@ -25,7 +25,7 @@ Forthword_ OPRSRD, 0, "_oprsrd"
 @  15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
 @ |      op      |   val5   |  Rs |  Rd |
 @ buil arm thumb assembler instruction    
-Forthword_ OPVALRSRD, 0, "_opvalrsrd"
+Forthword_ OPV5RSRD, 0, "_opv5rsrd"
   y_d_               @ ( Rd Rs op ) Y:val5
   movs r1, #31
   ands yreg, r1      @ ( Rd Rs op ) Y:val5&31
@@ -91,7 +91,7 @@ OPHIRSRD_END:
 @  15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
 @ |       op     |  Rd  |  8 bit val    |
 @ build arm thumb assembler instruction    
-Forthword_ OPRDVAL, 0, "_oprdval"
+Forthword_ OPRDV8, 0, "_oprdv8"
   lsls wreg, #3         @ ( val8 Rd op000 )
   @ mask val with 255
   x_d_                  @ ( Rd opxxx X:val8 )

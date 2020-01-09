@@ -1260,16 +1260,36 @@ sysvar .req r4 @ system variables base pointer
   not_
 .endm
 
-.macro lshift_
-  ldm dsp!, {r1}
-  lsls r1, wreg
-  mov wreg, r1
+.macro lshifty_
+  lsls wreg, yreg
 .endm
 
-.macro rshift_
-  ldm dsp!, {r1}
-  lsrs r1, wreg
-  mov wreg, r1
+.macro rshifty_
+  lsrs wreg, yreg
+.endm
+
+.macro lshiftx_
+  lsls wreg, xreg
+.endm
+
+.macro rshiftx_
+  lsrs wreg, xreg
+.endm
+
+.macro lshifta_
+  lsls wreg, areg
+.endm
+
+.macro rshifta_
+  lsrs wreg, areg
+.endm
+
+.macro lshiftb_
+  lsls wreg, breg
+.endm
+
+.macro rshiftb_
+  lsrs wreg, breg
 .endm
 
 @ fetch from memory pointed to by working register and store in register

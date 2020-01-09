@@ -23,23 +23,6 @@
   push c@x= 0=
 ;
 
-( c<name> -- )
-\ Compiler
-\ creates a RAM based defer vector
-: rdefer
-    (create)
-    cur@ !
-
-    compile (def)
-
-   \ here ,
-   \ 2 allot
-
-   \ ['] @ ,
-   \ ['] ! ,
-;
-
-
 \ signed multiply n1 * n2 and division  with n3 with double
 \ precision intermediate and remainder
 : */mod  ( n1 n2 n3 -- rem quot )

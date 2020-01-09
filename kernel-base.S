@@ -78,23 +78,23 @@ Forthword_ PNIB, 0, ".h"
 @ ( n -- )
 @ simple 32 bit hex print
 Forthword_ PHEX, 0, ".$"
-  d_w_
-  lit_ '$
+  d_w_      @ ( n n )
+  lit_ '$   @ ( n '$ )
   do_ EMIT
-  lit_ 28
+  r_a_      @ ( n ? ) (R: a )
+  lit_a_ 28 @ ( n A:cnt )
+
 PHEX_BEGIN:
-  y_d0_
-  d_w_
-  d_y_       @ ( n x n x )
-  rshift_
-  do_ PNIB
-  w_d_
-  fourminus_
+  d0_       @ ( n n )
+  rshifta_  @ ( n n>>cnt )
+  do_ PNIB  @ ( n ? )
+  a_minus4_
   ifnz_ PHEX_BEGIN
 
-  w_d_
+  a_r_      @ ( n ? ) (R: )
+  w_d_      @ ( n )
   do_ PNIB
-  lit_ 32
+  lit_ 32   @ ( 32 )
   end_do_ EMIT
 
 @ ( -- )
