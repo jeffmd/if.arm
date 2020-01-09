@@ -69,13 +69,6 @@ Forthword_ W_D, INLINE_OPT, "=d"
   w_d_
   end_
 
-@ ( n1 n2 n3 -- n1 n3 ) Y: n2
-@   d1 d0 WR    d0 WR
-@ pop top of data stack into register Y
-Forthword_ Y_D, INLINE_OPT, "y=d"
-  y_d_
-  end_
-
 @ (  -- addr )
 @ current data stack pointer
 Forthword_ DSP, INLINE_OPT, "dsp"

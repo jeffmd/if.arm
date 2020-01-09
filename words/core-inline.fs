@@ -78,9 +78,9 @@ rword x=d inlined
 
 ( n1 n2 n3 -- n1 n3 Y:n2 )
 \ pop top of data stack into register Y
-\ rword y=d inlined
-\  _dsp d= _y _ldmia! ,
-\  _bxlr ,
+rword y=d inlined
+  _dsp d= _y _ldmia! ,
+  _bxlr ,
 
 ( n2 n1 -- n2 n1 X:n2 )
 \ d0 WR
@@ -103,49 +103,49 @@ rword b=d0 inlined
 ( n3 n2 n1 -- n3 n2 n1 X:n3 )
 \ d1 d0 WR
 rword x=d1 inlined
-  _x d= _dsp d= 4 _ldr ,
+  _x d= _dsp d= 1 _ldr ,
   _bxlr ,
 
 ( n3 n2 n1 -- n3 n2 n1 Y:n3 )
 \ d1 d0 WR
 rword y=d1 inlined
-  _y d= _dsp d= 4 _ldr ,
+  _y d= _dsp d= 1 _ldr ,
   _bxlr ,
 
 ( n3 n2 n1 -- n3 n2 n1 A:n3 )
 \ d1 d0 WR
 rword a=d1 inlined
-  _a d= _dsp d= 4 _ldr ,
+  _a d= _dsp d= 1 _ldr ,
   _bxlr ,
 
 ( n3 n2 n1 -- n3 n2 n1 B:n3 )
 \ d1 d0 WR
 rword b=d1 inlined
-  _b d= _dsp d= 4 _ldr ,
+  _b d= _dsp d= 1 _ldr ,
   _bxlr ,
 
 ( n4 n3 n2 n1 -- n4 n3 n2 n1 X:n4 )
 \ d2 d1 d0 WR
 rword x=d2 inlined
-  _x d= _dsp d= 8 _ldr ,
+  _x d= _dsp d= 2 _ldr ,
   _bxlr ,
 
 ( n4 n3 n2 n1 -- n4 n3 n2 n1 Y:n4 )
 \ d2 d1 d0 WR
 rword y=d2 inlined
-  _y d= _dsp d= 8 _ldr ,
+  _y d= _dsp d= 2 _ldr ,
   _bxlr ,
 
 ( n4 n3 n2 n1 -- n4 n3 n2 n1 A:n4 )
 \ d2 d1 d0 WR
 rword a=d2 inlined
-  _a d= _dsp d= 8 _ldr ,
+  _a d= _dsp d= 2 _ldr ,
   _bxlr ,
 
 ( n4 n3 n2 n1 -- n4 n3 n2 n1 B:n4 )
 \ d2 d1 d0 WR
 rword b=d2 inlined
-  _b d= _dsp d= 8 _ldr ,
+  _b d= _dsp d= 2 _ldr ,
   _bxlr ,
 
 (  ? n2 -- n1 n2 X:n1 )
@@ -175,49 +175,49 @@ rword d0=b inlined
 (  ?  ? n2 -- n1 ? n2 X:n1 )
 \ d1 d0 WR
 rword d1=x inlined
-  _x d= _dsp d= 4 _str ,
+  _x d= _dsp d= 1 _str ,
   _bxlr ,
 
 (  ?  ? n2 -- n1 ? n2 Y:n1 )
 \ d1 d0 WR
 rword d1=y inlined
-  _y d= _dsp d= 4 _str ,
+  _y d= _dsp d= 1 _str ,
   _bxlr ,
 
 (  ?  ? n2 -- n1 ? n2 A:n1 )
 \ d1 d0 WR
 rword d1=a inlined
-  _a d= _dsp d= 4 _str ,
+  _a d= _dsp d= 1 _str ,
   _bxlr ,
 
 (  ?  ? n2 -- n1 ? n2 B:n1 )
 \ d1 d0 WR
 rword d1=b inlined
-  _b d= _dsp d= 4 _str ,
+  _b d= _dsp d= 1 _str ,
   _bxlr ,
 
 (  ?  ?  ? n2 -- n1 ? ? n2 X:n1 )
 \ d2 d1 d0 WR
 rword d2=x inlined
-  _x d= _dsp d= 8 _str ,
+  _x d= _dsp d= 2 _str ,
   _bxlr ,
 
 (  ?  ?  ? n2 -- n1 ? ? n2 Y:n1 )
 \ d2 d1 d0 WR
 rword d2=y inlined
-  _y d= _dsp d= 8 _str ,
+  _y d= _dsp d= 2 _str ,
   _bxlr ,
 
 (  ?  ?  ? n2 -- n1 ? ? n2 A:n1 )
 \ d2 d1 d0 WR
 rword d2=a inlined
-  _a d= _dsp d= 8 _str ,
+  _a d= _dsp d= 2 _str ,
   _bxlr ,
 
 (  ?  ?  ? n2 -- n1 ? ? n2 B:n1 )
 \ d2 d1 d0 WR
 rword d2=b inlined
-  _b d= _dsp d= 8 _str ,
+  _b d= _dsp d= 2 _str ,
   _bxlr ,
 
 ( -- a )
