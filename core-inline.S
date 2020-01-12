@@ -1,4 +1,5 @@
 @ core-inline.S - inlinned words using core macros
+@ these inlined words are needed for boot and core
 
 @@@@@@@@@@@@@ Parameter Stack  Manipulation @@@@@@@@@@@@@@
 
@@ -89,76 +90,10 @@ Forthword_ W_R, INLINE_OPT, "=r"
   w_r_
   end_
 
-@ ( -- ) (R: n2 --) A: n2
-@ pop top of return stack into A
-Forthword_ A_R, INLINE_OPT, "a=r"
-  a_r_
-  end_
-
-@ ( -- ) (R: n2 --) B: n2
-@ pop top of return stack into B
-Forthword_ B_R, INLINE_OPT, "b=r"
-  b_r_
-  end_
-
-@ ( -- ) (R: n2 --) X: n2
-@ pop top of return stack into X
-Forthword_ X_R, INLINE_OPT, "x=r"
-  x_r_
-  end_
-
-@ ( -- ) (R: n2 --) Y: n2
-@ pop top of return stack into Y
-Forthword_ Y_R, INLINE_OPT, "y=r"
-  y_r_
-  end_
-
-@ ( -- ) (R: n -- )
-@ Drop TOR
-Forthword_ R_M1, INLINE_OPT, "r-1"
-  r_m1_
-  end_
-
-@ ( -- ) (R: n2 n1 -- )
-@ remove 2 top cells of return stack
-Forthword_ R_M2, INLINE_OPT, "r-2"
-  r_m2_
-  end_
-
-@ ( -- ) (R: n3 n2 n1 -- )
-@ remove 3 top cells of return stack
-Forthword_ R_M3, INLINE_OPT, "r-3"
-  r_m3_
-  end_
-
 @ ( n -- n ) (R: -- n )
 @ push WR on top of return stack
 Forthword_ R_W, INLINE_OPT, "r="
   r_w_
-  end_
-
-@ ( -- ) (R: -- a)
-@ push A on top of return stack
-Forthword_ R_A, INLINE_OPT, "r=a"
-  r_a_
-  end_
-
-@ ( -- ) (R: -- b)
-@ push B on top of return stack
-Forthword_ R_B, INLINE_OPT, "r=b"
-  r_b_
-  end_
-
-@ ( -- ) (R: -- x)
-@ push X on top of return stack
-Forthword_ R_X, INLINE_OPT, "r=x"
-  r_x_
-  end_
-
-@ ( -- ) (R: -- y)
-@ push Y on top of return stack
-Forthword_ R_Y, INLINE_OPT, "r=y"
-  r_y_
   end_
 
 @ ( -- ) (R: -- sp)

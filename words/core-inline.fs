@@ -1,5 +1,23 @@
 \ core-inline.fs - core inlined words
 
+( -- ) ( R: n -- )
+\ Drop TOR
+rword r-1 inlined
+  1 _addsp ,
+  _bxlr ,
+
+( -- ) ( R: n1 n2 -- )
+\ remove 2 top cells of return stack
+rword r-2 inlined
+  2 _addsp ,
+  _bxlr ,
+
+( -- ) ( R: n1 n2 -- )
+\ remove 3 top cells of return stack
+rword r-3 inlined
+  3 _addsp ,
+  _bxlr ,
+
 ( n -- ? n  )
 \ restore top of data stack once
 rword d+1 inlined
@@ -218,6 +236,12 @@ rword d2=a inlined
 \ d2 d1 d0 WR
 rword d2=b inlined
   _b d= _dsp d= 2 _str ,
+  _bxlr ,
+
+\ (  -- addr )
+\ current data stack pointer
+rword dsp inlined
+  _w d= _dsp _mov ,
   _bxlr ,
 
 ( -- a )
@@ -447,3 +471,52 @@ rword <<x inlined
 rword >>x inlined
   _w d= _x _lsrs ,
   _bxlr ,
+
+\ push X register value onto return stack
+( reg -- ) ( R: -- x )
+rword r=x inlined
+  _x y= 1 <<y _push ,
+  _bxlr ,
+
+\ push Y register value onto return stack
+( reg -- ) ( R: -- y )
+rword r=y inlined
+  _y y= 1 <<y _push ,
+  _bxlr ,
+
+\ push A register value onto return stack
+( reg -- ) ( R: -- a )
+rword r=a inlined
+  _a y= 1 <<y _push ,
+  _bxlr ,
+
+\ push B register value onto return stack
+( reg -- ) ( R: -- b )
+rword r=b inlined
+  _b y= 1 <<y _push ,
+  _bxlr ,
+
+\ pop value from return stack into register X
+( -- X:x ) ( R: x -- )
+rword x=r inlined
+  _x y= 1 <<y _pop ,
+  _bxlr ,
+
+\ pop value from return stack into register Y
+( -- Y:y ) ( R: y -- )
+rword y=r inlined
+  _y y= 1 <<y _pop ,
+  _bxlr ,
+
+\ pop value from return stack into register A
+( -- A:a ) ( R: a -- )
+rword a=r inlined
+  _a y= 1 <<y _pop ,
+  _bxlr ,
+
+\ pop value from return stack into register B
+( -- B:b ) ( R: b -- )
+rword b=r inlined
+  _b y= 1 <<y _pop ,
+  _bxlr ,
+

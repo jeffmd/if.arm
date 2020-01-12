@@ -254,57 +254,93 @@ rword _r2 inlined
 ;
 
 \ store 32bit value in Rd to memory location pointed to by Rs + immediate offset
-( Rd Rs offset -- )
+( Rd Rs offset -- str )
 : _str
   d= %01100 _opv5rsrd
 ;
 
 \ store 8bit value in Rd to memory location pointed to by Rs + immediate offset
-( Rd Rs offset -- )
+( Rd Rs offset -- strb )
 : _strb
   d= %01110 _opv5rsrd
 ;
 
 \ load Rd with 32bit value from memory pointed to by Rs + immediate offset
-( Rd Rs offset -- )
+( Rd Rs offset -- ldr )
 : _ldr
   d= %01101 _opv5rsrd
 ;
 
 \ load Rd with 8bit value from memory pointed to by Rs + immediate offset
-( Rd Rs offset -- )
+( Rd Rs offset -- opv5rsrd )
 : _ldrb
   d= %01111 _opv5rsrd
 ;
 
 \ store 16bit value in Rd to memory location pointed to by Rs + immediate offset
-( Rd Rs offset -- )
+( Rd Rs offset -- strh )
 : _strh
   d= %10000 _opv5rsrd
 ;
 
 \ load Rd with 16bit value from memory pointed to by Rs + immediate offset
-( Rd Rs offset -- )
+( Rd Rs offset -- ldrh )
 : _ldrh
   d= %10001 _opv5rsrd
 ;
 
 \ store 32bit value in Rd to memory location pointed to by SP + immediate offset
-( Rd offset -- )
+( Rd offset -- strsp )
 : _strsp
   d= %10010 _oprdv8
 ;
 
 \ load Rd with 32bit value from memory pointed to by SP + immediate offset
-( Rd Rs offset -- )
+( Rd offset -- ldrsp )
 : _ldrsp
   d= %10011 _oprdv8
 ;
 
 \ load Rs with 32bit value poped from Rd stack
-( Rd Rs -- )
+( Rd Rs -- ldmia! )
 : _ldmia!
   y=
   1 [ _w d= _y _lsls , ]
   d= %11001 _oprdv8
+;
+
+\ add 7bit word offset to stack pointer
+\ 1 _addsp
+\ sp = sp + 1 word (4 bytes)
+( offset -- addsp )
+: _addsp
+  y: $7F [ _y d= _w _ands , ]
+  $B000 |=y
+;
+
+\ subtract 7bit word offset from stack pointer
+\ 1 _subsp
+\ sp = sp - 1 word (4 bytes)
+( offset -- subsp )
+: _subsp
+  y: $7F [ _y d= _w _ands , ]
+  $B080 |=y
+;
+
+\ push registers onto return stack
+\ list is an 8 bit value indicating which registers to push
+\ r7 r6 r5 r4 r3 r2 r1 r0
+( list -- push )
+: _push
+  y: $FF [ _y d= _w _ands , ]
+  $B400 |=y
+;
+
+\ pop registers from return stack
+\ list is an 8 bit value indicating which registers to pop
+\ r7 r6 r5 r4 r3 r2 r1 r0
+( list -- pop )
+: _pop
+  y: $FF [ _y d= _w _ands , ]
+  $BC00 |=y
 ;
