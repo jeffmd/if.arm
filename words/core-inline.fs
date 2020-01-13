@@ -18,6 +18,246 @@ rword r-3 inlined
   3 _addsp ,
   _bxlr ,
 
+( -- n ) ( R: n -- n )
+\            R0
+\ load value from top of return stack into working register
+\ w = rsp[0]
+rword r0 inlined
+  _w d= 0 _ldrsp ,
+  _bxlr ,
+
+( -- n1 ) ( R: n1 n2 -- n1 n2 )
+\              R1 R0
+\ load value from return stack into working register
+\ w = rsp[1]
+rword r1 inlined
+  _w d= 1 _ldrsp ,
+  _bxlr ,
+
+( -- n1 ) ( R: n1 n2 n3 -- n1 n2 n3 )
+\              R2 R1 R0
+\ load value from return stack into working register
+\ w = rsp[2]
+rword r2 inlined
+  _w d= 2 _ldrsp ,
+  _bxlr ,
+
+( -- A:n ) ( R: n -- n )
+\              R0
+\ load value from top of return stack into register A
+\ a = rsp[0]
+rword a=r0 inlined
+  _a d= 0 _ldrsp ,
+  _bxlr ,
+
+( -- A:n1 ) ( R: n1 n2 -- n1 n2 )
+\                R1 R0
+\ load value from return stack into register A
+\ a = rsp[1]
+rword a=r1 inlined
+  _a d= 1 _ldrsp ,
+  _bxlr ,
+
+( -- A:n1 ) ( R: n1 n2 n3 -- n1 n2 n3 )
+\                R2 R1 R0
+\ load value from return stack into register A
+\ a = rsp[2]
+rword a=r2 inlined
+  _a d= 2 _ldrsp ,
+  _bxlr ,
+
+( -- B:n ) ( R: n -- n )
+\              R0
+\ load value from top of return stack into register B
+\ b = rsp[0]
+rword b=r0 inlined
+  _b d= 0 _ldrsp ,
+  _bxlr ,
+
+( -- B:n1 ) ( R: n1 n2 -- n1 n2 )
+\                R1 R0
+\ load value from return stack into register B
+\ b = rsp[1]
+rword b=r1 inlined
+  _b d= 1 _ldrsp ,
+  _bxlr ,
+
+( -- B:n1 ) ( R: n1 n2 n3 -- n1 n2 n3 )
+\                R2 R1 R0
+\ load value from return stack into register B
+\ b = rsp[2]
+rword b=r2 inlined
+  _b d= 2 _ldrsp ,
+  _bxlr ,
+
+( -- X:n ) ( R: n -- n )
+\              R0
+\ load value from top of return stack into register X
+\ x = rsp[0]
+rword x=r0 inlined
+  _x d= 0 _ldrsp ,
+  _bxlr ,
+
+( -- X:n1 ) ( R: n1 n2 -- n1 n2 )
+\                R1 R0
+\ load value from return stack into register X
+\ x = rsp[1]
+rword x=r1 inlined
+  _x d= 1 _ldrsp ,
+  _bxlr ,
+
+( -- X:n1 ) ( R: n1 n2 n3 -- n1 n2 n3 )
+\                R2 R1 R0
+\ load value from return stack into register X
+\ x = rsp[2]
+rword x=r2 inlined
+  _x d= 2 _ldrsp ,
+  _bxlr ,
+
+( -- Y:n ) ( R: n -- n )
+\              R0
+\ load value from top of return stack into register Y
+\ y = rsp[0]
+rword y=r0 inlined
+  _y d= 0 _ldrsp ,
+  _bxlr ,
+
+( -- Y:n1 ) ( R: n1 n2 -- n1 n2 )
+\                R1 R0
+\ load value from return stack into register Y
+\ y = rsp[1]
+rword y=r1 inlined
+  _y d= 1 _ldrsp ,
+  _bxlr ,
+
+( -- Y:n1 ) ( R: n1 n2 n3 -- n1 n2 n3 )
+\                R2 R1 R0
+\ load value from return stack into register Y
+\ y = rsp[2]
+rword y=r2 inlined
+  _y d= 2 _ldrsp ,
+  _bxlr ,
+
+( n -- n ) ( R: ? -- n )
+\            R0
+\ store working register into top of return stack
+\ rsp[0] = w
+rword r0= inlined
+  _w d= 0 _strsp ,
+  _bxlr ,
+
+( n1 -- n1 ) ( R: n3 n2 -- n1 n2 )
+\                 R1 R0
+\ store working register into return stack
+\ rsp[1] = w
+rword r1= inlined
+  _w d= 1 _strsp ,
+  _bxlr ,
+
+( n1 -- n1 ) ( R: n4 n2 n3 -- n1 n2 n3 )
+\                 R2 R1 R0
+\ store working register into return stack
+\ rsp[2] = w
+rword r2= inlined
+  _w d= 2 _strsp ,
+  _bxlr ,
+
+( A:n -- A:n ) ( R: ? -- n )
+\                  R0
+\ store register A into return stack
+\ rsp[0] = a
+rword r0=a inlined
+  _a d= 0 _strsp ,
+  _bxlr ,
+
+( A:n1 -- A:n1 ) ( R: n3 n2 -- n1 n2 )
+\                     R1 R0
+\ store register A into return stack
+\ rsp[1] = a
+rword r1=a inlined
+  _a d= 1 _strsp ,
+  _bxlr ,
+
+( A:n1 -- A:n1 ) ( R: n4 n2 n3 -- n1 n2 n3 )
+\                     R2 R1 R0
+\ store register A into return stack
+\ rsp[2] = a
+rword r2=a inlined
+  _a d= 2 _strsp ,
+  _bxlr ,
+
+( B:n -- B:n ) ( R: ? -- n )
+\                  R0
+\ store register B into return stack
+\ rsp[0] = b
+rword r0=b inlined
+  _b d= 0 _strsp ,
+  _bxlr ,
+
+( B:n1 -- B:n1 ) ( R: n3 n2 -- n1 n2 )
+\                     R1 R0
+\ store register B into return stack
+\ rsp[1] = b
+rword r1=b inlined
+  _b d= 1 _strsp ,
+  _bxlr ,
+
+( B:n1 -- B:n1 ) ( R: n4 n2 n3 -- n1 n2 n3 )
+\                     R2 R1 R0
+\ store register B into return stack
+\ rsp[2] = b
+rword r2=b inlined
+  _b d= 2 _strsp ,
+  _bxlr ,
+
+( X:n -- X:n ) ( R: ? -- n )
+\                  R0
+\ store register X into return stack
+\ rsp[0] = x
+rword r0=x inlined
+  _x d= 0 _strsp ,
+  _bxlr ,
+
+( X:n1 -- X:n1 ) ( R: n3 n2 -- n1 n2 )
+\                     R1 R0
+\ store register X into return stack
+\ rsp[1] = x
+rword r1=x inlined
+  _x d= 1 _strsp ,
+  _bxlr ,
+
+( X:n1 -- X:n1 ) ( R: n4 n2 n3 -- n1 n2 n3 )
+\                     R2 R1 R0
+\ store register X into return stack
+\ rsp[2] = x
+rword r2=x inlined
+  _x d= 2 _strsp ,
+  _bxlr ,
+
+( Y:n -- Y:n ) ( R: ? -- n )
+\                  R0
+\ store register Y into return stack
+\ rsp[0] = y
+rword r0=y inlined
+  _y d= 0 _strsp ,
+  _bxlr ,
+
+( Y:n1 -- Y:n1 ) ( R: n3 n2 -- n1 n2 )
+\                     R1 R0
+\ store register Y into return stack
+\ rsp[1] = y
+rword r1=y inlined
+  _y d= 1 _strsp ,
+  _bxlr ,
+
+( Y:n1 -- Y:n1 ) ( R: n4 n2 n3 -- n1 n2 n3 )
+\                     R2 R1 R0
+\ store register Y into return stack
+\ rsp[2] = y
+rword r2=y inlined
+  _y d= 2 _strsp ,
+  _bxlr ,
+
 ( n -- ? n  )
 \ restore top of data stack once
 rword d+1 inlined
@@ -268,6 +508,20 @@ rword b= inlined
   _b d= _w _mov ,
   _bxlr ,
 
+( addr -- addr DSP:addr )
+\ set data stack pointer to addr
+\ dsp = working register
+rword dsp= inlined
+  _dsp d= _w _mov ,
+  _bxlr ,
+
+( ? DSP:addr -- addr DSP:addr )
+\ current data stack pointer
+\ working register = dsp
+rword dsp inlined
+  _w d= _dsp _mov ,
+  _bxlr ,
+
 ( -- X:X+1 )
 \ x = x + 1
 rword x+=1 inlined
@@ -473,27 +727,33 @@ rword >>x inlined
   _bxlr ,
 
 \ push X register value onto return stack
-( reg -- ) ( R: -- x )
+( -- ) ( R: -- x )
 rword r=x inlined
   _x y= 1 <<y _push ,
   _bxlr ,
 
 \ push Y register value onto return stack
-( reg -- ) ( R: -- y )
+( -- ) ( R: -- y )
 rword r=y inlined
   _y y= 1 <<y _push ,
   _bxlr ,
 
 \ push A register value onto return stack
-( reg -- ) ( R: -- a )
+( -- ) ( R: -- a )
 rword r=a inlined
   _a y= 1 <<y _push ,
   _bxlr ,
 
 \ push B register value onto return stack
-( reg -- ) ( R: -- b )
+( -- ) ( R: -- b )
 rword r=b inlined
   _b y= 1 <<y _push ,
+  _bxlr ,
+
+\ push dsp register value onto return stack
+( -- ) ( R: -- dsp )
+rword r=dsp inlined
+  _dsp y= 1 <<y _push ,
   _bxlr ,
 
 \ pop value from return stack into register X
