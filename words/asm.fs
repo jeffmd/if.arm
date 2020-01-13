@@ -4,7 +4,7 @@ rword _w inlined
   ] 0 [
   _bxlr ,
 
-rword _r1 inlined
+rword _t1 inlined
   ] 1 [
   _bxlr ,
 
@@ -49,11 +49,11 @@ rword _d0 inlined
   _bxlr ,
 
 rword _d1 inlined
-  ] 4 [
+  ] 1 [
   _bxlr ,
 
 rword _d2 inlined
-  ] 8 [
+  ] 2 [
   _bxlr ,
 
 rword _r0 inlined
@@ -61,11 +61,11 @@ rword _r0 inlined
   _bxlr ,
 
 rword _r1 inlined
-  ] 4 [
+  ] 1 [
   _bxlr ,
 
 rword _r2 inlined
-  ] 8 [
+  ] 2 [
   _bxlr ,
 
 \ move immediate into register
@@ -314,7 +314,7 @@ rword _r2 inlined
 \ sp = sp + 1 word (4 bytes)
 ( offset -- addsp )
 : _addsp
-  y: $7F [ _y d= _w _ands , ]
+  y# $7F [ _y d= _w _ands , ]
   $B000 |=y
 ;
 
@@ -323,7 +323,7 @@ rword _r2 inlined
 \ sp = sp - 1 word (4 bytes)
 ( offset -- subsp )
 : _subsp
-  y: $7F [ _y d= _w _ands , ]
+  y# $7F [ _y d= _w _ands , ]
   $B080 |=y
 ;
 
@@ -332,7 +332,7 @@ rword _r2 inlined
 \ r7 r6 r5 r4 r3 r2 r1 r0
 ( list -- push )
 : _push
-  y: $FF [ _y d= _w _ands , ]
+  y# $FF [ _y d= _w _ands , ]
   $B400 |=y
 ;
 
@@ -341,6 +341,6 @@ rword _r2 inlined
 \ r7 r6 r5 r4 r3 r2 r1 r0
 ( list -- pop )
 : _pop
-  y: $FF [ _y d= _w _ands , ]
+  y# $FF [ _y d= _w _ands , ]
   $BC00 |=y
 ;

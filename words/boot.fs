@@ -5,7 +5,7 @@
 \ header ( addr len wid -- nfa )
 \ build header entry in dictionary 
 dp d=           \ ( nfa nfa ) name field address
-pname header d= y: $FF00 |=y @dp=s \ ( nfa ? )
+pname header d= y# $FF00 |=y @dp=s \ ( nfa ? )
   current @ @   \ ( nfa linkaddr ) get latest word
   @dp=          \ ( nfa ? ) set link field to prev word in vocab
   cp @dp= =d    \ ( nfa ) set code pointer field

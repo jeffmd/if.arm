@@ -208,35 +208,35 @@ Forthword_ IFZ, 0, "_ifz"
 
 @ compile top of stack as inlinned immediate 32 bit constant
 @ ( n -- )
-Forthword_ WLIT_C, 0, "w:,"
+Forthword_ WLIT_C, 0, "#,"
   d_w_                    @ ( n n )
   zero_
   end_do_ LIT_C
 
 @ compile Y register load inlinned immediate 32 bit constant
 @ ( n -- )
-Forthword_ YLIT_C, 0, "y:,"
+Forthword_ YLIT_C, 0, "y#,"
   d_w_                     @ ( n n )
   lit_ 3                   @ ( n yreg )
   end_do_ LIT_C
 
 @ compile X register load inlinned immediate 32 bit constant
 @ ( n -- )
-Forthword_ XLIT_C, 0, "x:,"
+Forthword_ XLIT_C, 0, "x#,"
   d_w_                     @ ( n n )
   lit_ 2                   @ ( n xreg )
   end_do_ LIT_C
 
 @ compile A register load inlinned immediate 32 bit constant
 @ ( n -- )
-Forthword_ ALIT_C, 0, "a:,"
+Forthword_ ALIT_C, 0, "a#,"
   d_w_                     @ ( n n )
   lit_ 5                   @ ( n areg )
   end_do_ LIT_C
 
 @ compile B register load inlinned immediate 32 bit constant
 @ ( n -- )
-Forthword_ BLIT_C, 0, "b:,"
+Forthword_ BLIT_C, 0, "b#,"
   d_w_                     @ ( n n )
   lit_ 6                   @ ( n breg )
   end_do_ LIT_C

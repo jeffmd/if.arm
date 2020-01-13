@@ -48,7 +48,7 @@
 \ of the next word in working register
 : [char]
     char
-    w:,
+    #,
 ; immediate
 
 ( -- )
@@ -263,7 +263,7 @@
 : con
     d= rword
     =d
-    w:,
+    #,
     _bxlr ,
     clrcache
 ;

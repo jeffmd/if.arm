@@ -23,7 +23,7 @@ rword r-3 inlined
 \ load value from top of return stack into working register
 \ w = rsp[0]
 rword r0 inlined
-  _w d= 0 _ldrsp ,
+  _w d= _r0 _ldrsp ,
   _bxlr ,
 
 ( -- n1 ) ( R: n1 n2 -- n1 n2 )
@@ -31,7 +31,7 @@ rword r0 inlined
 \ load value from return stack into working register
 \ w = rsp[1]
 rword r1 inlined
-  _w d= 1 _ldrsp ,
+  _w d= _r1 _ldrsp ,
   _bxlr ,
 
 ( -- n1 ) ( R: n1 n2 n3 -- n1 n2 n3 )
@@ -39,7 +39,7 @@ rword r1 inlined
 \ load value from return stack into working register
 \ w = rsp[2]
 rword r2 inlined
-  _w d= 2 _ldrsp ,
+  _w d= _r2 _ldrsp ,
   _bxlr ,
 
 ( -- A:n ) ( R: n -- n )
@@ -47,7 +47,7 @@ rword r2 inlined
 \ load value from top of return stack into register A
 \ a = rsp[0]
 rword a=r0 inlined
-  _a d= 0 _ldrsp ,
+  _a d= _r0 _ldrsp ,
   _bxlr ,
 
 ( -- A:n1 ) ( R: n1 n2 -- n1 n2 )
@@ -55,7 +55,7 @@ rword a=r0 inlined
 \ load value from return stack into register A
 \ a = rsp[1]
 rword a=r1 inlined
-  _a d= 1 _ldrsp ,
+  _a d= _r1 _ldrsp ,
   _bxlr ,
 
 ( -- A:n1 ) ( R: n1 n2 n3 -- n1 n2 n3 )
@@ -63,7 +63,7 @@ rword a=r1 inlined
 \ load value from return stack into register A
 \ a = rsp[2]
 rword a=r2 inlined
-  _a d= 2 _ldrsp ,
+  _a d= _r2 _ldrsp ,
   _bxlr ,
 
 ( -- B:n ) ( R: n -- n )
@@ -71,7 +71,7 @@ rword a=r2 inlined
 \ load value from top of return stack into register B
 \ b = rsp[0]
 rword b=r0 inlined
-  _b d= 0 _ldrsp ,
+  _b d= _r0 _ldrsp ,
   _bxlr ,
 
 ( -- B:n1 ) ( R: n1 n2 -- n1 n2 )
@@ -79,7 +79,7 @@ rword b=r0 inlined
 \ load value from return stack into register B
 \ b = rsp[1]
 rword b=r1 inlined
-  _b d= 1 _ldrsp ,
+  _b d= _r1 _ldrsp ,
   _bxlr ,
 
 ( -- B:n1 ) ( R: n1 n2 n3 -- n1 n2 n3 )
@@ -87,7 +87,7 @@ rword b=r1 inlined
 \ load value from return stack into register B
 \ b = rsp[2]
 rword b=r2 inlined
-  _b d= 2 _ldrsp ,
+  _b d= _r2 _ldrsp ,
   _bxlr ,
 
 ( -- X:n ) ( R: n -- n )
@@ -95,7 +95,7 @@ rword b=r2 inlined
 \ load value from top of return stack into register X
 \ x = rsp[0]
 rword x=r0 inlined
-  _x d= 0 _ldrsp ,
+  _x d= _r0 _ldrsp ,
   _bxlr ,
 
 ( -- X:n1 ) ( R: n1 n2 -- n1 n2 )
@@ -103,7 +103,7 @@ rword x=r0 inlined
 \ load value from return stack into register X
 \ x = rsp[1]
 rword x=r1 inlined
-  _x d= 1 _ldrsp ,
+  _x d= _r1 _ldrsp ,
   _bxlr ,
 
 ( -- X:n1 ) ( R: n1 n2 n3 -- n1 n2 n3 )
@@ -111,7 +111,7 @@ rword x=r1 inlined
 \ load value from return stack into register X
 \ x = rsp[2]
 rword x=r2 inlined
-  _x d= 2 _ldrsp ,
+  _x d= _r2 _ldrsp ,
   _bxlr ,
 
 ( -- Y:n ) ( R: n -- n )
@@ -119,7 +119,7 @@ rword x=r2 inlined
 \ load value from top of return stack into register Y
 \ y = rsp[0]
 rword y=r0 inlined
-  _y d= 0 _ldrsp ,
+  _y d= _r0 _ldrsp ,
   _bxlr ,
 
 ( -- Y:n1 ) ( R: n1 n2 -- n1 n2 )
@@ -127,7 +127,7 @@ rword y=r0 inlined
 \ load value from return stack into register Y
 \ y = rsp[1]
 rword y=r1 inlined
-  _y d= 1 _ldrsp ,
+  _y d= _r1 _ldrsp ,
   _bxlr ,
 
 ( -- Y:n1 ) ( R: n1 n2 n3 -- n1 n2 n3 )
@@ -135,7 +135,7 @@ rword y=r1 inlined
 \ load value from return stack into register Y
 \ y = rsp[2]
 rword y=r2 inlined
-  _y d= 2 _ldrsp ,
+  _y d= _r2 _ldrsp ,
   _bxlr ,
 
 ( n -- n ) ( R: ? -- n )
@@ -143,7 +143,7 @@ rword y=r2 inlined
 \ store working register into top of return stack
 \ rsp[0] = w
 rword r0= inlined
-  _w d= 0 _strsp ,
+  _w d= _r0 _strsp ,
   _bxlr ,
 
 ( n1 -- n1 ) ( R: n3 n2 -- n1 n2 )
@@ -151,7 +151,7 @@ rword r0= inlined
 \ store working register into return stack
 \ rsp[1] = w
 rword r1= inlined
-  _w d= 1 _strsp ,
+  _w d= _r1 _strsp ,
   _bxlr ,
 
 ( n1 -- n1 ) ( R: n4 n2 n3 -- n1 n2 n3 )
@@ -159,7 +159,7 @@ rword r1= inlined
 \ store working register into return stack
 \ rsp[2] = w
 rword r2= inlined
-  _w d= 2 _strsp ,
+  _w d= _r2 _strsp ,
   _bxlr ,
 
 ( A:n -- A:n ) ( R: ? -- n )
@@ -167,7 +167,7 @@ rword r2= inlined
 \ store register A into return stack
 \ rsp[0] = a
 rword r0=a inlined
-  _a d= 0 _strsp ,
+  _a d= _r0 _strsp ,
   _bxlr ,
 
 ( A:n1 -- A:n1 ) ( R: n3 n2 -- n1 n2 )
@@ -175,7 +175,7 @@ rword r0=a inlined
 \ store register A into return stack
 \ rsp[1] = a
 rword r1=a inlined
-  _a d= 1 _strsp ,
+  _a d= _r1 _strsp ,
   _bxlr ,
 
 ( A:n1 -- A:n1 ) ( R: n4 n2 n3 -- n1 n2 n3 )
@@ -183,7 +183,7 @@ rword r1=a inlined
 \ store register A into return stack
 \ rsp[2] = a
 rword r2=a inlined
-  _a d= 2 _strsp ,
+  _a d= _r2 _strsp ,
   _bxlr ,
 
 ( B:n -- B:n ) ( R: ? -- n )
@@ -191,7 +191,7 @@ rword r2=a inlined
 \ store register B into return stack
 \ rsp[0] = b
 rword r0=b inlined
-  _b d= 0 _strsp ,
+  _b d= _r0 _strsp ,
   _bxlr ,
 
 ( B:n1 -- B:n1 ) ( R: n3 n2 -- n1 n2 )
@@ -199,7 +199,7 @@ rword r0=b inlined
 \ store register B into return stack
 \ rsp[1] = b
 rword r1=b inlined
-  _b d= 1 _strsp ,
+  _b d= _r1 _strsp ,
   _bxlr ,
 
 ( B:n1 -- B:n1 ) ( R: n4 n2 n3 -- n1 n2 n3 )
@@ -207,7 +207,7 @@ rword r1=b inlined
 \ store register B into return stack
 \ rsp[2] = b
 rword r2=b inlined
-  _b d= 2 _strsp ,
+  _b d= _r2 _strsp ,
   _bxlr ,
 
 ( X:n -- X:n ) ( R: ? -- n )
@@ -215,7 +215,7 @@ rword r2=b inlined
 \ store register X into return stack
 \ rsp[0] = x
 rword r0=x inlined
-  _x d= 0 _strsp ,
+  _x d= _r0 _strsp ,
   _bxlr ,
 
 ( X:n1 -- X:n1 ) ( R: n3 n2 -- n1 n2 )
@@ -223,7 +223,7 @@ rword r0=x inlined
 \ store register X into return stack
 \ rsp[1] = x
 rword r1=x inlined
-  _x d= 1 _strsp ,
+  _x d= _r1 _strsp ,
   _bxlr ,
 
 ( X:n1 -- X:n1 ) ( R: n4 n2 n3 -- n1 n2 n3 )
@@ -231,7 +231,7 @@ rword r1=x inlined
 \ store register X into return stack
 \ rsp[2] = x
 rword r2=x inlined
-  _x d= 2 _strsp ,
+  _x d= _r2 _strsp ,
   _bxlr ,
 
 ( Y:n -- Y:n ) ( R: ? -- n )
@@ -239,7 +239,7 @@ rword r2=x inlined
 \ store register Y into return stack
 \ rsp[0] = y
 rword r0=y inlined
-  _y d= 0 _strsp ,
+  _y d= _r0 _strsp ,
   _bxlr ,
 
 ( Y:n1 -- Y:n1 ) ( R: n3 n2 -- n1 n2 )
@@ -247,7 +247,7 @@ rword r0=y inlined
 \ store register Y into return stack
 \ rsp[1] = y
 rword r1=y inlined
-  _y d= 1 _strsp ,
+  _y d= _r1 _strsp ,
   _bxlr ,
 
 ( Y:n1 -- Y:n1 ) ( R: n4 n2 n3 -- n1 n2 n3 )
@@ -255,7 +255,7 @@ rword r1=y inlined
 \ store register Y into return stack
 \ rsp[2] = y
 rword r2=y inlined
-  _y d= 2 _strsp ,
+  _y d= _r2 _strsp ,
   _bxlr ,
 
 ( n -- ? n  )
@@ -343,139 +343,139 @@ rword y=d inlined
 ( n2 n1 -- n2 n1 X:n2 )
 \ d0 WR
 rword x=d0 inlined
-  _x d= _dsp d= 0 _ldr ,
+  _x d= _dsp d= _d0 _ldr ,
   _bxlr ,
 
 ( n2 n1 -- n2 n1 A:n2 )
 \ d0 WR
 rword a=d0 inlined
-  _a d= _dsp d= 0 _ldr ,
+  _a d= _dsp d= _d0 _ldr ,
   _bxlr ,
 
 ( n2 n1 -- n2 n1 B:n2 )
 \ d0 WR
 rword b=d0 inlined
-  _b d= _dsp d= 0 _ldr ,
+  _b d= _dsp d= _d0 _ldr ,
   _bxlr ,
 
 ( n3 n2 n1 -- n3 n2 n1 X:n3 )
 \ d1 d0 WR
 rword x=d1 inlined
-  _x d= _dsp d= 1 _ldr ,
+  _x d= _dsp d= _d1 _ldr ,
   _bxlr ,
 
 ( n3 n2 n1 -- n3 n2 n1 Y:n3 )
 \ d1 d0 WR
 rword y=d1 inlined
-  _y d= _dsp d= 1 _ldr ,
+  _y d= _dsp d= _d1 _ldr ,
   _bxlr ,
 
 ( n3 n2 n1 -- n3 n2 n1 A:n3 )
 \ d1 d0 WR
 rword a=d1 inlined
-  _a d= _dsp d= 1 _ldr ,
+  _a d= _dsp d= _d1 _ldr ,
   _bxlr ,
 
 ( n3 n2 n1 -- n3 n2 n1 B:n3 )
 \ d1 d0 WR
 rword b=d1 inlined
-  _b d= _dsp d= 1 _ldr ,
+  _b d= _dsp d= _d1 _ldr ,
   _bxlr ,
 
 ( n4 n3 n2 n1 -- n4 n3 n2 n1 X:n4 )
 \ d2 d1 d0 WR
 rword x=d2 inlined
-  _x d= _dsp d= 2 _ldr ,
+  _x d= _dsp d= _d2 _ldr ,
   _bxlr ,
 
 ( n4 n3 n2 n1 -- n4 n3 n2 n1 Y:n4 )
 \ d2 d1 d0 WR
 rword y=d2 inlined
-  _y d= _dsp d= 2 _ldr ,
+  _y d= _dsp d= _d2 _ldr ,
   _bxlr ,
 
 ( n4 n3 n2 n1 -- n4 n3 n2 n1 A:n4 )
 \ d2 d1 d0 WR
 rword a=d2 inlined
-  _a d= _dsp d= 2 _ldr ,
+  _a d= _dsp d= _d2 _ldr ,
   _bxlr ,
 
 ( n4 n3 n2 n1 -- n4 n3 n2 n1 B:n4 )
 \ d2 d1 d0 WR
 rword b=d2 inlined
-  _b d= _dsp d= 2 _ldr ,
+  _b d= _dsp d= _d2 _ldr ,
   _bxlr ,
 
 (  ? n2 -- n1 n2 X:n1 )
 \ d0 WR
 rword d0=x inlined
-  _x d= _dsp d= 0 _str ,
+  _x d= _dsp d= _d0 _str ,
   _bxlr ,
 
 (  ? n2 -- n1 n2 Y:n1 )
 \ d0 WR
 rword d0=y inlined
-  _y d= _dsp d= 0 _str ,
+  _y d= _dsp d= _d0 _str ,
   _bxlr ,
 
 (  ? n2 -- n1 n2 A:n1 )
 \ d0 WR
 rword d0=a inlined
-  _a d= _dsp d= 0 _str ,
+  _a d= _dsp d= _d0 _str ,
   _bxlr ,
 
 (  ? n2 -- n1 n2 B:n1 )
 \ d0 WR
 rword d0=b inlined
-  _b d= _dsp d= 0 _str ,
+  _b d= _dsp d= _d0 _str ,
   _bxlr ,
 
 (  ?  ? n2 -- n1 ? n2 X:n1 )
 \ d1 d0 WR
 rword d1=x inlined
-  _x d= _dsp d= 1 _str ,
+  _x d= _dsp d= _d1 _str ,
   _bxlr ,
 
 (  ?  ? n2 -- n1 ? n2 Y:n1 )
 \ d1 d0 WR
 rword d1=y inlined
-  _y d= _dsp d= 1 _str ,
+  _y d= _dsp d= _d1 _str ,
   _bxlr ,
 
 (  ?  ? n2 -- n1 ? n2 A:n1 )
 \ d1 d0 WR
 rword d1=a inlined
-  _a d= _dsp d= 1 _str ,
+  _a d= _dsp d= _d1 _str ,
   _bxlr ,
 
 (  ?  ? n2 -- n1 ? n2 B:n1 )
 \ d1 d0 WR
 rword d1=b inlined
-  _b d= _dsp d= 1 _str ,
+  _b d= _dsp d= _d1 _str ,
   _bxlr ,
 
 (  ?  ?  ? n2 -- n1 ? ? n2 X:n1 )
 \ d2 d1 d0 WR
 rword d2=x inlined
-  _x d= _dsp d= 2 _str ,
+  _x d= _dsp d= _d2 _str ,
   _bxlr ,
 
 (  ?  ?  ? n2 -- n1 ? ? n2 Y:n1 )
 \ d2 d1 d0 WR
 rword d2=y inlined
-  _y d= _dsp d= 2 _str ,
+  _y d= _dsp d= _d2 _str ,
   _bxlr ,
 
 (  ?  ?  ? n2 -- n1 ? ? n2 A:n1 )
 \ d2 d1 d0 WR
 rword d2=a inlined
-  _a d= _dsp d= 2 _str ,
+  _a d= _dsp d= _d2 _str ,
   _bxlr ,
 
 (  ?  ?  ? n2 -- n1 ? ? n2 B:n1 )
 \ d2 d1 d0 WR
 rword d2=b inlined
-  _b d= _dsp d= 2 _str ,
+  _b d= _dsp d= _d2 _str ,
   _bxlr ,
 
 \ (  -- addr )

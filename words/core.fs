@@ -122,7 +122,7 @@ rword dcell* inlined
 \ compiles xt as literal
 : [']
     '
-    w:,
+    #,
 ; :ic
 
 
@@ -133,11 +133,11 @@ rword dcell* inlined
 : ['f]
     'f
     d= d1
-    w:,
+    #,
     \ compile literal of 'f push
-    [ 'f d= d= d1 w:, ]
+    [ 'f d= d= d1 #, ]
     d=
-    [ d0 w:, d-1 =d ]
+    [ d0 #, d-1 =d ]
     xt,
-    d0 w:, d-1 =d
+    d0 #, d-1 =d
 ; :ic

@@ -42,7 +42,7 @@ YLIT_C:
 
 @ ( -- )
 @ Select W register for literal
-Forthword_ WSET, IMMEDIATE_EN, "w:"
+Forthword_ WSET, IMMEDIATE_EN, "#"
   d_w_
   lit32_ WLIT_C
   d_w_
@@ -51,7 +51,7 @@ Forthword_ WSET, IMMEDIATE_EN, "w:"
   
 @ ( -- )
 @ Select A register for literal
-Forthword_ ASET, IMMEDIATE_EN, "a:"
+Forthword_ ASET, IMMEDIATE_EN, "a#"
   d_w_
   lit32_ ALIT_C
   d_w_
@@ -60,7 +60,7 @@ Forthword_ ASET, IMMEDIATE_EN, "a:"
 
 @ ( -- )
 @ Select B register for literal
-Forthword_ BSET, IMMEDIATE_EN, "b:"
+Forthword_ BSET, IMMEDIATE_EN, "b#"
   d_w_
   lit32_ BLIT_C
   d_w_
@@ -69,7 +69,7 @@ Forthword_ BSET, IMMEDIATE_EN, "b:"
 
 @ ( -- )
 @ Select X register for literal
-Forthword_ XSET, IMMEDIATE_EN, "x:"
+Forthword_ XSET, IMMEDIATE_EN, "x#"
   d_w_
   lit32_ XLIT_C
   d_w_
@@ -78,7 +78,7 @@ Forthword_ XSET, IMMEDIATE_EN, "x:"
 
 @ ( -- )
 @ Select Y register for literal
-Forthword_ YSET, IMMEDIATE_EN, "y:"
+Forthword_ YSET, IMMEDIATE_EN, "y#"
   d_w_
   lit32_ YLIT_C
   d_w_
@@ -87,7 +87,7 @@ Forthword_ YSET, IMMEDIATE_EN, "y:"
 
 @ ( n -- )
 @ store n in WR
-Forthword_ WLIT_INTERP, IMMEDIATE_EN, "[w:]"
+Forthword_ WLIT_INTERP, IMMEDIATE_EN, "[#]"
   y_w_
   user_ WR
   mw_y_
@@ -95,7 +95,7 @@ Forthword_ WLIT_INTERP, IMMEDIATE_EN, "[w:]"
 
 @ ( n -- )
 @ store n in RY
-Forthword_ YLIT_INTERP, IMMEDIATE_EN, "[y:]"
+Forthword_ YLIT_INTERP, IMMEDIATE_EN, "[y#]"
   y_w_
   user_ RY
   mw_y_
@@ -103,7 +103,7 @@ Forthword_ YLIT_INTERP, IMMEDIATE_EN, "[y:]"
 
 @ ( n -- )
 @ store n in RX
-Forthword_ XLIT_INTERP, IMMEDIATE_EN, "[x:]"
+Forthword_ XLIT_INTERP, IMMEDIATE_EN, "[x#]"
   y_w_
   user_ RX
   mw_y_
@@ -111,7 +111,7 @@ Forthword_ XLIT_INTERP, IMMEDIATE_EN, "[x:]"
 
 @ ( n -- )
 @ store n in RA
-Forthword_ ALIT_INTERP, IMMEDIATE_EN, "[a:]"
+Forthword_ ALIT_INTERP, IMMEDIATE_EN, "[a#]"
   y_w_
   user_ RA
   mw_y_
@@ -119,7 +119,7 @@ Forthword_ ALIT_INTERP, IMMEDIATE_EN, "[a:]"
 
 @ ( n -- )
 @ store n in RB
-Forthword_ BLIT_INTERP, IMMEDIATE_EN, "[b:]"
+Forthword_ BLIT_INTERP, IMMEDIATE_EN, "[b#]"
   y_w_
   user_ RB
   mw_y_
