@@ -406,6 +406,12 @@ rword b=d2 inlined
   _b d= _dsp d= _d2 _ldr ,
   _bxlr ,
 
+(  ? n1 -- n1 n1  )
+\ d0 WR
+rword d0= inlined
+  _w d= _dsp d= _d0 _str ,
+  _bxlr ,
+
 (  ? n2 -- n1 n2 X:n1 )
 \ d0 WR
 rword d0=x inlined
@@ -430,6 +436,12 @@ rword d0=b inlined
   _b d= _dsp d= _d0 _str ,
   _bxlr ,
 
+(  ?  ? n1 -- n1 ? n1 )
+\ d1 d0 WR
+rword d1= inlined
+  _w d= _dsp d= _d1 _str ,
+  _bxlr ,
+
 (  ?  ? n2 -- n1 ? n2 X:n1 )
 \ d1 d0 WR
 rword d1=x inlined
@@ -452,6 +464,12 @@ rword d1=a inlined
 \ d1 d0 WR
 rword d1=b inlined
   _b d= _dsp d= _d1 _str ,
+  _bxlr ,
+
+(  ?  ?  ? n1 -- n1 ? ? n1 )
+\ d2 d1 d0 WR
+rword d2= inlined
+  _w d= _dsp d= _d2 _str ,
   _bxlr ,
 
 (  ?  ?  ? n2 -- n1 ? ? n2 X:n1 )

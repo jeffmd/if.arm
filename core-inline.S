@@ -23,12 +23,6 @@ Forthword_ D1, INLINE_OPT, "d1"
   d1_
   end_
 
-@ ( n2 n1 -- n2 n1 Y:n2 )
-@   d0 WR
-Forthword_ Y_D0, INLINE_OPT, "y=d0"
-  y_d0_
-  end_
-
 @ ( n4 n3 n2 n1 -- n4 n3 n2 n4 )
 @   d2 d1 d0 WR
 @ w=d2
@@ -36,27 +30,12 @@ Forthword_ D2, INLINE_OPT, "d2"
   d2_
   end_
 
-@ ( n2 n1 -- n1 n1 )
+@ ( n2 n1 -- n2 n1 Y:n2 )
 @   d0 WR
-@ d0=
-Forthword_ D0_W, INLINE_OPT, "d0="
-  d0_w_
+Forthword_ Y_D0, INLINE_OPT, "y=d0"
+  y_d0_
   end_
-    
-@ ( n3 n2 n1 -- n1 n2 n1 )
-@   d1 d0 WR
-@ d1=
-Forthword_ D1_W, INLINE_OPT, "d1="
-  d1_w_
-  end_
-    
-@ ( n4 n3 n2 n1 -- n1 n3 n2 n1 )
-@   d2 d1 d0 WR
-@ d2=
-Forthword_ D2_W, INLINE_OPT, "d2="
-  d2_w_
-  end_
-       
+
 @ ( n1 n2 -- n2)
 @ drop NOS, one before wreg.
 Forthword_ D_M1, INLINE_OPT, "d-1"
