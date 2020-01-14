@@ -68,18 +68,17 @@ Forthword_ OPHIRSRD, 0, "_ophirsrd"
   lsls wreg, #2
   y_d0_
   x_d1_
-  movs r1, #7
-  cmp yreg, r1
+  cmp yreg, #7
   ble OPHIRSRD_CHECK_RS
     @ set h1 bit field
-    adds wreg, #2
+    adds wreg, #1
     subs yreg, #8
     d0_y_
 
 OPHIRSRD_CHECK_RS:
-  cmp xreg, r1
+  cmp xreg, #7
   ble OPHIRSRD_END
-    adds wreg, #1
+    adds wreg, #2
     subs xreg, #8
     d1_x_
 
