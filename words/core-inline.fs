@@ -496,12 +496,6 @@ rword d2=b inlined
   _b d= _dsp d= _d2 _str ,
   _bxlr ,
 
-\ (  -- addr )
-\ current data stack pointer
-rword dsp inlined
-  _w d= _dsp _mov ,
-  _bxlr ,
-
 ( -- a )
 \ working register = a
 rword a inlined
@@ -538,6 +532,20 @@ rword dsp= inlined
 \ working register = dsp
 rword dsp inlined
   _w d= _dsp _mov ,
+  _bxlr ,
+
+( addr RSP:? -- addr RSP:addr )
+\ set return stack pointer to addr
+\ rsp = working register
+rword rsp= inlined
+  _rsp d= _w _mov ,
+  _bxlr ,
+
+( ? RSP:addr -- addr RSP:addr )
+\ current return stack pointer
+\ working register = rsp
+rword rsp inlined
+  _w d= _rsp _mov ,
   _bxlr ,
 
 ( -- X:X+1 )

@@ -71,20 +71,6 @@ Forthword_ R0PLUS, INLINE_OPT, "r0+"
   str r1, [sp]
   end_
 
-@ (  -- n)
-@ current return stack pointer address
-Forthword_ RSP, INLINE_OPT, "rsp"
-  rsp_
-  end_
-
-@ ( addr  -- ) (R: -- x*y)
-@ set return stack pointer
-@ must be called
-Forthword_ RSP_W, INLINE_OPT, "rsp="
-  @ keep the return address
-  rsp_w_
-  end_
-
 @@@@@@@@@@@@@ Arithmatic @@@@@@@@@@@@@
 
 @ ( n1 -- n1+y )
