@@ -764,6 +764,62 @@ rword b-=a inlined
   _b d= d= _a _subs ,
   _bxlr ,
 
+( n -- n*X )
+\ signed multiply 32b x 32b = 32b
+\ w = w * x
+rword *=x inlined
+  _w d= _x _muls ,
+  _bxlr ,
+
+( n -- n*Y )
+\ signed multiply 32b x 32b = 32b
+\ w = w * y
+rword *=y inlined
+  _w d= _y _muls ,
+  _bxlr ,
+
+( n -- n*A )
+\ signed multiply 32b x 32b = 32b
+\ w = w * a
+rword *=a inlined
+  _w d= _a _muls ,
+  _bxlr ,
+
+( n -- n*B )
+\ signed multiply 32b x 32b = 32b
+\ w = w * b
+rword *=b inlined
+  _w d= _b _muls ,
+  _bxlr ,
+
+( n -- n X:X*n )
+\ signed multiply 32b x 32b = 32b
+\ x = x * w
+rword x*= inlined
+  _x d= _w _muls ,
+  _bxlr ,
+
+( n -- n Y:Y*n )
+\ signed multiply 32b x 32b = 32b
+\ y = y * w
+rword y*= inlined
+  _y d= _w _muls ,
+  _bxlr ,
+
+( n -- n A:A*n )
+\ signed multiply 32b x 32b = 32b
+\ a = a * w
+rword a*= inlined
+  _a d= _w _muls ,
+  _bxlr ,
+
+( n -- n B:B*n )
+\ signed multiply 32b x 32b = 32b
+\ b = b * w
+rword b*= inlined
+  _b d= _w _muls ,
+  _bxlr ,
+
 ( -- X:X+1 )
 \ x = x + 1
 rword x+=1 inlined

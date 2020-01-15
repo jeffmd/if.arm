@@ -97,54 +97,6 @@ Forthword_ W_MINUS_X, INLINE_OPT, "-=x"
   w_minus_x_
   end_
 
-@ ( u1|n1 X:u2|n2 -- u3|n3 )
-@ signed multiply 32b x 32b = 32b
-Forthword_ W_MUL_X, INLINE_OPT,  "*=x"
-  w_mul_x_
-  end_
-
-@ ( u1|n1 Y:u2|n2 -- u3|n3 )
-@ signed multiply 32b x 32b = 32b
-Forthword_ W_MUL_Y, INLINE_OPT,  "*=y"
-  w_mul_y_
-  end_
-
-@ ( u1|n1 A:u2|n2 -- u3|n3 )
-@ signed multiply 32b x 32b = 32b
-Forthword_ W_MUL_A, INLINE_OPT,  "*=a"
-  w_mul_x_
-  end_
-
-@ ( u1|n1 B:u2|n2 -- u3|n3 )
-@ signed multiply 32b x 32b = 32b
-Forthword_ W_MUL_B, INLINE_OPT,  "*=b"
-  w_mul_b_
-  end_
-
-@ ( u1|n1 X:u2|n2 -- u1|n1 X:u3|n3 )
-@ signed multiply 32b x 32b = 32b
-Forthword_ X_MUL_W, INLINE_OPT,  "x*="
-  x_mul_w_
-  end_
-
-@ ( u1|n1 Y:u2|n2 -- u1|n1 Y:u3|n3 )
-@ signed multiply 32b x 32b = 32b
-Forthword_ Y_MUL_W, INLINE_OPT,  "y*="
-  y_mul_w_
-  end_
-
-@ ( u1|n1 A:u2|n2 -- u1|n1 A:u3|n3 )
-@ signed multiply 32b x 32b = 32b
-Forthword_ A_MUL_W, INLINE_OPT,  "a*="
-  a_mul_w_
-  end_
-
-@ ( u1|n1 B:u2|n2 -- u1|n1 B:u3|n3 )
-@ signed multiply 32b x 32b = 32b
-Forthword_ B_MUL_W, INLINE_OPT,  "b*="
-  b_mul_w_
-  end_
-
 @ ( n1 -- -n1 )
 @ 2-compliment of n1
 Forthword_ NEG, INLINE_OPT, "-"
