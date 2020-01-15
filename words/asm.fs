@@ -225,21 +225,21 @@ rword _r2 inlined
   d= $2 _opv5rsrd
 ;
 
-\ add registers
+\ add hi/low registers, no effect on flags
 \ Rd = Rd + Rs
 ( Rd Rs -- add )
 : _add
   d= 0 _ophirsrd
 ;
 
-\ compare registers
+\ compare hi/low registers
 \ Rd = Rs
 ( Rd Rs -- cmp )
 : _cmp
   d= 1 _ophirsrd
 ;
 
-\ move values between registers
+\ move values between hi/low registers
 \ Rd = Rs
 ( Rd Rs -- mov )
 : _mov
@@ -283,10 +283,41 @@ rword _r2 inlined
   d= %10000 _opv5rsrd
 ;
 
-\ load Rd with 16bit value from memory pointed to by Rs + immediate offset
+\ load Rd with 16bit value from memory pointed
+\ to by Rs + immediate offset
 ( Rd Rs offset -- ldrh )
 : _ldrh
   d= %10001 _opv5rsrd
+;
+
+\ add low registers
+\ Rd = Rs + Rn
+( Rd Rs Rn -- adds )
+: _adds
+  d= %1100 _opvrrsrd
+;
+
+\ subtract low registers
+\ Rd = Rs - Rn
+( Rd Rs Rn -- subs )
+: _subs
+  d= %1101 _opvrrsrd
+;
+
+\ add 3 bit immediate value to low register
+\ and store in low register
+\ Rd = Rs + val3
+( Rd Rs val3 -- addis )
+: _addis
+  d= %1110 _opvrrsrd
+;
+
+\ subtract 3 bit immediate value from low register
+\ and store in low register
+\ Rd = Rs - val3
+( Rd Rs val3 -- subis )
+: _subis
+  d= %1111 _opvrrsrd
 ;
 
 \ store 32bit value in Rd to memory location pointed to by SP + immediate offset

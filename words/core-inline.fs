@@ -548,6 +548,222 @@ rword rsp inlined
   _w d= _rsp _mov ,
   _bxlr ,
 
+( n1 -- n1+a )
+\ w = w + a
+rword +=a inlined
+  _w d= d= _a _adds ,
+  _bxlr ,
+
+( n1 -- n1+b )
+\ w = w + b
+rword +=b inlined
+  _w d= d= _b _adds ,
+  _bxlr ,
+
+( n1 -- n1-a )
+\ w = w - a
+rword -=a inlined
+  _w d= d= _a _subs ,
+  _bxlr ,
+
+( n1 -- n1-b )
+\ w = w - b
+rword -=b inlined
+  _w d= d= _b _subs ,
+  _bxlr ,
+
+( n1 -- n1 X:x+n1 )
+\ x = x + w
+rword x+= inlined
+  _x d= d= _w _adds ,
+  _bxlr ,
+
+( n1 -- n1 X:x+y )
+\ x = x + y
+rword x+=y inlined
+  _x d= d= _y _adds ,
+  _bxlr ,
+
+( n1 -- n1 X:x+a )
+\ x = x + a
+rword x+=a inlined
+  _x d= d= _a _adds ,
+  _bxlr ,
+
+( n1 -- n1 X:x+b )
+\ x = x + b
+rword x+=b inlined
+  _x d= d= _b _adds ,
+  _bxlr ,
+
+( n1 -- n1 Y:y+n1 )
+\ y = y + w
+rword y+= inlined
+  _y d= d= _w _adds ,
+  _bxlr ,
+
+( n1 -- n1 Y:y+x )
+\ y = y + x
+rword y+=x inlined
+  _y d= d= _x _adds ,
+  _bxlr ,
+
+( n1 -- n1 Y:y+a )
+\ y = y + a
+rword y+=a inlined
+  _y d= d= _a _adds ,
+  _bxlr ,
+
+( n1 -- n1 Y:y+b )
+\ y = y + b
+rword y+=b inlined
+  _y d= d= _b _adds ,
+  _bxlr ,
+
+( n1 -- n1 A:a+n1 )
+\ a = a + w
+rword a+= inlined
+  _a d= d= _w _adds ,
+  _bxlr ,
+
+( n1 -- n1 A:a+x )
+\ a = a + x
+rword a+=x inlined
+  _a d= d= _x _adds ,
+  _bxlr ,
+
+( n1 -- n1 A:a+y )
+\ a = a + y
+rword a+=y inlined
+  _a d= d= _y _adds ,
+  _bxlr ,
+
+( n1 -- n1 A:a+b )
+\ a = a + b
+rword a+=b inlined
+  _a d= d= _b _adds ,
+  _bxlr ,
+
+( n1 -- n1 B:b+n1 )
+\ b = b + w
+rword b+= inlined
+  _b d= d= _w _adds ,
+  _bxlr ,
+
+( n1 -- n1 B:b+x )
+\ b = b + x
+rword b+=x inlined
+  _b d= d= _x _adds ,
+  _bxlr ,
+
+( n1 -- n1 B:b+y )
+\ b = b + y
+rword b+=y inlined
+  _b d= d= _y _adds ,
+  _bxlr ,
+
+( n1 -- n1 B:b+n1 )
+\ b = b + a
+rword b+=a inlined
+  _b d= d= _a _adds ,
+  _bxlr ,
+
+( n1 -- n1 X:x-n1 )
+\ x = x - w
+rword x-= inlined
+  _x d= d= _w _subs ,
+  _bxlr ,
+
+( n1 -- n1 X:x-y )
+\ x = x - y
+rword x-=y inlined
+  _x d= d= _y _subs ,
+  _bxlr ,
+
+( n1 -- n1 X:x-a )
+\ x = x - a
+rword x-=a inlined
+  _x d= d= _a _subs ,
+  _bxlr ,
+
+( n1 -- n1 X:x-b )
+\ x = x - b
+rword x-=b inlined
+  _x d= d= _b _subs ,
+  _bxlr ,
+
+( n1 -- n1 Y:y-n1 )
+\ y = y - w
+rword y-= inlined
+  _y d= d= _w _subs ,
+  _bxlr ,
+
+( n1 -- n1 Y:y-x )
+\ y = y - x
+rword y-=x inlined
+  _y d= d= _x _subs ,
+  _bxlr ,
+
+( n1 -- n1 Y:y-a )
+\ y = y - a
+rword y-=a inlined
+  _y d= d= _a _subs ,
+  _bxlr ,
+
+( n1 -- n1 Y:y-b )
+\ y = y - b
+rword y-=b inlined
+  _y d= d= _b _subs ,
+  _bxlr ,
+
+( n1 -- n1 A:a-n1 )
+\ a = a - w
+rword a-= inlined
+  _a d= d= _w _subs ,
+  _bxlr ,
+
+( n1 -- n1 A:a-x )
+\ a = a - x
+rword a-=x inlined
+  _a d= d= _x _subs ,
+  _bxlr ,
+
+( n1 -- n1 A:a-y )
+\ a = a - y
+rword a-=y inlined
+  _a d= d= _y _subs ,
+  _bxlr ,
+
+( n1 -- n1 A:a-b )
+\ a = a - b
+rword a-=b inlined
+  _a d= d= _b _subs ,
+  _bxlr ,
+
+( n1 -- n1 B:b-n1 )
+\ b = b - w
+rword b-= inlined
+  _b d= d= _w _subs ,
+  _bxlr ,
+
+( n1 -- n1 B:b-x )
+\ b = b - x
+rword b-=x inlined
+  _b d= d= _x _subs ,
+  _bxlr ,
+
+( n1 -- n1 B:b-y )
+\ b = b - y
+rword b-=y inlined
+  _b d= d= _y _subs ,
+  _bxlr ,
+
+( n1 -- n1 B:b-a )
+\ b = b - a
+rword b-=a inlined
+  _b d= d= _a _subs ,
+  _bxlr ,
+
 ( -- X:X+1 )
 \ x = x + 1
 rword x+=1 inlined
