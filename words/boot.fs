@@ -5,7 +5,7 @@
 \ header ( addr len wid -- nfa )
 \ build header entry in dictionary 
 dp d=           \ ( nfa nfa ) name field address
-pname header d= y# $FF00 |=y @dp=s \ ( nfa ? )
+pname header d= y# $FF00 |y @dp=s \ ( nfa ? )
   current @ @   \ ( nfa linkaddr ) get latest word
   @dp=          \ ( nfa ? ) set link field to prev word in vocab
   cp @dp= =d    \ ( nfa ) set code pointer field
@@ -17,7 +17,7 @@ pname header d= y# $FF00 |=y @dp=s \ ( nfa ? )
     =d          \ ( addr len wid )
     r=          \ ( addr len wid ) (R: nfa wid )
     y=d0        \ ( addr len wid Y:len )
-    $FF00 |=y   \ ( addr len len|$FF00 )
+    $FF00 |y   \ ( addr len len|$FF00 )
     @dp=s       \ ( ? )
     =r @        \ ( linkaddr ) (R: nfa )
     @dp=        \ ( ? )
@@ -61,7 +61,7 @@ pname (create) d= current @ header \ ( nfa )
     y=         \ ( n ) y; n
     cur@ @ x=  \ ( nfa ) X: nfa
     h@x        \ ( flags )
-    &=y        \ ( n&flags )
+    &y         \ ( n&flags )
     h@x=       \ ( n&flags )
   [
   ;opt uwid

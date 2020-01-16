@@ -255,7 +255,7 @@
 
 \ allocate or release n bytes of memory in RAM
 : allot ( n -- )
-    y= here y+= here# @=y
+    y= here y+ here# @=y
 ;
 
 ( x -- ) ( C: x "<spaces>name" -- )

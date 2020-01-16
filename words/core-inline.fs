@@ -1,5 +1,7 @@
 \ core-inline.fs - core inlined words
 
+\ ********** Return Stack ************
+
 ( -- ) ( R: n -- )
 \ Drop TOR
 rword r-1 inlined
@@ -258,6 +260,8 @@ rword r2=y inlined
   _y d= _r2 _strsp ,
   _bxlr ,
 
+\ ********** Data Stack ************
+
 ( n -- ? n  )
 \ restore top of data stack once
 rword d+1 inlined
@@ -496,6 +500,8 @@ rword d2=b inlined
   _b d= _dsp d= _d2 _str ,
   _bxlr ,
 
+\ ********** Register Moves ************
+
 ( -- a )
 \ working register = a
 rword a inlined
@@ -548,15 +554,17 @@ rword rsp inlined
   _w d= _rsp _mov ,
   _bxlr ,
 
+\ ********** Arithmatic ************
+
 ( n1 -- n1+a )
 \ w = w + a
-rword +=a inlined
+rword +a inlined
   _w d= d= _a _adds ,
   _bxlr ,
 
 ( n1 -- n1+b )
 \ w = w + b
-rword +=b inlined
+rword +b inlined
   _w d= d= _b _adds ,
   _bxlr ,
 
@@ -574,394 +582,633 @@ rword -=b inlined
 
 ( n1 -- n1 X:x+n1 )
 \ x = x + w
-rword x+= inlined
+rword x+ inlined
   _x d= d= _w _adds ,
   _bxlr ,
 
 ( n1 -- n1 X:x+y )
 \ x = x + y
-rword x+=y inlined
+rword x+y inlined
   _x d= d= _y _adds ,
   _bxlr ,
 
 ( n1 -- n1 X:x+a )
 \ x = x + a
-rword x+=a inlined
+rword x+a inlined
   _x d= d= _a _adds ,
   _bxlr ,
 
 ( n1 -- n1 X:x+b )
 \ x = x + b
-rword x+=b inlined
+rword x+b inlined
   _x d= d= _b _adds ,
   _bxlr ,
 
 ( n1 -- n1 Y:y+n1 )
 \ y = y + w
-rword y+= inlined
+rword y+ inlined
   _y d= d= _w _adds ,
   _bxlr ,
 
 ( n1 -- n1 Y:y+x )
 \ y = y + x
-rword y+=x inlined
+rword y+x inlined
   _y d= d= _x _adds ,
   _bxlr ,
 
 ( n1 -- n1 Y:y+a )
 \ y = y + a
-rword y+=a inlined
+rword y+a inlined
   _y d= d= _a _adds ,
   _bxlr ,
 
 ( n1 -- n1 Y:y+b )
 \ y = y + b
-rword y+=b inlined
+rword y+b inlined
   _y d= d= _b _adds ,
   _bxlr ,
 
 ( n1 -- n1 A:a+n1 )
 \ a = a + w
-rword a+= inlined
+rword a+ inlined
   _a d= d= _w _adds ,
   _bxlr ,
 
 ( n1 -- n1 A:a+x )
 \ a = a + x
-rword a+=x inlined
+rword a+x inlined
   _a d= d= _x _adds ,
   _bxlr ,
 
 ( n1 -- n1 A:a+y )
 \ a = a + y
-rword a+=y inlined
+rword a+y inlined
   _a d= d= _y _adds ,
   _bxlr ,
 
 ( n1 -- n1 A:a+b )
 \ a = a + b
-rword a+=b inlined
+rword a+b inlined
   _a d= d= _b _adds ,
   _bxlr ,
 
 ( n1 -- n1 B:b+n1 )
 \ b = b + w
-rword b+= inlined
+rword b+ inlined
   _b d= d= _w _adds ,
   _bxlr ,
 
 ( n1 -- n1 B:b+x )
 \ b = b + x
-rword b+=x inlined
+rword b+x inlined
   _b d= d= _x _adds ,
   _bxlr ,
 
 ( n1 -- n1 B:b+y )
 \ b = b + y
-rword b+=y inlined
+rword b+y inlined
   _b d= d= _y _adds ,
   _bxlr ,
 
 ( n1 -- n1 B:b+n1 )
 \ b = b + a
-rword b+=a inlined
+rword b+a inlined
   _b d= d= _a _adds ,
   _bxlr ,
 
 ( n1 -- n1 X:x-n1 )
 \ x = x - w
-rword x-= inlined
+rword x- inlined
   _x d= d= _w _subs ,
   _bxlr ,
 
 ( n1 -- n1 X:x-y )
 \ x = x - y
-rword x-=y inlined
+rword x-y inlined
   _x d= d= _y _subs ,
   _bxlr ,
 
 ( n1 -- n1 X:x-a )
 \ x = x - a
-rword x-=a inlined
+rword x-a inlined
   _x d= d= _a _subs ,
   _bxlr ,
 
 ( n1 -- n1 X:x-b )
 \ x = x - b
-rword x-=b inlined
+rword x-b inlined
   _x d= d= _b _subs ,
   _bxlr ,
 
 ( n1 -- n1 Y:y-n1 )
 \ y = y - w
-rword y-= inlined
+rword y- inlined
   _y d= d= _w _subs ,
   _bxlr ,
 
 ( n1 -- n1 Y:y-x )
 \ y = y - x
-rword y-=x inlined
+rword y-x inlined
   _y d= d= _x _subs ,
   _bxlr ,
 
 ( n1 -- n1 Y:y-a )
 \ y = y - a
-rword y-=a inlined
+rword y-a inlined
   _y d= d= _a _subs ,
   _bxlr ,
 
 ( n1 -- n1 Y:y-b )
 \ y = y - b
-rword y-=b inlined
+rword y-b inlined
   _y d= d= _b _subs ,
   _bxlr ,
 
 ( n1 -- n1 A:a-n1 )
 \ a = a - w
-rword a-= inlined
+rword a- inlined
   _a d= d= _w _subs ,
   _bxlr ,
 
 ( n1 -- n1 A:a-x )
 \ a = a - x
-rword a-=x inlined
+rword a-x inlined
   _a d= d= _x _subs ,
   _bxlr ,
 
 ( n1 -- n1 A:a-y )
 \ a = a - y
-rword a-=y inlined
+rword a-y inlined
   _a d= d= _y _subs ,
   _bxlr ,
 
 ( n1 -- n1 A:a-b )
 \ a = a - b
-rword a-=b inlined
+rword a-b inlined
   _a d= d= _b _subs ,
   _bxlr ,
 
 ( n1 -- n1 B:b-n1 )
 \ b = b - w
-rword b-= inlined
+rword b- inlined
   _b d= d= _w _subs ,
   _bxlr ,
 
 ( n1 -- n1 B:b-x )
 \ b = b - x
-rword b-=x inlined
+rword b-x inlined
   _b d= d= _x _subs ,
   _bxlr ,
 
 ( n1 -- n1 B:b-y )
 \ b = b - y
-rword b-=y inlined
+rword b-y inlined
   _b d= d= _y _subs ,
   _bxlr ,
 
 ( n1 -- n1 B:b-a )
 \ b = b - a
-rword b-=a inlined
+rword b-a inlined
   _b d= d= _a _subs ,
+  _bxlr ,
+
+( n -- -n )
+\ 2-compliment of W
+\ w = -w
+rword -w inlined
+  _w d= _w _rsbs ,
+  _bxlr ,
+
+( X:n -- X:-n )
+\ 2-compliment of X
+\ x = -x
+rword -x inlined
+  _x d= _x _rsbs ,
+  _bxlr ,
+
+( Y:n -- Y:-n )
+\ 2-compliment of Y
+\ y = -y
+rword -y inlined
+  _y d= _y _rsbs ,
+  _bxlr ,
+
+( A:n -- A:-n )
+\ 2-compliment of A
+\ a = -a
+rword -a inlined
+  _a d= _a _rsbs ,
+  _bxlr ,
+
+( B:n -- B:-n )
+\ 2-compliment of B
+\ b = -b
+rword -b inlined
+  _b d= _b _rsbs ,
+  _bxlr ,
+
+( n -- !n )
+\ 1-compliment of W
+\ W = NOT W
+rword !w inlined
+  _w d= _w _mvns ,
+  _bxlr ,
+
+( X:n -- X:!n )
+\ 1-compliment of X
+\ x = NOT x
+rword !x inlined
+  _x d= _x _mvns ,
+  _bxlr ,
+
+( Y:n -- Y:!n )
+\ 1-compliment of Y
+\ y = NOT y
+rword !y inlined
+  _y d= _y _mvns ,
+  _bxlr ,
+
+( A:n -- A:!n )
+\ 1-compliment of A
+\ a = NOT a
+rword !a inlined
+  _a d= _a _mvns ,
+  _bxlr ,
+
+( B:n -- B:!n )
+\ 1-compliment of B
+\ b = NOT b
+rword !b inlined
+  _b d= _b _mvns ,
   _bxlr ,
 
 ( n -- n*X )
 \ signed multiply 32b x 32b = 32b
 \ w = w * x
-rword *=x inlined
+rword *x inlined
   _w d= _x _muls ,
   _bxlr ,
 
 ( n -- n*Y )
 \ signed multiply 32b x 32b = 32b
 \ w = w * y
-rword *=y inlined
+rword *y inlined
   _w d= _y _muls ,
   _bxlr ,
 
 ( n -- n*A )
 \ signed multiply 32b x 32b = 32b
 \ w = w * a
-rword *=a inlined
+rword *a inlined
   _w d= _a _muls ,
   _bxlr ,
 
 ( n -- n*B )
 \ signed multiply 32b x 32b = 32b
 \ w = w * b
-rword *=b inlined
+rword *b inlined
   _w d= _b _muls ,
   _bxlr ,
 
 ( n -- n X:X*n )
 \ signed multiply 32b x 32b = 32b
 \ x = x * w
-rword x*= inlined
+rword x* inlined
   _x d= _w _muls ,
   _bxlr ,
 
 ( n -- n Y:Y*n )
 \ signed multiply 32b x 32b = 32b
 \ y = y * w
-rword y*= inlined
+rword y* inlined
   _y d= _w _muls ,
   _bxlr ,
 
 ( n -- n A:A*n )
 \ signed multiply 32b x 32b = 32b
 \ a = a * w
-rword a*= inlined
+rword a* inlined
   _a d= _w _muls ,
   _bxlr ,
 
 ( n -- n B:B*n )
 \ signed multiply 32b x 32b = 32b
 \ b = b * w
-rword b*= inlined
+rword b* inlined
   _b d= _w _muls ,
   _bxlr ,
 
+\ ********** Register Arithmatic with constants ************
+
 ( -- X:X+1 )
 \ x = x + 1
-rword x+=1 inlined
+rword x+1 inlined
   _x d= 1 _addsi ,
   _bxlr ,
 
 ( -- X:X+2 )
 \ x = x + 2
-rword x+=2 inlined
+rword x+2 inlined
   _x d= 2 _addsi ,
   _bxlr ,
 
 ( -- X:X+4 )
 \ x = x + 4
-rword x+=4 inlined
+rword x+4 inlined
   _x d= 4 _addsi ,
   _bxlr ,
 
 ( -- Y:Y+1 )
 \ y = y + 1
-rword y+=1 inlined
+rword y+1 inlined
   _y d= 1 _addsi ,
   _bxlr ,
 
 ( -- Y:Y+2 )
 \ y = y + 2
-rword y+=2 inlined
+rword y+2 inlined
   _y d= 2 _addsi ,
   _bxlr ,
 
 ( -- Y:Y+4 )
 \ y = y + 4
-rword y+=4 inlined
+rword y+4 inlined
   _y d= 4 _addsi ,
   _bxlr ,
 
 ( -- A:A+1 )
 \ a = a + 1
-rword a+=1 inlined
+rword a+1 inlined
   _a d= 1 _addsi ,
   _bxlr ,
 
 ( -- A:A+2 )
 \ a = a + 2
-rword a+=2 inlined
+rword a+2 inlined
   _a d= 2 _addsi ,
   _bxlr ,
 
 ( -- A:A+4 )
 \ a = a + 4
-rword a+=4 inlined
+rword a+4 inlined
   _a d= 4 _addsi ,
   _bxlr ,
 
 ( -- B:B+1 )
 \ b = b + 1
-rword b+=1 inlined
+rword b+1 inlined
   _b d= 1 _addsi ,
   _bxlr ,
 
 ( -- B:B+2 )
 \ b = b + 2
-rword b+=2 inlined
+rword b+2 inlined
   _b d= 2 _addsi ,
   _bxlr ,
 
 ( -- B:B+4 )
 \ b = b + 4
-rword b+=4 inlined
+rword b+4 inlined
   _b d= 4 _addsi ,
   _bxlr ,
 
 ( -- X:X-1 )
 \ x = x - 1
-rword x-=1 inlined
+rword x-1 inlined
   _x d= 1 _subsi ,
   _bxlr ,
 
 ( -- X:X-2 )
 \ x = x - 2
-rword x-=2 inlined
+rword x-2 inlined
   _x d= 2 _subsi ,
   _bxlr ,
 
 ( -- X:X-4 )
 \ x = x - 4
-rword y-=4 inlined
+rword x-4 inlined
   _x d= 4 _subsi ,
   _bxlr ,
 
 ( -- Y:Y-1 )
 \ y = y - 1
-rword a-=1 inlined
+rword y-1 inlined
   _y d= 1 _subsi ,
   _bxlr ,
 
 ( -- Y:Y-2 )
 \ y = y - 2
-rword y-=2 inlined
+rword y-2 inlined
   _y d= 2 _subsi ,
   _bxlr ,
 
 ( -- Y:Y-4 )
 \ y = y - 4
-rword y-=4 inlined
+rword y-4 inlined
   _y d= 4 _subsi ,
   _bxlr ,
 
 ( -- A:A-1 )
 \ a = a - 1
-rword a-=1 inlined
+rword a-1 inlined
   _a d= 1 _subsi ,
   _bxlr ,
 
 ( -- A:A-2 )
 \ a = a - 2
-rword a-=2 inlined
+rword a-2 inlined
   _a d= 2 _subsi ,
   _bxlr ,
 
 ( -- A:A-4 )
 \ a = a - 4
-rword a-=4 inlined
+rword a-4 inlined
   _a d= 4 _subsi ,
   _bxlr ,
 
 ( -- B:B-1 )
 \ b = b - 1
-rword b-=1 inlined
+rword b-1 inlined
   _b d= 1 _subsi ,
   _bxlr ,
 
-( -- B:B-1 )
-\ b = b - 1
-rword b-=1 inlined
-  _b d= 1 _subsi ,
+( -- B:B-2 )
+\ b = b - 2
+rword b-2 inlined
+  _b d= 2 _subsi ,
   _bxlr ,
 
 ( -- B:B-4 )
 \ b = b - 4
-rword b-=4 inlined
+rword b-4 inlined
   _b d= 4 _subsi ,
+  _bxlr ,
+
+( -- A:A*2 )
+\ a = a * 2
+rword a*2 inlined
+  _a d= _a d= 1 _lslsi ,
+  _bxlr ,
+
+( -- B:B*2 )
+\ b = b * 2
+rword b*2 inlined
+  _b d= _b d= 1 _lslsi ,
+  _bxlr ,
+
+( -- A:A/2 )
+\ a = a / 2
+rword a/2 inlined
+  _a d= _a d= 1 _lsrsi ,
+  _bxlr ,
+
+( -- B:B/2 )
+\ b = b / 2
+rword b/2 inlined
+  _b d= _b d= 1 _lsrsi ,
+  _bxlr ,
+
+( -- A:A*4 )
+\ a = a * 4
+rword a*4 inlined
+  _a d= _a d= 2 _lslsi ,
+  _bxlr ,
+
+( -- B:B*4 )
+\ b = b * 4
+rword b*4 inlined
+  _b d= _b d= 2 _lslsi ,
+  _bxlr ,
+
+( -- A:A/4 )
+\ a = a / 4
+rword a/4 inlined
+  _a d= _a d= 2 _lsrsi ,
+  _bxlr ,
+
+( -- B:B/4 )
+\ b = b / 4
+rword b/4 inlined
+  _b d= _b d= 2 _lsrsi ,
+  _bxlr ,
+
+\ ********** Register Logical Operations ************
+
+( n1 A:n2 -- n1&n2 A:n2 )
+\ w = w and a
+rword &a inlined
+  _w d= _a _ands ,
+  _bxlr ,
+
+( n1 B:n2 -- n1&n2 B:n2 )
+\ w = w and b
+rword &b inlined
+  _w d= _b _ands ,
+  _bxlr ,
+
+( n1 X:n2 -- n2 X:n1&n2 )
+\ x = x and w
+rword x& inlined
+  _x d= _w _ands ,
+  _bxlr ,
+
+( n1 Y:n2 -- n2 Y:n1&n2 )
+\ y = y and w
+rword y& inlined
+  _y d= _w _ands ,
+  _bxlr ,
+
+( n1 A:n2 -- n2 A:n1&n2 )
+\ a = a and w
+rword a& inlined
+  _a d= _w _ands ,
+  _bxlr ,
+
+( n1 B:n2 -- n2 B:n1&n2 )
+\ b = b and w
+rword b& inlined
+  _b d= _w _ands ,
+  _bxlr ,
+
+( n1 A:n2 -- n1|n2 A:n2 )
+\ w = w or a
+rword |a inlined
+  _w d= _a _orrs ,
+  _bxlr ,
+
+( n1 B:n2 -- n1|n2 B:n2 )
+\ w = w or b
+rword |b inlined
+  _w d= _b _orrs ,
+  _bxlr ,
+
+( n1 X:n2 -- n1 X:n2|n1 )
+\ x = x or w
+rword x| inlined
+  _x d= _w _orrs ,
+  _bxlr ,
+
+( n1 Y:n2 -- n1 Y:n2|n2 )
+\ y = y or w
+rword y| inlined
+  _y d= _w _orrs ,
+  _bxlr ,
+
+( n1 A:n2 -- n1 A:n2|n1 )
+\ a = a or w
+rword a| inlined
+  _a d= _w _orrs ,
+  _bxlr ,
+
+( n1 B:n2 -- n1 B:n2|n2 )
+\ b = b or w
+rword b| inlined
+  _b d= _w _orrs ,
+  _bxlr ,
+
+( n1 A:n2 -- n1^n2 A:n2 )
+\ w = w xor a
+rword ^a inlined
+  _w d= _a _eors ,
+  _bxlr ,
+
+( n1 B:n2 -- n1^n2 B:n2 )
+\ w = w xor b
+rword ^b inlined
+  _w d= _b _eors ,
+  _bxlr ,
+
+( n1 X:n2 -- n1 X:n2^n1 )
+\ x = x xor w
+rword x^ inlined
+  _x d= _w _eors ,
+  _bxlr ,
+
+( n1 Y:n2 -- n1 Y:n2^n1 )
+\ y = y xor w
+rword y^ inlined
+  _y d= _w _eors ,
+  _bxlr ,
+
+( n1 A:n2 -- n1 A:n2^n1 )
+\ a = a xor w
+rword a^ inlined
+  _a d= _w _eors ,
+  _bxlr ,
+
+( n1 B:n2 -- n1 B:n2^n1 )
+\ b = b xor w
+rword b^ inlined
+  _b d= _w _eors ,
+  _bxlr ,
+
+\ ********** Memory Store and Load ************
+
+( addr -- addr A:n )
+\ Read a word (32bit) from memory pointed to by W
+\ and store in register A
+rword a=@ inlined
+  _w d= _a d= 0 _ldr ,
   _bxlr ,
 
 ( -- n )
@@ -1000,6 +1247,8 @@ rword c@a= inlined
   _w d= _a d= 0 _strb ,
   _bxlr ,
 
+\ ********** register shifting ************
+
 ( n Y:n2 -- n<<n2 )
 \ left shift working register by value in Y register
 rword <<y inlined
@@ -1023,6 +1272,8 @@ rword <<x inlined
 rword >>x inlined
   _w d= _x _lsrs ,
   _bxlr ,
+
+\ ********** Return Stack ************
 
 \ push X register value onto return stack
 ( -- ) ( R: -- x )

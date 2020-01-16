@@ -75,13 +75,13 @@ Forthword_ R0PLUS, INLINE_OPT, "r0+"
 
 @ ( n1 -- n1+y )
 @ w = w + y
-Forthword_ W_PLUS_Y, INLINE_OPT, "+=y"
+Forthword_ W_PLUS_Y, INLINE_OPT, "+y"
   w_plus_y_
   end_
 
 @ ( n1 -- n1+x )
 @ w = w + x
-Forthword_ W_PLUS_X, INLINE_OPT, "+=x"
+Forthword_ W_PLUS_X, INLINE_OPT, "+x"
   w_plus_x_
   end_
 
@@ -97,144 +97,34 @@ Forthword_ W_MINUS_X, INLINE_OPT, "-=x"
   w_minus_x_
   end_
 
-@ ( n1 -- -n1 )
-@ 2-compliment of n1
-Forthword_ NEG, INLINE_OPT, "-"
-  neg_
-  end_
-
-@ ( Y:n1 -- Y:-n1 )
-@ 2-compliment of Y
-Forthword_ NEG_Y, INLINE_OPT, "-y"
-  neg_y_
-  end_
-
-@ ( X:n1 -- X:-n1 )
-@ 2-compliment of X
-Forthword_ NEG_X, INLINE_OPT, "-x"
-  neg_x_
-  end_
-
-
-@ ( A:n1 -- A:-n1 )
-@ 2-compliment of A
-Forthword_ NEG_A, INLINE_OPT, "-a"
-  neg_a_
-  end_
-
-@ ( B:n1 -- B:-n1 )
-@ 2-compliment of B
-Forthword_ NEG_B, INLINE_OPT, "-b"
-  neg_b_
-  end_
-
 @ ( n1 -- n1 and Y )
 @ w = w and y
-Forthword_ W_AND_Y, INLINE_OPT, "&=y"
+Forthword_ W_AND_Y, INLINE_OPT, "&y"
   w_and_y_
   end_
 
 @ ( n1 -- n1 and X )
 @ w = w and x
-Forthword_ W_AND_X, INLINE_OPT, "&=x"
+Forthword_ W_AND_X, INLINE_OPT, "&x"
   w_and_x_
-  end_
-
-@ ( n1 -- n1 and A )
-@ w = w and a
-Forthword_ W_AND_A, INLINE_OPT, "&=a"
-  w_and_a_
-  end_
-
-@ ( n1 -- n1 and B )
-@ w = w and b
-Forthword_ W_AND_B, INLINE_OPT, "&=b"
-  w_and_b_
   end_
 
 @ ( n1 -- n1.or.Y )
 @ w = w or y
-Forthword_ W_OR_Y, INLINE_OPT, "|=y"
+Forthword_ W_OR_Y, INLINE_OPT, "|y"
   w_or_y_
   end_
 
 @ ( n1 -- n1.or.X )
 @ w = w or x
-Forthword_ W_OR_X, INLINE_OPT, "|=x"
+Forthword_ W_OR_X, INLINE_OPT, "|x"
   w_or_x_
-  end_
-
-@ ( n1 -- n1.or.A )
-@ w = w or a
-Forthword_ W_OR_A, INLINE_OPT, "|=a"
-  w_or_a_
-  end_
-
-@ ( n1 -- n1.or.B )
-@ w = w or b
-Forthword_ W_OR_B, INLINE_OPT, "|=b"
-  w_or_b_
-  end_
-
-@ ( n1 -- n1.xor.Y)
-@ w = w xor y
-Forthword_ W_XOR_Y, INLINE_OPT, "^=y"
-  w_xor_y_
-  end_
-
-@ ( n1 -- n1.xor.X)
-@ w = w xor x
-Forthword_ W_XOR_X, INLINE_OPT, "^=x"
-  w_xor_x_
-  end_
-
-@ ( n1 -- n1.xor.A)
-@ w = w xor a
-Forthword_ W_XOR_A, INLINE_OPT, "^=a"
-  w_xor_a_
-  end_
-
-@ ( n1 -- n1.xor.B)
-@ w = w xor b
-Forthword_ W_XOR_B, INLINE_OPT, "^=b"
-  w_xor_b_
-  end_
-
-@ ( n1 -- n2)
-@ 1-complement of WR
-Forthword_ NOT, INLINE_OPT, "!"
-  not_
-  end_
-
-@ ( n1 -- n2)
-@ 1-complement of y
-Forthword_ NOT_Y, INLINE_OPT, "!y"
-  not_y_
-  end_
-
-@ ( n1 -- n2)
-@ 1-complement of x
-Forthword_ NOT_X, INLINE_OPT, "!x"
-  not_x_
-  end_
-
-@ ( n1 -- n2)
-@ 1-complement of a
-Forthword_ NOT_A, INLINE_OPT, "!a"
-  not_a_
-  end_
-
-@ ( n1 -- n2)
-@ 1-complement of b
-Forthword_ NOT_B, INLINE_OPT, "!b"
-  not_b_
   end_
 
 @ ( n1 n2 -- flag)
 @ flag is true if n1 is not equal to n2
 Forthword_ NOTEQUAL, INLINE_OPT, "!="
-  y_d0_
-  d_m1_
+  y_d_
   w_xor_y_
   end_
 
@@ -300,98 +190,50 @@ Forthword_ FOURSTAR, INLINE_OPT, "4*"
 
 @ ( X:n1 -- X:n1/2 )
 @ optimized X divide by 2
-Forthword_ XTWOSLASH, INLINE_OPT, "x/=2"
+Forthword_ XTWOSLASH, INLINE_OPT, "x/2"
   x_twoslash_
   end_
 
 @ ( X:n1 -- X:n1*2 )
 @ optimized X 2 multiply
-Forthword_ XTWOSTAR, INLINE_OPT, "x*=2"
+Forthword_ XTWOSTAR, INLINE_OPT, "x*2"
   x_twostar_
   end_
 
 @ ( X:n1 -- X:n1/4 )
 @ optimized X divide by 4
-Forthword_ XFOURSLASH, INLINE_OPT, "x/=4"
+Forthword_ XFOURSLASH, INLINE_OPT, "x/4"
   x_fourslash_
   end_
 
 @ ( X:n1 -- X:n*4 )
 @ optimized x four multiply
-Forthword_ XFOURSTAR, INLINE_OPT, "x*=4"
+Forthword_ XFOURSTAR, INLINE_OPT, "x*4"
   x_fourstar_
   end_
 
 @ ( Y:n1 -- Y:n1/2 )
 @ optimized y divide by 2
-Forthword_ YTWOSLASH, INLINE_OPT, "y/=2"
+Forthword_ YTWOSLASH, INLINE_OPT, "y/2"
   y_twoslash_
   end_
 
 @ ( Y:n1 -- Y:n1*2 )
 @ optimized y 2 multiply
-Forthword_ YTWOSTAR, INLINE_OPT, "y*=2"
+Forthword_ YTWOSTAR, INLINE_OPT, "y*2"
   y_twostar_
   end_
 
 @ ( Y:n1 -- Y:n1/4 )
 @ optimized y divide by 4
-Forthword_ YFOURSLASH, INLINE_OPT, "y/=4"
+Forthword_ YFOURSLASH, INLINE_OPT, "y/4"
   y_fourslash_
   end_
 
 @ ( Y:n1 -- Y:n*4 )
 @ optimized y four multiply
-Forthword_ YFOURSTAR, INLINE_OPT, "y*=4"
+Forthword_ YFOURSTAR, INLINE_OPT, "y*4"
   y_fourstar_
-  end_
-
-@ ( A:n1 -- A:n1/2 )
-@ optimized A divide by 2
-Forthword_ ATWOSLASH, INLINE_OPT, "a/=2"
-  a_twoslash_
-  end_
-
-@ ( A:n1 -- A:n1*2 )
-@ optimized A 2 multiply
-Forthword_ ATWOSTAR, INLINE_OPT, "a*=2"
-  a_twostar_
-  end_
-
-@ ( A:n1 -- A:n1/4 )
-@ optimized A divide by 4
-Forthword_ AFOURSLASH, INLINE_OPT, "a/=4"
-  a_fourslash_
-  end_
-
-@ ( A:n1 -- A:n*4 )
-@ optimized A four multiply
-Forthword_ AFOURSTAR, INLINE_OPT, "a*=4"
-  a_fourstar_
-  end_
-
-@ ( B:n1 -- B:n1/2 )
-@ optimized B divide by 2
-Forthword_ BTWOSLASH, INLINE_OPT, "b/=2"
-  b_twoslash_
-  end_
-
-@ ( B:n1 -- B:n1*2 )
-@ optimized B 2 multiply
-Forthword_ BTWOSTAR, INLINE_OPT, "b*=2"
-  b_twostar_
-  end_
-
-@ ( B:n1 -- B:n1/4 )
-@ optimized B divide by 4
-Forthword_ BFOURSLASH, INLINE_OPT, "b/=4"
-  b_fourslash_
-  end_
-
-@ ( B:n1 -- B:n*4 )
-@ optimized B four multiply
-Forthword_ BFOURSTAR, INLINE_OPT, "b*=4"
-  b_fourstar_
   end_
 
 @ ( n1 -- flag )

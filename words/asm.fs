@@ -346,7 +346,7 @@ rword _r2 inlined
 ( offset -- addsp )
 : _addsp
   y# $7F [ _y d= _w _ands , ]
-  $B000 |=y
+  $B000 |y
 ;
 
 \ subtract 7bit word offset from stack pointer
@@ -355,7 +355,7 @@ rword _r2 inlined
 ( offset -- subsp )
 : _subsp
   y# $7F [ _y d= _w _ands , ]
-  $B080 |=y
+  $B080 |y
 ;
 
 \ push registers onto return stack
@@ -364,7 +364,7 @@ rword _r2 inlined
 ( list -- push )
 : _push
   y# $FF [ _y d= _w _ands , ]
-  $B400 |=y
+  $B400 |y
 ;
 
 \ pop registers from return stack
@@ -373,5 +373,5 @@ rword _r2 inlined
 ( list -- pop )
 : _pop
   y# $FF [ _y d= _w _ands , ]
-  $BC00 |=y
+  $BC00 |y
 ;
