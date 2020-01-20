@@ -16,7 +16,7 @@ Forthword_ PUTCHAR, 0, "putchar"
 @ ( -- )
 @ turn emit off
 Forthword_ EMIT_OFF, 0, "emit.off"
-  @ reset output source for emit
+  @ dummy output source for emit
   lit32_ NOOP
   y_w_
   do_ EMITADDR
