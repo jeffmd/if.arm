@@ -49,6 +49,13 @@ Forthword_ W_D, INLINE_OPT, "=d"
   w_d_
   end_
 
+@ ( ? DSP:addr -- addr DSP:addr )
+@ current data stack pointer
+@ working register = dsp
+Forthword_ DSP, INLINE_OPT, "dsp"
+  dsp_
+  end_
+
 @@@@@@@@@@@@@ return Stack @@@@@@@@@@@@@
 
 @ ( n1 -- n2 ) (R: n2 --)
@@ -236,6 +243,12 @@ Forthword_ YFOURSTAR, INLINE_OPT, "y*4"
   y_fourstar_
   end_
 
+@ ( -- 0 ) 
+@ zero
+Forthword_ ZERO, INLINE_OPT, "0"
+  zero_
+  end_
+
 @ ( n1 -- flag )
 @ flag is true if n1 is 0
 Forthword_ ZEROEQUAL, INLINE_OPT, "0="
@@ -248,36 +261,6 @@ Forthword_ TRUE, INLINE_OPT, "true"
   true_
   end_
 
-@ ( -- 0 )
-@ w = 0
-Forthword_ ZERO, INLINE_OPT, "0"
-  zero_
-  end_
-
-@ ( -- ) A: 0
-@ a = 0
-Forthword_ A_0, INLINE_OPT, "a=0"
-  a_0_
-  end_
-
-@ ( -- ) B: 0
-@ b = 0
-Forthword_ B_0, INLINE_OPT, "b=0"
-  b_0_
-  end_
-
-@ ( -- ) X: 0
-@ x = 0
-Forthword_ X_0, INLINE_OPT, "x=0"
-  x_0_
-  end_
-
-@ ( -- ) Y: 0
-@ y = 0
-Forthword_ Y_0, INLINE_OPT, "y=0"
-  y_0_
-  end_
-
 @ ( n -- n )
 @ test WR if zero, does not consume WR
 Forthword_ ISZERO, INLINE_OPT, "==0"
@@ -288,18 +271,6 @@ Forthword_ ISZERO, INLINE_OPT, "==0"
 @ read 1 cell (32 bits) from RAM address
 Forthword_ FETCH, INLINE_OPT, "@"
   mw_
-  end_
-
-@ ( a-addr -- a-addr A:n32 )
-@ read 1 cell (32 bits) from RAM address and put in A register
-Forthword_ A_MW, INLINE_OPT, "a=@"
-  a_mw_
-  end_
-
-@ ( a-addr -- a-addr B:n32 )
-@ read 1 cell (32 bits) from RAM address and put in B register
-Forthword_ B_MW, INLINE_OPT, "b=@"
-  b_mw_
   end_
 
 @ ( a-addr -- a-addr X:n32 )
@@ -320,18 +291,6 @@ Forthword_ HMW, INLINE_OPT, "h@"
   hmw_
   end_
 
-@ ( a-addr -- a-addr A:n16 )
-@ read 1 cell (16 bits) from RAM address and put in A register
-Forthword_ A_HMW, INLINE_OPT, "a=h@"
-  a_hmw_
-  end_
-
-@ ( a-addr -- a-addr B:n16 )
-@ read 1 cell (16 bits) from RAM address and put in B register
-Forthword_ B_HMW, INLINE_OPT, "b=h@"
-  b_hmw_
-  end_
-
 @ ( a-addr -- a-addr X:n16 )
 @ read 1 cell (16 bits) from RAM address and put in X register
 Forthword_ X_HMW, INLINE_OPT, "x=h@"
@@ -342,36 +301,6 @@ Forthword_ X_HMW, INLINE_OPT, "x=h@"
 @ read 1 cell (16 bits) from RAM address and put in Y register
 Forthword_ Y_HMW, INLINE_OPT, "y=h@"
   y_hmw_
-  end_
-
-@ ( a-addr -- n8 )
-@ read byte (8 bits) from RAM address
-Forthword_ CMW, INLINE_OPT, "c@"
-  cmw_
-  end_
-
-@ ( a-addr -- a-addr A:n8 )
-@ read 1 cell (8 bits) from RAM address and put in A register
-Forthword_ A_CMW, INLINE_OPT, "a=c@"
-  a_cmw_
-  end_
-
-@ ( a-addr -- a-addr B:n8 )
-@ read 1 cell (8 bits) from RAM address and put in B register
-Forthword_ B_CMW, INLINE_OPT, "b=c@"
-  b_cmw_
-  end_
-
-@ ( a-addr -- a-addr X:n8 )
-@ read 1 cell (8 bits) from RAM address and put in X register
-Forthword_ X_CMW, INLINE_OPT, "x=c@"
-  x_cmw_
-  end_
-
-@ ( a-addr -- a-addr Y:n8 )
-@ read 1 cell (8 bits) from RAM address and put in Y register
-Forthword_ Y_CMW, INLINE_OPT, "y=c@"
-  y_cmw_
   end_
 
 @ ( addr Y:n -- )
@@ -386,18 +315,6 @@ Forthword_ MW_X, INLINE_OPT, "@=x"
   mw_x_
   end_
 
-@ ( addr A:n -- )
-@ store a word From A (32 bits) to RAM address
-Forthword_ MW_A, INLINE_OPT, "@=a"
-  mw_a_
-  end_
-
-@ ( addr B:n -- )
-@ store a word From B (32 bits) to RAM address
-Forthword_ MW_B, INLINE_OPT, "@=b"
-  mw_b_
-  end_
-
 @ ( a-addr -- a-addr Y:n16 )
 @ store a half word (16 bits) in Y register to RAM address
 Forthword_ HMW_Y, INLINE_OPT, "h@=y"
@@ -408,30 +325,6 @@ Forthword_ HMW_Y, INLINE_OPT, "h@=y"
 @ store a half word (16 bits) in X register to RAM address
 Forthword_ HMW_X, INLINE_OPT, "h@=x"
   hmw_x_
-  end_
-
-@ ( a-addr -- a-addr A:n16 )
-@ store a half word (16 bits) in A register to RAM address
-Forthword_ HMW_A, INLINE_OPT, "h@=a"
-  hmw_a_
-  end_
-
-@ ( a-addr -- a-addr B:n16 )
-@ store a half word (16 bits) in B register to RAM address
-Forthword_ HMW_B, INLINE_OPT, "h@=b"
-  hmw_b_
-  end_
-
-@ ( a-addr -- )
-@ store a single byte from Y register to RAM address
-Forthword_ CMW_Y, INLINE_OPT, "c@=y"
-  cmw_y_
-  end_
-
-@ ( a-addr -- )
-@ store a single byte from Y register to RAM address
-Forthword_ CMW_X, INLINE_OPT, "c@=x"
-  cmw_x_
   end_
 
 @ ( n1 -- n1 ) X: n1
@@ -461,42 +354,6 @@ Forthword_ Y_, INLINE_OPT, "y"
   end_
 
 @ ( -- n )
-@ Read a word (32bit) from memory pointed to by register B
-Forthword_ MB, INLINE_OPT, "@b"
-  mb_
-  end_
-
-@ ( n -- )
-@ store a word to RAM address pointed to by b register
-Forthword_ MB_W, INLINE_OPT, "@b="
-  mb_w_
-  end_
-
-@ ( -- n )
-@ Read a half word (32bit) from memory pointed to by register B
-Forthword_ HMB, INLINE_OPT, "h@b"
-  hmb_
-  end_
-
-@ ( h -- )
-@ store a half word to RAM address pointed to by b reg
-Forthword_ HMB_W, INLINE_OPT, "h@b="
-  hmb_w_
-  end_
-
-@ ( -- n )
-@ Read a byte from memory pointed to by register B
-Forthword_ CMB, INLINE_OPT, "c@b"
-  cmb_
-  end_
-
-@ ( c -- )
-@ store a single byte to RAM address pointed to by B reg
-Forthword_ CMB_W, INLINE_OPT, "c@b="
-  cmb_w_
-  end_
-
-@ ( -- n )
 @ Read a word (32bit) from memory pointed to by register X
 Forthword_ MX, INLINE_OPT, "@x"
   mx_
@@ -518,18 +375,6 @@ Forthword_ HMX, INLINE_OPT, "h@x"
 @ store a half word to RAM address pointed to by x reg
 Forthword_ HMX_W, INLINE_OPT, "h@x="
   hmx_w_
-  end_
-
-@ ( -- n )
-@ Read a byte from memory pointed to by register X
-Forthword_ CMX, INLINE_OPT, "c@x"
-  cmx_
-  end_
-
-@ ( c -- )
-@ store a single byte to RAM address pointed to by X reg
-Forthword_ CMX_W, INLINE_OPT, "c@x="
-  cmx_w_
   end_
 
 @ ( -- n )
@@ -556,25 +401,8 @@ Forthword_ HMY_W, INLINE_OPT, "h@y="
   hmy_w_
   end_
 
-@ ( -- n )
-@ Read a byte from memory pointed to by register Y
-Forthword_ CMY, INLINE_OPT, "c@y"
-  cmy_
-  end_
-
-@ ( c -- )
-@ store a single byte to RAM address pointed to by Y reg
-Forthword_ CMY_W, INLINE_OPT, "c@y="
-  cmy_w_
-  end_
-  
-
-@ ( -- lr )
-@ move link register into working register
-Forthword_ LR, INLINE_OPT, "_lr"
-  mov wreg, lr
-  end_
-
+@ ( -- )
+@ exit a word
 Forthword_ EXIT, INLINE_OPT, "exit"
   pop {pc}
   end_

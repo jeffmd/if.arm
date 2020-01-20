@@ -533,13 +533,6 @@ rword dsp= inlined
   _dsp d= _w _mov ,
   _bxlr ,
 
-( ? DSP:addr -- addr DSP:addr )
-\ current data stack pointer
-\ working register = dsp
-rword dsp inlined
-  _w d= _dsp _mov ,
-  _bxlr ,
-
 ( addr RSP:? -- addr RSP:addr )
 \ set return stack pointer to addr
 \ rsp = working register
@@ -1202,13 +1195,144 @@ rword b^ inlined
   _b d= _w _eors ,
   _bxlr ,
 
+\ ********** initialize register ************
+
+( X:? -- X:0 )
+\ x = 0
+rword x=0 inlined
+  _x d= 0 _movsi ,
+  _bxlr ,
+
+( Y:? -- Y:0 )
+\ y = 0
+rword y=0 inlined
+  _y d= 0 _movsi ,
+  _bxlr ,
+
+( A:? -- A:0 )
+\ a = 0
+rword a=0 inlined
+  _a d= 0 _movsi ,
+  _bxlr ,
+
+( B:? -- B:0 )
+\ b = 0
+rword b=0 inlined
+  _b d= 0 _movsi ,
+  _bxlr ,
+
+
 \ ********** Memory Store and Load ************
 
-( addr -- addr A:n )
+( addr A:n32 -- addr A:n32 )
+\ store a word in A to RAM address pointed to by W
+rword @=a inlined
+  _a d= _w d= 0 _str ,
+  _bxlr ,
+
+( addr B:n32 -- addr B:n32 )
+\ store a word in B to RAM address pointed to by W
+rword @=b inlined
+  _b d= _w d= 0 _str ,
+  _bxlr ,
+
+( addr A:n16 -- addr A:n16 )
+\ store a half word in A to RAM address pointed to by W
+rword h@=a inlined
+  _a d= _w d= 0 _strh ,
+  _bxlr ,
+
+( addr B:n16 -- addr B:n16 )
+\ store a half word in B to RAM address pointed to by W
+rword h@=b inlined
+  _b d= _w d= 0 _strh ,
+  _bxlr ,
+
+( addr X:n8 -- addr X:n8 )
+\ store a character/byte in X to RAM address pointed to by W
+rword c@=x inlined
+  _x d= _w d= 0 _strb ,
+  _bxlr ,
+
+( addr Y:n8 -- addr Y:n8 )
+\ store a character/byte in Y to RAM address pointed to by W
+rword c@=y inlined
+  _y d= _w d= 0 _strb ,
+  _bxlr ,
+
+( addr A:n8 -- addr A:n8 )
+\ store a character/byte in A to RAM address pointed to by W
+rword c@=a inlined
+  _a d= _w d= 0 _strb ,
+  _bxlr ,
+
+( addr B:n8 -- addr B:n8 )
+\ store a character/byte in B to RAM address pointed to by W
+rword c@=b inlined
+  _b d= _w d= 0 _strb ,
+  _bxlr ,
+
+( addr -- addr A:n32 )
 \ Read a word (32bit) from memory pointed to by W
 \ and store in register A
 rword a=@ inlined
-  _w d= _a d= 0 _ldr ,
+  _a d= _w d= 0 _ldr ,
+  _bxlr ,
+
+( addr -- addr B:n32 )
+\ Read a word (32bit) from memory pointed to by W
+\ and store in register B
+rword b=@ inlined
+  _b d= _w d= 0 _ldr ,
+  _bxlr ,
+
+( addr -- addr A:n16 )
+\ Read a half word (16bit) from memory pointed to by W
+\ and store in register A
+rword a=h@ inlined
+  _a d= _w d= 0 _ldrh ,
+  _bxlr ,
+
+( addr -- addr B:n16 )
+\ Read a half word (16bit) from memory pointed to by W
+\ and store in register B
+rword b=h@ inlined
+  _b d= _w d= 0 _ldrh ,
+  _bxlr ,
+
+( addr -- n8 )
+\ Read a byte (8bit) from memory pointed to by W
+\ and store in register W
+rword c@ inlined
+  _w d= _w d= 0 _ldrb ,
+  _bxlr ,
+
+( addr -- addr X:n8 )
+\ Read a byte (8bit) from memory pointed to by W
+\ and store in register X
+rword x=c@ inlined
+  _x d= _w d= 0 _ldrb ,
+  _bxlr ,
+
+( addr -- addr Y:n8 )
+\ Read a byte (8bit) from memory pointed to by W
+\ and store in register Y
+rword y=c@ inlined
+  _y d= _w d= 0 _ldrb ,
+  _bxlr ,
+
+( addr -- addr A:n8 )
+\ Read a byte (8bit) from memory pointed to by W
+\ and store in register A
+rword a=c@ inlined
+  _a d= _w d= 0 _ldrb ,
+  _bxlr ,
+
+( addr -- addr B:n8 )
+\ Read a byte (8bit) from memory pointed to by W
+\ and store in register B
+rword b=c@ inlined
+  _b d= _w d= 0 _ldrb ,
   _bxlr ,
 
 ( -- n )
@@ -1218,7 +1342,7 @@ rword @a inlined
   _bxlr ,
 
 ( n -- )
-\ store a word to RAM address pointed to by areg
+\ store a word to RAM address pointed to by register A
 rword @a= inlined
   _w d= _a d= 0 _str ,
   _bxlr ,
@@ -1230,9 +1354,33 @@ rword h@a inlined
   _bxlr ,
 
 ( h -- h )
-\ store a half word to RAM address pointed to by areg
+\ store a half word to RAM address pointed to by register A
 rword h@a= inlined
   _w d= _a d= 0 _strh ,
+  _bxlr ,
+
+( -- n )
+\ Read a byte from memory pointed to by register X
+rword c@x inlined
+  _w d= _x d= 0 _ldrb ,
+  _bxlr ,
+
+( c -- )
+\ store a single byte to RAM address pointed to by register X
+rword c@x= inlined
+  _w d= _x d= 0 _strb ,
+  _bxlr ,
+
+( -- n )
+\ Read a byte from memory pointed to by register Y
+rword c@y inlined
+  _w d= _y d= 0 _ldrb ,
+  _bxlr ,
+
+( c -- )
+\ store a single byte to RAM address pointed to by register Y
+rword c@y= inlined
+  _w d= _y d= 0 _strb ,
   _bxlr ,
 
 ( -- n )
@@ -1242,9 +1390,45 @@ rword c@a inlined
   _bxlr ,
 
 ( c -- )
-\ store a single byte to RAM address pointed to by areg
+\ store a single byte to RAM address pointed to by register A
 rword c@a= inlined
   _w d= _a d= 0 _strb ,
+  _bxlr ,
+
+( -- n )
+\ Read a word (32bit) from memory pointed to by register B
+rword @b inlined
+  _w d= _b d= 0 _ldr ,
+  _bxlr ,
+
+( n -- n )
+\ store a word to RAM address pointed to by register B
+rword @b= inlined
+  _w d= _b d= 0 _str ,
+  _bxlr ,
+
+( -- n )
+\ Read a half word (16bit) from memory pointed to by register B
+rword h@b inlined
+  _w d= _b d= 0 _ldrh ,
+  _bxlr ,
+
+( h -- h )
+\ store a half word to RAM address pointed to by register B
+rword h@b= inlined
+  _w d= _b d= 0 _strh ,
+  _bxlr ,
+
+( -- n )
+\ Read a byte from memory pointed to by register B
+rword c@b inlined
+  _w d= _b d= 0 _ldrb ,
+  _bxlr ,
+
+( c -- )
+\ store a single byte to RAM address pointed to by register B
+rword c@b= inlined
+  _w d= _b d= 0 _strb ,
   _bxlr ,
 
 \ ********** register shifting ************
@@ -1328,4 +1512,12 @@ rword a=r inlined
 rword b=r inlined
   _b y= 1 <<y _pop ,
   _bxlr ,
+
+\ move link register into working register
+( -- lr )
+rword _lr inlined
+  _w d= __lr _mov ,
+  _bxlr ,
+
+
 
