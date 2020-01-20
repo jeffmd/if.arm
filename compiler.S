@@ -92,10 +92,10 @@ TAILOPT_OPT:
 .endif
 
 @ ( -- )
-@ clear data cache to force reload when executed as instructions
+@ clear code cache to force reload when executed as instructions
 Forthword_ CLRCACHE, 0, "clrcache"
   @ r1 = end address
-  do_ DP
+  do_ CP
   mov r1, wreg
   @ r0 = start address: will be current last word defined
   do_ CURRENT
