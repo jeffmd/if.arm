@@ -81,22 +81,22 @@ sysvar .req r4 @ system variables base pointer
 
 @ load working register into another register
 
-@ a=w
+@ a=
 .macro a_w_
     mov areg, wreg
 .endm
 
-@ b=w
+@ b=
 .macro b_w_
     mov breg, wreg
 .endm
 
-@ x=w
+@ x=
 .macro x_w_
     mov xreg, wreg
 .endm
 
-@ y=w
+@ y=
 .macro y_w_
     mov yreg, wreg
 .endm
@@ -165,14 +165,17 @@ sysvar .req r4 @ system variables base pointer
   pop {dsp}
 .endm
 
+@ r-1
 .macro r_m1_
     add sp, #4
 .endm
 
+@ r-2
 .macro r_m2_ 
     add sp, #8
 .endm
 
+@ r-3
 .macro r_m3_ 
     add sp, #12
 .endm
@@ -256,7 +259,7 @@ sysvar .req r4 @ system variables base pointer
 
 @ store register value in return stack
 
-@ r0=w
+@ r0=
 .macro r0_w_
   str wreg, [sp] 
 .endm
@@ -338,7 +341,7 @@ sysvar .req r4 @ system variables base pointer
   mov wreg, sp
 .endm
 
-@ rsp=w
+@ rsp=
 .macro rsp_w_
   mov sp, wreg
 .endm
@@ -398,17 +401,17 @@ sysvar .req r4 @ system variables base pointer
 
 @ store register into data stack
 
-@ d0=w
+@ d0=
 .macro d0_w_
   str wreg, [dsp] @ Replace it with wr.
 .endm
 
-@ d1=w
+@ d1=
 .macro d1_w_
   str wreg, [dsp, #4] @ Replace it with wr.
 .endm
 
-@ d2=w
+@ d2=
 .macro d2_w_
   str wreg, [dsp, #8] @ Replace it with wr.
 .endm
@@ -552,14 +555,17 @@ sysvar .req r4 @ system variables base pointer
 
 @ make room on data stack
 
+@ d+1
 .macro d_p1_ @ move stack pointer down one cell
    subs dsp, #4
 .endm
 
+@ d+2
 .macro d_p2_ @ move stack pointer down two cells
    subs dsp, #8
 .endm
 
+@ d+3
 .macro d_p3_ @ move stack pointer down three cells
    subs dsp, #12
 .endm
@@ -643,329 +649,329 @@ sysvar .req r4 @ system variables base pointer
   mov wreg, dsp
 .endm
 
-@ dsp=w
+@ dsp=
 .macro dsp_w_
   mov dsp, wreg
 .endm
 
 @ add register to register
 
-@ w+=a
+@ +a
 .macro w_plus_a_
   adds wreg, areg
 .endm
 
-@ w+=b
+@ +b
 .macro w_plus_b_
   adds wreg, breg
 .endm
 
-@ w+=x
+@ +x
 .macro w_plus_x_
   adds wreg, xreg
 .endm
 
-@ w+=y
+@ +y
 .macro w_plus_y_
   adds wreg, yreg
 .endm
 
-@ a+=w
+@ a+
 .macro a_plus_w_
   adds areg, wreg
 .endm
 
-@ a+=b
+@ a+b
 .macro a_plus_b_
   adds areg, breg
 .endm
 
-@ a+=x
+@ a+x
 .macro a_plus_x_
   adds areg, xreg
 .endm
 
-@ a+=y
+@ a+y
 .macro a_plus_y_
   adds areg, yreg
 .endm
 
-@ b+=w
+@ b+
 .macro b_plus_w_
   adds breg, wreg
 .endm
 
-@ b+=a
+@ b+a
 .macro b_plus_a_
   adds breg, areg
 .endm
 
-@ b+=x
+@ b+x
 .macro b_plus_x_
   adds breg, xreg
 .endm
 
-@ b+=y
+@ b+y
 .macro b_plus_y_
   adds breg, yreg
 .endm
 
-@ x+=w
+@ x+
 .macro x_plus_w_
   adds xreg, wreg
 .endm
 
-@ x+=a
+@ x+a
 .macro x_plus_a_
   adds xreg, areg
 .endm
 
-@ x+=b
+@ x+b
 .macro x_plus_b_
   adds xreg, breg
 .endm
 
-@ x+=y
+@ x+y
 .macro x_plus_y_
   adds xreg, yreg
 .endm
 
-@ y+=w
+@ y+
 .macro y_plus_w_
   adds yreg, wreg
 .endm
 
-@ y+=a
+@ y+a
 .macro y_plus_a_
   adds yreg, areg
 .endm
 
-@ y+=b
+@ y+b
 .macro y_plus_b_
   adds yreg, breg
 .endm
 
-@ y+=x
+@ y+x
 .macro y_plus_x_
   adds yreg, xreg
 .endm
 
-@ w-=a
+@ -=a
 .macro w_minus_a_
   subs wreg, areg
 .endm
 
-@ w-=b
+@ -=b
 .macro w_minus_b_
   subs wreg, breg
 .endm
 
-@ w-=x
+@ -=x
 .macro w_minus_x_
   subs wreg, xreg
 .endm
 
-@ w-=y
+@ -=y
 .macro w_minus_y_
   subs wreg, yreg
 .endm
 
-@ a-=w
+@ a-
 .macro a_minus_w_
   subs areg, wreg
 .endm
 
-@ a-=b
+@ a-b
 .macro a_minus_b_
   subs areg, breg
 .endm
 
-@ a-=x
+@ a-x
 .macro a_minus_x_
   subs areg, xreg
 .endm
 
-@ a-=y
+@ a-y
 .macro a_minus_y_
   subs areg, yreg
 .endm
 
-@ b-=w
+@ b-w
 .macro b_minus_w_
   subs breg, wreg
 .endm
 
-@ b-=a
+@ b-a
 .macro b_minus_a_
   subs breg, areg
 .endm
 
-@ b-=x
+@ b-x
 .macro b_minus_x_
   subs breg, xreg
 .endm
 
-@ b-=y
+@ b-y
 .macro b_minus_y_
   subs breg, yreg
 .endm
 
-@ x-=w
+@ x-
 .macro x_minus_w_
   subs xreg, wreg
 .endm
 
-@ x-=a
+@ x-a
 .macro x_minus_a_
   subs xreg, areg
 .endm
 
-@ x-=b
+@ x-b
 .macro x_minus_b_
   subs xreg, breg
 .endm
 
-@ x-=y
+@ x-y
 .macro x_minus_y_
   subs xreg, yreg
 .endm
 
-@ y-=w
+@ y-
 .macro y_minus_w_
   subs yreg, wreg
 .endm
 
-@ y-=a
+@ y-a
 .macro y_minus_a_
   subs yreg, areg
 .endm
 
-@ y-=b
+@ y-b
 .macro y_minus_b_
   subs yreg, breg
 .endm
 
-@ y-=x
+@ y-x
 .macro y_minus_x_
   subs yreg, xreg
 .endm
 
-@ w&=a
+@ &a
 .macro w_and_a_
   ands wreg, areg
 .endm
 
-@ a&=w
+@ a&
 .macro a_and_w_
   ands areg, wreg
 .endm
 
-@ w&=b
+@ &b
 .macro w_and_b_
   ands wreg, breg
 .endm
 
-@ b&=w
+@ b&
 .macro b_and_w_
   ands breg, wreg
 .endm
 
-@ w&=x
+@ &x
 .macro w_and_x_
   ands wreg, xreg
 .endm
 
-@ x&=w
+@ x&
 .macro x_and_w_
   ands xreg, wreg
 .endm
 
-@ w&=y
+@ &y
 .macro w_and_y_
   ands wreg, yreg
 .endm
 
-@ y&=w
+@ y&
 .macro y_and_w_
   ands yreg, wreg
 .endm
 
-@ w|=a
+@ |a
 .macro w_or_a_
   orrs wreg, areg
 .endm
 
-@ a|=w
+@ a|
 .macro a_or_w_
   orrs areg, wreg
 .endm
 
-@ w|=b
+@ |b
 .macro w_or_b_
   orrs wreg, breg
 .endm
 
-@ b|=w
+@ b|
 .macro b_or_
   orrs breg, wreg
 .endm
 
-@ w|=x
+@ |x
 .macro w_or_x_
   orrs wreg, xreg
 .endm
 
-@ x|=w
+@ x|
 .macro x_or_w_
   orrs xreg, wreg
 .endm
 
-@ w|=y
+@ |y
 .macro w_or_y_
   orrs wreg, yreg
 .endm
 
-@ y|=w
+@ y|
 .macro y_or_w_
   orrs yreg, wreg
 .endm
 
-@ w^=a
+@ ^a
 .macro w_xor_a_
   eors wreg, areg
 .endm
 
-@ a^=w
+@ a^
 .macro a_xor_w_
   eors areg, wreg
 .endm
 
-@ w^=b
+@ ^b
 .macro w_xor_b_
   eors wreg, breg
 .endm
 
-@ b^=w
+@ b^
 .macro b_xor_w_
   eors breg, wreg
 .endm
 
-@ w^=x
+@ ^x
 .macro w_xor_x_
   eors wreg, xreg
 .endm
 
-@ x^=w
+@ x^
 .macro x_xor_w_
   eors xreg, wreg
 .endm
 
-@ w^=y
+@ ^y
 .macro w_xor_y_
   eors wreg, yreg
 .endm
 
-@ y^=w
+@ y^
 .macro y_xor_w_
   eors yreg, wreg
 .endm
@@ -1070,122 +1076,122 @@ sysvar .req r4 @ system variables base pointer
     lsls wreg, #2
 .endm
 
-@ x/=2
+@ x/2
 .macro x_twoslash_
   asrs xreg, #1
 .endm
 
-@ x/=4
+@ x/4
 .macro x_fourslash_
   asrs xreg, #2
 .endm
 
-@ x*=2
+@ x*2
 .macro x_twostar_
   lsls xreg, #1
 .endm
 
-@ x*=4
+@ x*4
 .macro x_fourstar_
   lsls xreg, #2
 .endm
 
-@ y/=2
+@ y/2
 .macro y_twoslash_
   asrs yreg, #1
 .endm
 
-@ y/=4
+@ y/4
 .macro y_fourslash_
   asrs yreg, #2
 .endm
 
-@ y*=2
+@ y*2
 .macro y_twostar_
   lsls yreg, #1
 .endm
 
-@ y*=4
+@ y*4
 .macro y_fourstar_
   lsls yreg, #2
 .endm
 
-@ a/=2
+@ a/2
 .macro a_twoslash_
   asrs areg, #1
 .endm
 
-@ a/=4
+@ a/4
 .macro a_fourslash_
   asrs areg, #2
 .endm
 
-@ a*=2
+@ a*2
 .macro a_twostar_
   lsls areg, #1
 .endm
 
-@ a*=4
+@ a*4
 .macro a_fourstar_
   lsls areg, #2
 .endm
 
-@ b/=2
+@ b/2
 .macro b_twoslash_
   asrs breg, #1
 .endm
 
-@ b/=4
+@ b/4
 .macro b_fourslash_
   asrs breg, #2
 .endm
 
-@ b*=2
+@ b*2
 .macro b_twostar_
   lsls breg, #1
 .endm
 
-@ b*=4
+@ b*4
 .macro b_fourstar_
   lsls breg, #2
 .endm
 
-@ *=x
+@ *x
 .macro w_mul_x_
   muls wreg, xreg
 .endm
 
-@ *=y
+@ *y
 .macro w_mul_y_
   muls wreg, yreg
 .endm
 
-@ *=a
+@ *a
 .macro w_mul_a_
   muls wreg, areg
 .endm
 
-@ *=b
+@ *b
 .macro w_mul_b_
   muls wreg, breg
 .endm
 
-@ x*=
+@ x*
 .macro x_mul_w_
   muls xreg, wreg
 .endm
 
-@ y*=
+@ y*
 .macro y_mul_w_
   muls yreg, wreg
 .endm
 
-@ a*=
+@ a*
 .macro a_mul_w_
   muls areg, wreg
 .endm
 
-@ b*=
+@ b*
 .macro b_mul_w_
   muls breg, wreg
 .endm
@@ -1260,34 +1266,42 @@ sysvar .req r4 @ system variables base pointer
   not_
 .endm
 
+@ <<y
 .macro lshifty_
   lsls wreg, yreg
 .endm
 
+@ >>y
 .macro rshifty_
   lsrs wreg, yreg
 .endm
 
+@ <<x
 .macro lshiftx_
   lsls wreg, xreg
 .endm
 
+@ >>x
 .macro rshiftx_
   lsrs wreg, xreg
 .endm
 
+@ <<a
 .macro lshifta_
   lsls wreg, areg
 .endm
 
+@ >>a
 .macro rshifta_
   lsrs wreg, areg
 .endm
 
+@ <<b
 .macro lshiftb_
   lsls wreg, breg
 .endm
 
+@ >>b
 .macro rshiftb_
   lsrs wreg, breg
 .endm
@@ -1299,22 +1313,22 @@ sysvar .req r4 @ system variables base pointer
   ldr wreg, [wreg]
 .endm
 
-@ a=@w
+@ a=@
 .macro a_mw_
   ldr areg, [wreg]
 .endm
 
-@ b=@w
+@ b=@
 .macro b_mw_
   ldr breg, [wreg]
 .endm
 
-@ x=@w
+@ x=@
 .macro x_mw_
   ldr xreg, [wreg]
 .endm
 
-@ y=@w
+@ y=@
 .macro y_mw_
   ldr yreg, [wreg]
 .endm
@@ -1324,22 +1338,22 @@ sysvar .req r4 @ system variables base pointer
   ldrh wreg, [wreg]
 .endm
 
-@ a=h@w
+@ a=h@
 .macro a_hmw_
   ldrh areg, [wreg]
 .endm
 
-@ b=h@w
+@ b=h@
 .macro b_hmw_
   ldrh breg, [wreg]
 .endm
 
-@ x=h@w
+@ x=h@
 .macro x_hmw_
   ldrh xreg, [wreg]
 .endm
 
-@ y=h@w
+@ y=h@
 .macro y_hmw_
   ldrh yreg, [wreg]
 .endm
@@ -1349,22 +1363,22 @@ sysvar .req r4 @ system variables base pointer
   ldrb wreg, [wreg]
 .endm
 
-@ a=c@w
+@ a=c@
 .macro a_cmw_
   ldrb areg, [wreg]
 .endm
 
-@ b=c@w
+@ b=c@
 .macro b_cmw_
   ldrb breg, [wreg]
 .endm
 
-@ x=c@w
+@ x=c@
 .macro x_cmw_
   ldrb xreg, [wreg]
 .endm
 
-@ y=c@w
+@ y=c@
 .macro y_cmw_
   ldrb yreg, [wreg]
 .endm
@@ -1433,254 +1447,254 @@ sysvar .req r4 @ system variables base pointer
 
 @ store register into memory pointed to by working register
 
-@ @w=a
+@ @=a
 .macro mw_a_
   str areg, [wreg]     
 .endm
 
-@ @w=b
+@ @=b
 .macro mw_b_
   str breg, [wreg]     
 .endm
 
-@ @w=x
+@ @=x
 .macro mw_x_
   str xreg, [wreg]     
 .endm
 
-@ @w=y
+@ @=y
 .macro mw_y_
   str yreg, [wreg]
 .endm
 
-@ h@w=a
+@ h@=a
 .macro hmw_a_
   strh areg, [wreg]     
 .endm
 
-@ h@w=b
+@ h@=b
 .macro hmw_b_
   strh breg, [wreg]     
 .endm
 
-@ h@w=x
+@ h@=x
 .macro hmw_x_
   strh xreg, [wreg]     
 .endm
 
-@ h@w=y
+@ h@=y
 .macro hmw_y_
   strh yreg, [wreg]
 .endm
 
-@ c@w=a
+@ c@=a
 .macro cmw_a_
   strb areg, [wreg]     
 .endm
 
-@ c@w=b
+@ c@=b
 .macro cmw_b_
   strb breg, [wreg]     
 .endm
 
-@ c@w=x
+@ c@=x
 .macro cmw_x_
   strb xreg, [wreg]     
 .endm
 
-@ c@w=y
+@ c@=y
 .macro cmw_y_
   strb yreg, [wreg]
 .endm
 
-@ @a=w
+@ @a=
 .macro ma_w_
   str wreg, [areg]     
 .endm
 
-@ @b=w
+@ @b=
 .macro mb_w_
   str wreg, [breg]     
 .endm
 
-@ @x=w
+@ @x=
 .macro mx_w_
   str wreg, [xreg]     
 .endm
 
-@ @y=w
+@ @y=
 .macro my_w_
   str wreg, [yreg]     
 .endm
 
-@ h@a=w
+@ h@a=
 .macro hma_w_
   strh wreg, [areg]     
 .endm
 
-@ h@b=w
+@ h@b=
 .macro hmb_w_
   strh wreg, [breg]     
 .endm
 
-@ h@x=w
+@ h@x=
 .macro hmx_w_
   strh wreg, [xreg]     
 .endm
 
-@ h@y=w
+@ h@y=
 .macro hmy_w_
   strh wreg, [yreg]     
 .endm
 
-@ c@a=w
+@ c@a=
 .macro cma_w_
   strb wreg, [areg]     
 .endm
 
-@ c@b=w
+@ c@b=
 .macro cmb_w_
   strb wreg, [breg]     
 .endm
 
-@ c@x=w
+@ c@x=
 .macro cmx_w_
   strb wreg, [xreg]     
 .endm
 
-@ c@y=w
+@ c@y=
 .macro cmy_w_
   strb wreg, [yreg]     
 .endm
 
 @ add 4 to register
 
-@ a+=4
+@ a+4
 .macro a_plus4_
   adds areg, #4
 .endm
 
-@ b+=4
+@ b+4
 .macro b_plus4_
   adds breg, #4
 .endm
 
-@ x+=4
+@ x+4
 .macro x_plus4_
   adds xreg, #4
 .endm
 
-@ y+=4
+@ y+4
 .macro y_plus4_
   adds yreg, #4
 .endm
 
 @ subtract 4 from register
 
-@ a-=4
+@ a-4
 .macro a_minus4_
   subs areg, #4
 .endm
 
-@ b-=4
+@ b-4
 .macro b_minus4_
   subs breg, #4
 .endm
 
-@ x-=4
+@ x-4
 .macro x_minus4_
   subs xreg, #4
 .endm
 
-@ y-=4
+@ y-4
 .macro y_minus4_
   subs yreg, #4
 .endm
 
 @ add 2 to register
 
-@ a+=2
+@ a+2
 .macro a_plus2_
   adds areg, #2
 .endm
 
-@ b+=2
+@ b+2
 .macro b_plus2_
   adds breg, #2
 .endm
 
-@ x+=2
+@ x+2
 .macro x_plus2_
   adds xreg, #2
 .endm
 
-@ y+=2
+@ y+2
 .macro y_plus2_
   adds yreg, #2
 .endm
 
 @ subtract 2 from register
 
-@ a-=2
+@ a-2
 .macro a_minus2_
   subs areg, #2
 .endm
 
-@ b-=2
+@ b-2
 .macro b_minus2_
   subs breg, #2
 .endm
 
-@ x-=2
+@ x-2
 .macro x_minus2_
   subs xreg, #2
 .endm
 
-@ y-=2
+@ y-2
 .macro y_minus2_
   subs yreg, #2
 .endm
 
 @ add 1 to register
 
-@ a+=1
+@ a+1
 .macro a_plus1_
   adds areg, #1
 .endm
 
-@ b+=1
+@ b+1
 .macro b_plus1_
   adds breg, #1
 .endm
 
-@ x+=1
+@ x+1
 .macro x_plus1_
   adds xreg, #1
 .endm
 
-@ y+=1
+@ y+1
 .macro y_plus1_
   adds yreg, #1
 .endm
 
 @ subtract 1 from register
 
-@ a-=1
+@ a-1
 .macro a_minus1_
   subs areg, #1
 .endm
 
-@ b-=1
+@ b-1
 .macro b_minus1_
   subs breg, #1
 .endm
 
-@ x-=1
+@ x-1
 .macro x_minus1_
   subs xreg, #1
 .endm
 
-@ y-=1
+@ y-1
 .macro y_minus1_
   subs yreg, #1
 .endm
