@@ -17,7 +17,7 @@ pname header d= y# $FF00 |y @dp=s \ ( nfa ? )
     =d          \ ( addr len wid )
     r=          \ ( addr len wid ) (R: nfa wid )
     y=d0        \ ( addr len wid Y:len )
-    $FF00 |y   \ ( addr len len|$FF00 )
+    $FF00 |y    \ ( addr len len|$FF00 )
     @dp=s       \ ( ? )
     =r @        \ ( linkaddr ) (R: nfa )
     @dp=        \ ( ? )
@@ -78,4 +78,3 @@ pname (create) d= current @ header \ ( nfa )
   \ back in compile mode
     ;opt uwid
 [ ;opt uwid immediate
-
