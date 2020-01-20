@@ -114,6 +114,9 @@ Forthword_ CATCH, 0, "catch"
 @ throw an exception
 @ will type the string passed in
 Forthword_ THROW, 0, "throw"
+  d_w_
+  do_ RESET
+  w_d_
   do_ TYPE           @ ( ? )
   do_ HANDLER        @ ( haddr )
   x_w_               @ ( haddr X:haddr )
