@@ -73,7 +73,7 @@ Forthword_ DEPTH, 0, "depth"
 @ check stack underflow, throw exception 
 Forthword_ QSTACK, 0, "?dsp"
   do_ DEPTH
-  zeroless_
+  lesszero_
   iszero_
   ifz_ QSTACKFIN
     slit_ " Stack Underflow!"

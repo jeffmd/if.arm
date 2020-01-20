@@ -48,14 +48,14 @@ GREATER_END:
 
 @ ( n1 -- flag )
 @ flag is true if n1 is greater than 0
-Forthword_ ZEROGREATER, 0, "0>"
+Forthword_ GREATERZERO, 0, ">0"
   subs wreg, #0
   end_do_ GREATER_CHK
 
 @ ( n1 -- flag)
 @ flag is true if wreg is less than zero
-forthword_ ZEROLESS, INLINE_OPT, "0<"
-  zeroless_
+forthword_ LESSZERO, INLINE_OPT, "<0"
+  lesszero_
   end_
 
 @ ( len -- len/2 rem)

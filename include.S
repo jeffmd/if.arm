@@ -38,7 +38,7 @@ Forthword_ DOINCLUDE, 0, "(include)"
   do_ open             @ ( filedes )
   @ if file descriptor > 0 then open is success
   d_w_                 @ ( filedes filedes )
-  do_ ZEROGREATER      @ ( filedes flag )
+  do_ GREATERZERO      @ ( filedes flag )
   iszero_
   ifz_ DOINCLUDE_EXIT
 

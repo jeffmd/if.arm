@@ -1222,7 +1222,7 @@ sysvar .req r4 @ system variables base pointer
 .endm
 
 @ <0
-.macro zeroless_
+.macro lesszero_
   asrs wreg, #31    @ Turn MSB into 0xffffffff or 0x00000000
 .endm
 
