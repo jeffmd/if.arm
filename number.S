@@ -2,7 +2,7 @@
 
 @ ( -- a-addr )
 @ location of the cell containing the number conversion radix
-Forthword_ BASE, 0, "base"
+Forthword_ BASE, 0, "base#"
   user_ USER_BASE
   end_
 
@@ -16,7 +16,7 @@ Forthword_ BASESTORE, 0, "base="
 
 @ ( n -- )
 @ load base
-Forthword_ BASEFETCH, 0, "base@"
+Forthword_ BASEFETCH, 0, "base"
   user_ USER_BASE
   hmw_
   end_

@@ -563,13 +563,13 @@ rword +b inlined
 
 ( n1 -- n1-a )
 \ w = w - a
-rword -=a inlined
+rword -a inlined
   _w d= d= _a _subs ,
   _bxlr ,
 
 ( n1 -- n1-b )
 \ w = w - b
-rword -=b inlined
+rword -b inlined
   _w d= d= _b _subs ,
   _bxlr ,
 
@@ -768,27 +768,27 @@ rword b-a inlined
 ( n -- -n )
 \ 2-compliment of W
 \ w = -w
-rword -w inlined
+rword - inlined
   _w d= _w _rsbs ,
   _bxlr ,
 
 ( X:n -- X:-n )
 \ 2-compliment of X
 \ x = -x
-rword -x inlined
+rword 0-x inlined
   _x d= _x _rsbs ,
   _bxlr ,
 
 ( Y:n -- Y:-n )
 \ 2-compliment of Y
-\ y = -y
-rword -y inlined
+\ y = 0-y
+rword =-y inlined
   _y d= _y _rsbs ,
   _bxlr ,
 
 ( A:n -- A:-n )
 \ 2-compliment of A
-\ a = -a
+\ a = 0-a
 rword -a inlined
   _a d= _a _rsbs ,
   _bxlr ,
@@ -796,7 +796,7 @@ rword -a inlined
 ( B:n -- B:-n )
 \ 2-compliment of B
 \ b = -b
-rword -b inlined
+rword 0-b inlined
   _b d= _b _rsbs ,
   _bxlr ,
 

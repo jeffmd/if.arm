@@ -94,13 +94,13 @@ Forthword_ W_PLUS_X, INLINE_OPT, "+x"
 
 @ ( n1|u1 -- n1-y|u1-y )
 @ w = w - y
-Forthword_ W_MINUS_Y, INLINE_OPT, "-=y"
+Forthword_ W_MINUS_Y, INLINE_OPT, "-y"
   w_minus_y_
   end_
 
 @ ( n1|u1 -- n1-x|u1-x )
 @ w = w - x
-Forthword_ W_MINUS_X, INLINE_OPT, "-=x"
+Forthword_ W_MINUS_X, INLINE_OPT, "-x"
   w_minus_x_
   end_
 
@@ -137,7 +137,7 @@ Forthword_ NOTEQUAL, INLINE_OPT, "!="
 
 @ ( n1 -- n1+1 ) 
 @ optimized increment
-Forthword_ ONEPLUS, INLINE_OPT, "1+"
+Forthword_ ONEPLUS, INLINE_OPT, "+1"
   oneplus_
   end_
 
@@ -155,7 +155,7 @@ Forthword_ TWOMINUS, INLINE_OPT, "2-"
 
 @ ( n1 -- n1+2 )
 @ optimized decrement
-Forthword_ TWOPLUS, INLINE_OPT, "2+"
+Forthword_ TWOPLUS, INLINE_OPT, "+2"
   twoplus_
   end_
 
@@ -167,31 +167,31 @@ Forthword_ FOURMINUS, INLINE_OPT, "4-"
 
 @ ( n1 -- n1+4 )
 @ optimized decrement
-Forthword_ FOURPLUS, INLINE_OPT, "4+"
+Forthword_ FOURPLUS, INLINE_OPT, "+4"
   fourplus_
   end_
 
 @ ( n1 -- n1/2 )
 @ optimized divide by 2
-Forthword_ TWOSLASH, INLINE_OPT, "2/"
+Forthword_ TWOSLASH, INLINE_OPT, "/2"
   twoslash_
   end_
 
 @ ( n1 -- n1*2 )
 @ optimized 2 multiply
-Forthword_ TWOSTAR, INLINE_OPT, "2*"
+Forthword_ TWOSTAR, INLINE_OPT, "*2"
   twostar_
   end_
 
 @ ( n1 -- n1/4 )
 @ optimized divide by 4
-Forthword_ FOURSLASH, INLINE_OPT, "4/"
+Forthword_ FOURSLASH, INLINE_OPT, "/4"
   fourslash_
   end_
 
 @ ( n1 -- n*4 )
 @ optimized four multiply
-Forthword_ FOURSTAR, INLINE_OPT, "4*"
+Forthword_ FOURSTAR, INLINE_OPT, "*4"
   fourstar_
   end_
 
@@ -262,7 +262,7 @@ Forthword_ TRUE, INLINE_OPT, "true"
   end_
 
 @ ( n -- n )
-@ test WR if zero, does not consume WR
+@ test WR if zero,
 Forthword_ ISZERO, INLINE_OPT, "==0"
   iszero_
   end_  

@@ -57,7 +57,7 @@ rword icell inlined
 ( n -- n+icell )
 \ add instruction stack cell size to n
 rword icell+ inlined
-    ] 2+ [
+    ] +2 [
     _bxlr ,
   
 ( n -- n-icell )
@@ -69,7 +69,7 @@ rword icell- inlined
 ( n -- n*icell )
 \ multiply n by instruction stack cell size 
 rword icell* inlined
-    ] 2* [
+    ] *2 [
     _bxlr ,
 
 ( -- dcell )
@@ -81,7 +81,7 @@ rword dcell inlined
 ( n -- n+dcell )
 \ add data stack cell size to n
 rword dcell+ inlined
-    ] 4+ [
+    ] +4 [
     _bxlr ,
 
 ( n -- n-dcell )
@@ -93,7 +93,7 @@ rword dcell- inlined
 ( n -- n*dcell )
 \ multiply n by data stack cell size 
 rword dcell* inlined
-    ] 4* [
+    ] *4 [
     _bxlr ,
 
 ( C:"<spaces>name" -- 0 | nfa )
