@@ -20,7 +20,7 @@ sigjmp_buf quitbuf;
 void handler (int signo, siginfo_t *info, void *arg)
 {
   printf("Signal: %s\n", strsignal(signo));
-  printf("Faulted at address %x\n", info->si_addr);
+  printf("Faulted at address 0x%x\n", info->si_addr);
   
   siglongjmp( quitbuf, -1 );
 }
@@ -48,5 +48,5 @@ int main(int argc, char *argv[])
     COLD();
   }
   
-	return 0;
+  return 0;
 }
