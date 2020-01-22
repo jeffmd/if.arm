@@ -1,27 +1,30 @@
 @ mathadv.S - advanced math
 
+.if 0
 @ Multiply unsigned 32*32 = 64
-@ ( u u -- ud )
+@ ( u2 u1 -- ud )
 Forthword_ UMSTAR, 0, "um*"
 .if rpi2
 
-    ldr r0, [dsp]
-    umull r0, wreg, r0, wreg @ Unsigned long multiply 32*32=64
-    str r0, [dsp]
+    ldr r1, [dsp]
+    umull r1, wreg, r1, wreg @ Unsigned long multiply 32*32=64
+    str r1, [dsp]
     bx lr
     
 .else
+  @ To be calculated: wreg * d0
+  @ d0 = high 32bit
+  @ wreg = low 32bit
+  y_d0            @ ( u2 u1 Y:u2 )
+  @ Calculate low part in hardware:
+  @ Save the low part for later
+  x_w_            @ ( u2 u1 X:u1 )
+  @ Gives complete low-part of result
+  muls yreg, wreg 
 
-    ldr r0, [dsp]  @ To be calculated: wreg * r0
-
-    @ Calculate low part in hardware:
-    movs r3, r0    @ Save the low part for later
-    muls r3, wreg   @ Gives complete low-part of result
-    str r3, [dsp]  @ Store low part
-
-    @ Calculate high part:
-    lsrs r1, r0,  #16 @ Shifted half
-    lsrs r2, wreg, #16 @ Shifted half
+  @ Calculate high part:
+  lsrs r1, r0,  #16 @ Shifted half
+  lsrs r2, wreg, #16 @ Shifted half
 
     movs r3, r1  @ High-High
     muls r3, r2
@@ -463,12 +466,24 @@ Forthword_ DIV, INLINE_OPT, "/"
 
 .else
 
-Forthword_, DIV, 0, "/" 
-  push {lr}
-  bl DIVMOD
-  nip_
-  pop {pc}
 
 .endif
 
+.endif
 
+@ ( n1 n2 -- rem quot )
+@ quot = n1/n2
+@ signed division with remainder
+Forthword_ DIVMOD, 0, "/mod"
+  ldr r1, [dsp]
+  mov r2, wreg 
+  d_w_
+  dsp_
+  do_ div
+  w_d_
+  end_
+
+Forthword_ DIV, 0, "/" 
+  do_ DIVMOD
+  d_m1_
+  end_
