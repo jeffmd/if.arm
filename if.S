@@ -13,7 +13,7 @@
 .set INCLUDE,       12  @ include file support
 .set MATH_ADV,      14  @ advanced math routines 
 
-.set BUILD_LEVEL, INCLUDE
+.set BUILD_LEVEL, MATH_ADV
 
 @ minimum kernel build has minimum word set needed to be up and running without interpreter
 
