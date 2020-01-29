@@ -1,21 +1,22 @@
 @ dictionary.S
 
-@ dictionary structure:
-@ length | flags : word: highbyte is flags, lowbyte is string length
-@ name : string is variable length
-@ previouse word: 32 bit pointer to previousely defined word
-@ code: 32 bit pointer to executable code
+@ word in dictionary structure:
+@ NFA: flags | length : half word: highbyte is flags, lowbyte is string length
+@ NAME: string is variable length
+@ LINK: 32 bit pointer to previousely defined WID/word
+@ CODE: 32 bit pointer to executable code
 
 @ ( -- addr )
 @ current vocabulary for new words
-Forthword_ CURRENT, 0, "current"
+@ pointer to WID structure
+Forthword_ CURRENT_ADDR, 0, "current#"
   user_ ram_CURRENT
   end_
   
 @ ( -- addr )
 @ context vocabulary for searching
-@ array of wordlists
-Forthword_ CONTEXT, 0, "context"
+@ pointer to first element in array of wordlist (WID) pointers
+Forthword_ CONTEXT_ADDR, 0, "context#"
   user_ ram_CONTEXT
   end_
 
@@ -54,7 +55,7 @@ NFATOXTF_EXIT:
 FINDWI:
   fourstar_          @ ( addr len idx*4)
   y_w_               @ ( addr len idx*4 ) Y: idx*4
-  do_ CONTEXT        @ ( addr len context )
+  do_ CONTEXT_ADDR   @ ( addr len context )
   w_plus_y_          @ ( addr len context' )
   mw_                @ ( addr len wid )
   end_next_
@@ -114,10 +115,9 @@ Forthword_ FINDROOT, 0, "froot"
 
 @ ( -- idx )
 @ get context index
-Forthword_ CONTIDX_FETCH, 0 "contidx@"
-  do_ CONTEXT         @ ( context )
+Forthword_ CONTIDX_FETCH, 0 "contidx"
+  user_ ram_CONTEXTidx @ ( context )
   @ get context index
-  twominus_           @ ( context-2 )
   y_w_                @ ( contidx ) Y:contidx
   hmw_                @ ( idx )
   x_w_            
@@ -177,10 +177,10 @@ FINDW_END:
 Forthword_ ONLY, IMMEDIATE_EN, "only"
   @ forth vocab always takes slot 0
   lit32_y_ EE_FORTHWORDLIST    @ ( ? ) Y:EE_FORTHWORDLIST
-  do_ CURRENT                  @ ( CURRENT )
+  do_ CURRENT_ADDR             @ ( CURRENT )
   mw_y_                        @ ( CURRENT )
   @ make current also forth vocab
-  do_ CONTEXT                  @ ( CONTEXT )
+  do_ CONTEXT_ADDR             @ ( CONTEXT )
   mw_y_                        @ ( CONTEXT )
   @ move index to slot 1
   twominus_                    @ ( CONTEXT-2 )

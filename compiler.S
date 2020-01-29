@@ -1,25 +1,27 @@
 @ compiler.S
 
 
-@ ( -- addr )
-@ system SMUDGE. Get program address of latest word currently being compiled.
-Forthword_ SMUDGE, 0, "smudge"
-  user_ COLON_SMUDGE
+@ ( -- xt )
+@ get new word. Get program address of latest word currently being compiled.
+Forthword_ NWORD, 0, "nword"
+  user_ NEW_WORD
   mw_
   end_
 
-@ ( addr -- )
-@ system SMUDGE. Set program address of latest word being compiled.
-Forthword_ SMUDGE_STR, 0, "smudge="
+@ ( xt -- )
+@ set new word. Set nword to program code address of latest word being compiled.
+Forthword_ NWORD_STR, 0, "nword="
   y_w_
-  user_ COLON_SMUDGE
+  user_ NEW_WORD
   mw_y_
   end_
 
 @ ( -- f-addr )
-@ get address of the dictionary cell
-Forthword_ DPSHARP, 0, "dp#"
+@ set dictionary pointer address
+Forthword_ DP_STR, 0, "dp="
+  y_w_
   user_ ram_dp
+  mw_y_
   end_
 
 @ ( -- f-addr )
@@ -30,7 +32,7 @@ Forthword_ DP, 0, "dp"
   end_
 
 @ ( offset -- )
-@ add offset to 16 bit (dictionary pointer) DP
+@ add offset to (dictionary pointer) DP
 Forthword_ DPPLUS, 0, "dp+="
   y_w_
   user_ ram_dp
@@ -40,16 +42,18 @@ Forthword_ DPPLUS, 0, "dp+="
   end_
 
 @ ( -- f-addr )
-@ get address of the code cell
-Forthword_ CPSHARP, 0, "cp#"
-  user_ ram_cp
-  end_
-
-@ ( -- f-addr )
 @ address of the next free code cell
 Forthword_ CP, 0, "cp"
   user_ ram_cp
   mw_
+  end_
+
+@ ( -- f-addr )
+@ set code pointer address
+Forthword_ CP_STR, 0, "cp="
+  y_w_
+  user_ ram_cp
+  mw_y_
   end_
 
 @ ( offset -- cp#)
@@ -76,8 +80,8 @@ Forthword_ CPWA, 0, "cpwa"
 @ ( -- )
 @ tail call optimize: change last branch with link (bl) into a branch (b)
 Forthword_ TAILOPT, 0, ";opt"
-  @ optimize only if smudge is not zero
-  do_ SMUDGE
+  @ optimize only if nword is not zero
+  do_ NWORD
   iszero_
   ifnz_ TAILOPT_OPT
   exit_
@@ -98,27 +102,27 @@ Forthword_ CLRCACHE, 0, "clrcache"
   do_ CP
   mov r1, wreg
   @ r0 = start address: will be current last word defined
-  do_ CURRENT
+  do_ CURRENT_ADDR
   mw_
   @ can't tail call optimize here since calling c code in arm not thumb
   do_ __clear_cache
   end_
     
 @ ( -- )
-@ update wid from smudge if valid
+@ update wlid from nword if valid
 Forthword_ UWID, 0, "uwid"
-  do_ SMUDGE           @ (xt)
+  do_ NWORD            @ (xt)
   iszero_
   ifz_ UWID_end
-    @ wid.word = smudge
+    @ wlid.word = nword
     y_w_               @ ( xt ) Y:xt
-    do_ CURRENT        @ ( current )
-    mw_                @ ( wid )
+    do_ CURRENT_ADDR   @ ( current )
+    mw_                @ ( wlid )
     mw_y_              @ ( wid )
     do_ CLRCACHE
-    @ set smudge to zero indicating no longer compiling a word
+    @ set nword to zero indicating no longer compiling a word
     zero_
-    do_ SMUDGE_STR
+    do_ NWORD_STR
 
 UWID_end:
   end_
@@ -199,10 +203,7 @@ Forthword_ STRINGPROGSTORE, 0, "@cp=s"
   d_w_
   do_ CP
   do_ COPYSTRING
-  y_w_
-  do_ CPSHARP
-  mw_y_
-  end_
+  end_do_ CP_STR
 
 @ ( addr len len' -- )
 @ copies a counted string with flags to dictionary ram
@@ -210,10 +211,8 @@ Forthword_ STRINGDICTSTORE, 0, "@dp=s"
   d_w_
   do_ DP
   do_ COPYSTRING
-  y_w_
-  do_ DPSHARP
-  mw_y_
-  end_
+  end_do_ DP_STR
+  
 
 @ ( source destination term -- count )
 @ copy half words from source to destination until match is made

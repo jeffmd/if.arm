@@ -45,7 +45,7 @@ sysvar_base:
 .globl USER_ARGC
 .globl  USER_ARGV
 
-COLON_SMUDGE: .space 4
+NEW_WORD: .space 4
 user_g_in: .space 2
 state: .space 2
 USER_BASE: .space 2

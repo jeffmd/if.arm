@@ -266,7 +266,7 @@ Forthword_ RESET, 0, "reset"
 
 .if BUILD_LEVEL >= COMPILER
   zero_
-  do_ SMUDGE_STR
+  do_ NWORD_STR
 .endif
 
   do_ PAUSE_CLR

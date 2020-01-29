@@ -129,7 +129,7 @@ var hld
 
 \ unsigned PNO with single cell numbers
 : u. ( u -- )
-  d= d= 0 ( n 0 ) \ want unsigned
+  d= d= 0 ( n n 0 ) \ want unsigned
   d1=     ( 0 n 0 )
   .r
 ;

@@ -18,14 +18,10 @@ Forthword_ WIPE, 0, "WIPE"
    
 .if BUILD_LEVEL >= COMPILER
   lit32_ DPSTART
-  y_w_
-  do_ DPSHARP
-  mw_y_
+  do_ DP_STR
 
   lit32_ CPSTART
-  y_w_
-  do_ CPSHARP
-  mw_y_
+  do_ CP_STR
 .endif
     
   lit32_ EE_FORTHWORDLIST

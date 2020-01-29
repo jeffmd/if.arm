@@ -1,19 +1,19 @@
 \ compiler.fs 
 
 \ force compile any word including immediate words
-: [compile]
+: [compile] ( -- )
   'f xt,
 ; :ic
 
 
 \ read the following cell from the executing word and compile it
 \ into the current code position.
-: (word:,)  ( -- )
-    r0+      ( raddr ) ( R: raddr+1 )
-    1-       \ account for thumb address
-    @        ( nfa )
-    nfa>xtf  ( xt xtflags )
-    xt,
+: (word:,) ( -- )
+  r0+      ( raddr ) ( R: raddr+1 )
+  1-       \ account for thumb address
+  @        ( nfa )
+  nfa>xtf  ( xt xtflags )
+  xt,
 ;
 
 \ compile a word into pending new word
@@ -23,203 +23,176 @@
 ; :ic
 
 
-( -- ) ( C: "<spaces>name" -- )
-\ Dictionary
 \ create a dictionary header that will push the address of the
 \ data field of name.
 \ is used in conjunction with does>
-: create
-    rword
-    _pushlr ,
-    \ leave address after call on tos
-    word:, popret
+: create ( -- ) ( C: "<spaces>name" -- )
+  rword
+  _pushlr ,
+  \ leave address after call on tos
+  word:, popret
 ;
 
 
 \ copy the first character of the next word onto the stack
 : char  ( "<spaces>name" -- c )
-    pname
-    =d
-    c@
+  pname
+  =d
+  c@
 ;
 
-( -- c ) ( C: "<space>name" -- )
 \ skip leading space delimites, place the first character
 \ of the next word in working register
-: [char]
-    char
-    #,
+: [char] ( -- c ) ( C: "<space>name" -- )
+  char
+  #,
 ; immediate
 
-( -- )
 \ replace the instruction written by CREATE to call
 \ the code that follows does>
 \ does not return to caller
 \ this is the runtime portion of does>
-: (does>)
-    \ change call at XT to code after (does>)
-    \ code at XT is 'bl POPRET'
-    \ want to change POPRET address to return address
-    =r                        ( retaddr )
-    \ remove thumb flag - will be using for memory access
-    1- d=                     ( retaddr-1 retaddr-1 )
-    \ get address of bl POPRET
-    \ get current word and then get its XT being compiled
-    cur@ @                    ( retaddr nfa )
-    nfa>xtf                   ( retaddr xt flags )
-    \ temp save cp on return stack
-    cp r=                     ( retaddr xt flags ) ( R: cp )
-    \  skip over push {lr}    
-    d0 icell+                 ( retaddr xt xt+2 )
-    \ set cp to xt+2
-    cp= =d icell+             ( retaddr xt+2 )
-    \ modify the bl
-    \ calc displacement
-    reldst                    ( dst )
-    \ compile a bl instruction
-    do,                       ( ? )
-    \ restore cp
-    =r cp=                    ( ? ) ( R: )
+: (does>) ( -- )
+  \ change call at XT to code after (does>)
+  \ code at XT is 'bl POPRET'
+  \ want to change POPRET address to return address
+  =r                        ( retaddr )
+  \ remove thumb flag - will be using for memory access
+  1- d=                     ( retaddr-1 retaddr-1 )
+  \ get address of bl POPRET
+  \ get current word and then get its XT being compiled
+  current @                 ( retaddr nfa )
+  nfa>xtf                   ( retaddr xt flags )
+  \ temp save cp on return stack
+  cp r=                     ( retaddr xt flags ) ( R: cp )
+  \  skip over push {lr}    
+  d0 icell+                 ( retaddr xt xt+2 )
+  \ set cp to xt+2
+  cp= =d icell+             ( retaddr xt+2 )
+  \ modify the bl
+  \ calc displacement
+  reldst                    ( dst )
+  \ compile a bl instruction
+  do,                       ( ? )
+  \ restore cp
+  =r cp=                    ( ? ) ( R: )
 ;
 
-( -- )
-\ Compiler
 \ organize the XT replacement to call other colon code
 \ used in conjunction with create
 \ ie: : name create .... does> .... ;
-: does>
-    \ compile pop return to tos which is used as 'THIS' pointer
-    word:, (does>)
-    word:, _lr
-    word:, 1-
+: does> ( -- )
+  \ compile pop return to tos which is used as 'THIS' pointer
+  word:, (does>)
+  word:, _lr
+  word:, 1-
 ; :ic
 
-( -- xt )
-\ Compiler
 \ create an unnamed entry in the dictionary
-: :noname
-    cp ]
+: :noname ( -- xt )
+  cp ]
 ;
 
-( -- start )
-\ Compiler
 \ place marker. Places current code position for forward
 \ jump resolve on stack and advances CP
-: markf
-    cp d=          ( start start )
-    4 cp+=         ( start ? ) \ advance DP to allow branch/jmp
+: markf ( -- start )
+  cp d=          ( start start )
+  4 cp+=         ( start ? ) \ advance DP to allow branch/jmp
 ;
 
-( start ? -- )
-\ Compiler
 \ resolve jump forward
-: rjmpf
-    ?dsp             ( start ? ) \ check stack integrety
-    cp               ( start dest )
-    gotos            ( ? )
+: rjmpf ( start ? -- )
+  \ check stack integrety
+  ?dsp             ( start ? )
+  cp               ( start dest )
+  gotos            ( ? )
 ;
 
-( -- dest )
-\ Compiler
 \ place marker for destination of backward branch
-: markb
-    cp d=            ( dest )
+: markb ( -- dest )
+  cp d=            ( dest )
 ;
 
-( dest -- )
-\ Compiler
 \ resolve jump backwards
-: rjmpb
-    ?dsp            \ make sure there is something on the stack
-    \ compile a rjmp at current CP that jumps back to mark
-    cp              \ ( dest start )
-    y=d0
-    d0=
-    y               \ ( start dest )
-    gotos           \ ( ? )
-    4 cp+=          \ advance CP
+: rjmpb ( dest -- )
+  ?dsp            \ make sure there is something on the stack
+  \ compile a rjmp at current CP that jumps back to mark
+  cp              \ ( dest start )
+  y=d0
+  d0=
+  y               \ ( start dest )
+  gotos           \ ( ? )
+  4 cp+=          \ advance CP
 ;
 
-( f -- ) ( C: -- orig )
-\ Compiler
-\ start conditional branch
+\ start conditional branch on zero flag set
 \ part of: ifz...[else]...then
-: ifz
-   _ifz ,
-   markf
+: ifz ( f -- ) ( C: -- orig )
+  _ifz ,
+  markf
 ; :ic
 
-( f -- ) ( C: -- orig )
-\ Compiler
-\ start conditional branch
+\ start conditional branch on zero flag not set
 \ part of: ifnz...[else]...then
-: ifnz
-   _ifnz ,
-   markf
+: ifnz ( f -- ) ( C: -- orig )
+  _ifnz ,
+  markf
 ; :ic
 
 
-( C: orig1 -- orig2 )
-\ Compiler
 \ resolve the forward reference and place
 \ a new unresolved forward reference
 \ part of: if...else...then
-: else
-    markf         \ mark forward rjmp at end of true code
-    d1 y=d0
-    d0= d1=y      \ swap new mark with previouse mark
-    rjmpf         \ rjmp from previous mark to false code starting here
+: else ( C: orig1 -- orig2 )
+  markf         \ mark forward rjmp at end of true code
+  d1 y=d0
+  d0= d1=y      \ swap new mark with previouse mark
+  rjmpf         \ rjmp from previous mark to false code starting here
 ; :ic
 
-( -- ) ( C: orig -- )
-\ Compiler
+
 \ finish if
 \ part of: if...[else]...then
-: then
-    rjmpf
+: then ( -- ) ( C: orig -- )
+  rjmpf
 ; :ic
 
-( -- ) ( C: -- dest )
-\ Compiler
+
 \ put the destination address for the backward branch:
-\ part of: begin...while...repeat, begin...until, begin...again
-: begin
-    markb
+\ part of: begin...whilez...repeat
+\          begin...whilenz...repeat
+\          begin...untilz
+\          begin...untilnz
+\          begin...again
+: begin ( -- ) ( C: -- dest )
+  markb
 ; :ic
 
-( -- ) ( C: dest -- )
-\ Compiler
 \ compile a jump back to dest
 \ part of: begin...again
-: again
-    rjmpb
+: again ( -- ) ( C: dest -- )
+  rjmpb
 ; :ic
 
-( f -- ) ( C: dest -- orig dest )
-\ Compiler
 \ at runtime skip until repeat if non-true
 \ part of: begin...whilez...repeat
-: whilez
-    [compile] ifz
-    d1 y=d0
-    d0= d1=y     \ swap new mark with previouse mark
+: whilez ( f -- ) ( C: dest -- orig dest )
+  [compile] ifz
+  d1 y=d0
+  d0= d1=y     \ swap new mark with previouse mark
 ; :ic
 
-( f -- ) ( C: dest -- orig dest )
-\ Compiler
 \ at runtime skip until repeat if non-true
 \ part of: begin...whilenz...repeat
-: whilenz
-    [compile] ifnz
-    d1 y=d0
-    d0= d1=y     \ swap new mark with previouse mark
+: whilenz ( f -- ) ( C: dest -- orig dest )
+  [compile] ifnz
+  d1 y=d0
+  d0= d1=y     \ swap new mark with previouse mark
 ; :ic
 
-( --  ) ( C: orig dest -- )
-\ Compiler
 \ continue execution at dest, resolve orig
 \ part of: begin...while...repeat
-: repeat
+: repeat ( --  ) ( C: orig dest -- )
   [compile] again
   rjmpf
 ; :ic
@@ -250,7 +223,7 @@
 \ compile the XT of the word currently
 \ being defined into the dictionary
 : recurse
-  smudge nfa>xtf xt,  
+  nword nfa>xtf xt,  
 ; :ic
 
 \ allocate or release n bytes of memory in RAM

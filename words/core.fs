@@ -28,22 +28,11 @@
     $77FF widf
 ;
 
-\ store address of the next free dictionary cell
-: dp= ( addr -- )
-    y= dp# @=y
-;
-
-\ store address of the next free code cell
-: cp= ( addr -- )
-    y= cp# @=y
-;
-
-( -- ) ( C: x "<spaces>name" -- )
+( -- wid ) ( C: x "<spaces>name" -- )
 \ create a dictionary entry and register in current word list
 : rword
     (create)      ( nfa )
-    y= cur@       ( wid Y:nfa )
-    @=y           ( wid )
+    current+      ( wid )
 ;
 
 \ inlinned assembly routines

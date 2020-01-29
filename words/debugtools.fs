@@ -1,110 +1,123 @@
 only
 
-( -- n )
 \ Tools
 \ Amount of available RAM (incl. PAD)
-: unused
-    sp0 here -
-;
-    
-
-
-
-( addr1 cnt -- addr2)
-: dmp
- over .$ [char] : emit space
- begin
-   ?while icell- swap dup h@ .$ icell+ swap
- repeat
- drop
+: unused ( -- n )
+    here y= cp0 -y
 ;
 
+\ dump memory to screen
+: dmp ( addr1 cnt -- addr2 )
+  d= d1 .$ [char] : emit space
+  begin
+    d0 ==0
+  whilenz
+    1- d0= 
+    d1 @ .$
+    d1 dcell+ d1=
+  repeat
+  d-1 =d
+;
 
-( addr -- )
 \ Tools
 \ print the contents at ram word addr
-: ? @ . ;
+: ? ( addr -- ) 
+  @ .
+;
 
 \ print the contents at ram char addr
-: c? c@ . ;
+: c? ( addr -- )
+  c@ .
+;
 
-( bbb reg -- )
-\ tools
-\ set the bits of reg defined by bit pattern in bbb
-: rbs :a c@ or ac! ;
+\ set the bits of an 8 bit register port
+\ bits set defined by bit pattern in bbb
+: rbs ( bbb reg -- )
+  y=d x= c@ |y c@x=
+;
 
-( bbb reg -- )
-\ tools
 \ clear the bits of reg defined by bit pattern in bbb
-: rbc >a not ac@ and ac! ;
+: rbc ( bbb reg -- )
+  x= y=d !y
+  c@x &y c@x=
+;
 
 \ modify bits of reg defined by mask
 : rbm ( val mask reg -- )
-    >a ac@ and or
-    ac!
+  x= y=d
+  c@x &y y=d |y c@x=
 ;
 
-
-( reg -- )
 \ tools
 \ read register/ram byte contents and print in binary form
-: rb? c@ bin <# # # # # # # # # #> type space decimal ;
+: rb? ( reg -- )
+  c@ x= bin x <# # # # # # # # # #> type space decimal
+;
 
-( reg -- )
-\ tools
 \ read register/ram byte contents and print in hex form
-: r? c@ .$ ;
+: r? ( reg -- )
+  c@ .$
+;
 
 \ setup fence which is the lowest address that we can forget words
-find r? var fence fence !
+var fence
 
-( c: name -- )
+\ set fence
+: fence= ( addr -- )
+  y= fence @=y
+;
+
+find r? fence= 
+
+
 \ can only forget a name that is in the current definition
-: forget
-  pname
-  cur@
+: forget ( c: name -- )
+  pname             ( addr cnt )
+  d= cur@           ( addr cnt wid )
   findnfa           ( nfa )
-  ?dup
-  if
+  ==0
+  ifnz
     \ nfa must be greater than fence
-    dup             ( nfa nfa)
-    fence @         ( nfa nfa fence )
-    >               ( nfa nfa>fence )
-    if
+    d=              ( nfa nfa)
+    d= fence @      ( nfa nfa fence )
+    > ==0           ( nfa nfa>fence )
+    =d              ( nfa )
+    ifnz
       \ nfa is valid
       \ set dp to nfa
-      dup           ( nfa nfa )
-      dp!           ( nfa )
+      dp=           ( dp# Y:nfa )
       \ set context wid to lfa
-      nfa>lfa       ( lfa )
-      @             ( nfa )
-      cur@          ( nfa wid )
-      !             (  )
-    else
-      drop  
+      y nfa>lfa     ( lfa )
+      @ y=          ( nfa Y:nfa)
+      cur@          ( wid )
+      @=y           ( wid )
     then
   then
 ;
 
-find forget fence !
+find forget fence=
 
 \ create a marker word
 \ when executed it will restore dp, here and current
 \ back to when marker was created
 : marker  ( c: name -- )
   \ copy current word list, current wid, dp, here
-  cur@ dup @ dp here
-  create
+  cur@ d=            ( wid wid )
+  @ d=               ( wid nfa nfa )
+  dp d=              ( wid nfa dp dp )
+  here d=            ( wid nfa dp here here )
+  create             ( wid nfa dp here ? )
   \ save here, dp, current wid, current word list
-  d, d, d, d,
+  =d d, =d d, =d d, =d d,
+
   does> ( addr )
     \ restore here
-    dup @ here# !
+    x= y=@ here# @=y
     \ restore dp
-    dcell+ dup @ dp!
+    x+4 @x dp=
     \ restore current wid
-    dcell+ dup @ 
-    swap dcell+ @ !
+    x+4 @x y= 
+    x+4 @x @=y
     \ only Forth and Root are safe vocabs
     [compile] only
 ;
