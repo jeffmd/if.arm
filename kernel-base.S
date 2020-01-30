@@ -37,7 +37,7 @@ Forthword_ RBRACKET, 0, "]"
 
 @ ( -- pauseaddr )
 @ get pause defer
-Forthword_ PAUSE_FETCH, 0, "pause@"
+Forthword_ PAUSE_FETCH, 0, "pause"
   user_ USER_PAUSE
   mw_
   end_
@@ -152,8 +152,7 @@ QP_RD_exit:
 @ flag is true if buffer needs processing ie full or enter pressed
 Forthword_ DOREFILL, 0, "(refill)"
   @ if just starting new input line then check prompt and reset input position
-  do_ G_IN                 @ ( >inaddr )
-  hmw_                     @ ( >in )
+  do_ RIB                  @ ( rib )
   iszero_                  @ ( )
   ifz_ DOREFILL_do
     do_ INRESET
@@ -195,16 +194,9 @@ DOTASK_N1:
   ifz_ DOTASKS1
   end_
 
-
-@ ( -- a-addr )
-@ address of idletime
-Forthword_ IDLETIMEADDR, 0, "idletime#"
-  user_ USER_IDLETIME
-  end_
-
 @ ( n -- )
 @ set idletime
-Forthword_ IDLETIMESTORE, 0, "idletime="
+Forthword_ IDLETIME_STR, 0, "idletime="
   y_w_
   user_ USER_IDLETIME
   mw_y_
@@ -212,7 +204,7 @@ Forthword_ IDLETIMESTORE, 0, "idletime="
   
 @ ( -- n )
 @ get idletime
-Forthword_ IDLETIMEFETCH, 0, "idletime@"
+Forthword_ IDLETIME, 0, "idletime"
   user_ USER_IDLETIME
   mw_
   end_
@@ -223,11 +215,10 @@ Forthword_ USLEEP, 0, "usleep"
   do_ usleep
   end_
 
-
 @ ( -- )
 @ sleep for n micro seconds
 Forthword_ SLEEP, 0, "sleep"
-  do_ IDLETIMEFETCH
+  do_ IDLETIME
   iszero_
   ifz_ NO_IDLESLEEP
     exit_do_ USLEEP
@@ -238,13 +229,13 @@ NO_IDLESLEEP:
 @ turn sleep off
 Forthword_ SLEEPOFF, 0, "sleep.off"
   zero_
-  end_do_ IDLETIMESTORE
+  end_do_ IDLETIME_STR
  
 @ ( -- )
 @ turn sleep on
 Forthword_ SLEEPON, 0, "sleep.on"
   lit_ 5000
-  end_do_ IDLETIMESTORE
+  end_do_ IDLETIME_STR
 
 @ ( -- )
 @ reset input source

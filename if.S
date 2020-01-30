@@ -46,7 +46,6 @@ sysvar_base:
 .globl  USER_ARGV
 
 NEW_WORD: .space 4
-user_g_in: .space 2
 state: .space 2
 USER_BASE: .space 2
 USER_PAUSE: .space 4
@@ -77,7 +76,8 @@ Lit_Compile: .space 4
 
 rstack0: .space 4
 ram_handler: .space 4
-ram_sharptib: .space 2
+ram_rib: .space 2
+ram_wib: .space 2
 ram_tib: .space TIBSIZE
 
 EE_FORTHWORDLIST:

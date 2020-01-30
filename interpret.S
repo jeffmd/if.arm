@@ -3,13 +3,10 @@
 @ ( -- )
 @ ignore remaining text to end of line
 Forthword_ COMMENT, IMMEDIATE_EN, "\\"
-  d_w_       @ preserve WR
-  do_ STIB
-  y_w_
-  d_m1_
-  do_ G_IN  @ skip to end of input buffer
-  hmw_y_
-  w_d_      
+  d_w_         @ ( ? ? )
+  do_ WIB      @ ( ? wib )
+  do_ RIB_STR  @ ( ? ? )
+  w_d_         @ ( ? )
   end_
 
 @ ( r-addr r-len f-addr f-len --  f)
@@ -141,23 +138,12 @@ CSCAN_DONE:
   end_
 
 @ ( -- srcaddr len  )
-@ Adjust the source addr using >in.
+@ Adjust the source addr using rib.
 Forthword_ SRCIN, 0, "srcin"
   do_ STIB             @ ( srcaddr len )
   d_w_                 @ ( srcaddr len len)
-  do_ G_IN             @ ( srcaddr len ginaddr )
-  hmw_                 @ ( srcaddr len gin)
+  do_ RIB              @ ( srcaddr len rib )
   end_do_ SLASHSTRING  @ ( srcaddr' len' )
-
-@ ( n -- ginaddr Y:n )
-@ update position in input source.
-Forthword_ UPDIN, 0, "updin"
-  y_w_                 @ ( n2 Y:n2 )
-  do_ G_IN             @ ( n2 >inaddr )
-  x_hmw_               @ ( >inaddr X:inidx)
-  x_plus_y_            @ ( >inaddr ) X:inidx+n2
-  hmw_x_               @ [>inaddr]=inidx+n2
-  end_
 
 @ ( -- )
 @ skip space in input source.
@@ -168,7 +154,7 @@ Forthword_ SKIPBL, 0, "skipbl"
   do_ CSKIP            @ ( n2 )
 
   @ adjust >IN
-  end_do_ UPDIN
+  end_do_ RIB_PLUS_STR
 
 @ ( char -- c-addr len ) "ccc<char>"
 @ in input buffer parse ccc delimited string by the delimiter char.
@@ -179,9 +165,9 @@ Forthword_ PARSE, 0, "parse"
   d_w_             @ ( addr len len )
   w_r_             @ ( addr len c ) (R: )
   do_ CSCAN        @ ( addr' len'' )
-  oneplus_         @ ( addr' len''+1 )
   # skip terminating delimeter in input buffer
-  do_ UPDIN
+  oneplus_         @ ( addr' len''+1 )
+  do_ RIB_PLUS_STR
   y_               @ ( addr' len''+1)
   oneminus_        @ ( addr' len'')
   end_
@@ -364,8 +350,6 @@ Forthword_ DOINTERPRET, 0, "(interp)"
   @ <then>
 DOINTERPRET_ok:
   @ make sure in buf pointer is not at zero
-  do_ G_IN              @ ( >inaddr )
-  y_hmw_                @ y=[>inaddr]
-  y_plus1_
-  hmw_y_                @ [>inaddr]+=1
+  lit_ 1
+  do_ RIB_PLUS_STR      @ ( ribaddr )
   end_do_ PROMPTOK

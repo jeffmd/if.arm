@@ -42,7 +42,7 @@ Forthword_ DOINCLUDE, 0, "(include)"
   iszero_
   ifz_ DOINCLUDE_EXIT
 
-  do_ IDLETIMEFETCH    @ ( filedes itime )
+  do_ IDLETIME         @ ( filedes itime )
   r_w_                 @ ( filedes itime ) (R: itime )
   do_ SLEEPOFF         @ ( filedes ? )
 
@@ -93,7 +93,7 @@ Forthword_ DOINCLUDE, 0, "(include)"
   do_ FFLAGS           @ ( FFLAGS )
   hmw_y_               @ ( FFLAGS )
   w_r_                 @ ( itime ) ( R: )
-  exit_do_ IDLETIMESTORE
+  exit_do_ IDLETIME_STR
        
 DOINCLUDE_EXIT:
   w_d_                 @ ( filedes )

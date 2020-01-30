@@ -1,33 +1,85 @@
 @ cin.S - character input
 
-@ ( -- addr )
-@ terminal input buffer address
-Forthword_ TIB, 0, "tib"
-  user_  ram_tib
-  end_
-
-@ ( -- addr-half )
-@ variable holding the number of characters in TIB
-@ is half cell size
-Forthword_ SHARPTIB, 0, "#tib"
-  user_ ram_sharptib
-  end_
-
-@ ( -- addr len )
-@ address and current length of the input buffer
-Forthword_ STIB, 0, "stib"
-  user_  ram_tib
-  d_w_
-  user_ ram_sharptib
+@ ( -- n )
+@ the number of characters (write position) in TIB
+Forthword_ WIB, 0, "wib"
+  user_ ram_wib
   hmw_
   end_
 
-@ ( -- a-addr )
+@ ( n -- Y:n )
+@ set write index to current write position in input buffer
+Forthword_ WIB_STR, 0, "wib="
+  y_w_
+  user_ ram_wib
+  hmw_y_
+  end_
+
+@ ( -- )
+@ decrement write index
+Forthword_ WIB_DEC, 0, "wib--"
+  user_ ram_wib
+  y_hmw_
+  y_minus1_
+  hmw_y_
+  end_
+
+@ ( -- )
+@ increment write index
+Forthword_ WIB_INC, 0, "wib++"
+  user_ ram_wib
+  y_hmw_
+  y_plus1_
+  hmw_y_
+  end_
+
+@ ( -- addr len )
+@ address and current write position (length) in the input buffer
+Forthword_ STIB, 0, "stib"
+  user_  ram_tib
+  d_w_
+  user_ ram_wib
+  hmw_
+  end_
+
+@ ( -- idx )
 @ index to current read position in input buffer
 @ is half cell size
-Forthword_ G_IN, 0, ">in"
-  user_ user_g_in
+Forthword_ RIB, 0, "rib"
+  user_ ram_rib
+  hmw_
   end_
+
+@ ( n -- Y:n )
+@ set index to current read position in input buffer
+Forthword_ RIB_STR, 0, "rib="
+  y_w_
+  user_ ram_rib
+  hmw_y_
+  end_
+
+@ ( n -- ribaddr Y:n )
+@ add n to read index of input buffer
+Forthword_ RIB_PLUS_STR, 0, "rib+="
+  y_w_
+  user_ ram_rib
+  x_hmw_
+  x_plus_y_
+  hmw_x_
+  end_
+
+@ ( k ? -- )
+@ put key character in input buffer
+Forthword_ TIB_STR, 0, "tib="
+  do_ STIB             @ ( k tibaddr wib )
+  y_d0_                @ ( k tibaddr wib ) Y:tibaddr
+  x_d1_                @ ( k tibaddr wib ) X:k
+  w_plus_y_            @ ( k tibaddr tibaddr+wib )
+  cmw_x_               @ ( k tibaddr tibaddr+wib )
+  d_m2_                @ ( tibaddr+wib )
+
+  end_do_ WIB_INC      @ ( #tibaddr )
+  
 
 @ ( -- keyaddr )
 @ get ram address of key defer
@@ -54,12 +106,12 @@ Forthword_ KEY, 0, "key"
 @ ( -- )
 @ Reset the input buffer
 Forthword_ INRESET, 0, "in_"
-  do_ G_IN               @ ( >inaddr )
-  y_0_
-  hmw_y_                 @ ( >inaddr )
-  @ reset input buffer cursor position
-  do_ SHARPTIB           @ ( #tibaddr )
-  hmw_y_                 @ ( #tibaddr )
+  zero_
+  @ reset input buffer read position
+  do_ RIB_STR           @ ( rib_addr Y:0 )
+  @ reset input buffer write position
+  y_
+  do_ WIB_STR           @ ( #tibaddr )
   end_do_ QP_RD
 
 @ ( -- flag )
@@ -96,11 +148,10 @@ ACCEPT_checkdelete:
   @ check beginning of line
   @ if cursor is 0 then at begining of input
   d_w_
-  do_ SHARPTIB
-  hmw_                @ ( k #tib )
+  do_ WIB             @ ( k wib )
   @ <if>
-  iszero_             @ ( k )
-  w_d_
+  iszero_             @ ( k wib )
+  w_d_                @ ( k )
   ifnz_ ACCEPT_dodelete
   @ at the beginning of the line, ignore this character
   zero_
@@ -109,19 +160,14 @@ ACCEPT_checkdelete:
 ACCEPT_dodelete:
   movs r1, #8
   ands wreg, r1
-  d_w_              @ ( k k )
-  do_ EMIT          @ ( k ? )
-  bl_               @ ( k bl )
-  do_ EMIT          @ ( k ? )
-  w_d_              @ ( k )
-  do_ EMIT          @ ( ? )
+  d_w_                @ ( k k )
+  do_ EMIT            @ ( k ? )
+  bl_                 @ ( k bl )
+  do_ EMIT            @ ( k ? )
+  w_d_                @ ( k )
+  do_ EMIT            @ ( ? )
   @ decrease cursor position by one
-  true_             @ ( true )
-  y_w_              @ ( true Y:true )
-  do_ SHARPTIB      @ ( #tibaddr )
-  x_hmw_
-  x_plus_y_
-  hmw_x_            @ ( #tibaddr )
+  do_ WIB_DEC         @ ( #tibaddr )
   goto_ ACCEPT_checkmaxinput
 
 
@@ -134,27 +180,16 @@ ACCEPT_checkcontrol:
 
 ACCEPT_echo:
   @ emit the key
-  d_w_                @ ( k k )
+  d_w_                 @ ( k k )
   do_ EMIT             @ ( k ? )
   @ now store the key in the input buffer
-  do_ STIB             @ ( k tibaddr #tib)
-  y_d0_                @ ( k tibaddr #tib) Y: tibaddr
-  w_plus_y_            @ ( k tibaddr tibaddr+#tib )
-  x_d1_                @ ( k tibaddr tibaddr+#tib ) X: k
-  cmw_x_               @ ( k tibaddr tibaddr+#tib )
-  d_m2_                @ ( tibaddr+#tib )
-
-  do_ SHARPTIB         @ ( #tibaddr )
-  y_hmw_
-  y_plus1_
-  hmw_y_               @ ( ? )
-
+  do_ TIB_STR          @ ( ? )
 ACCEPT_checkmaxinput:
   @ check if max number of char input
-  do_ SHARPTIB         @ ( #tibaddr )
-  y_hmw_               @ ( tibsize #tib )
+  do_ WIB              @ ( wib )
+  y_w_                 @ ( wib Y:wib )
   lit_ TIBSIZE         @ ( tibsize )
-  w_minus_y_           @ ( tibsize-#tib )
+  w_minus_y_           @ ( tibsize-wib )
   @ <if>
   iszero_              @ ( tibsize-#tib )
   ifz_ ACCEPT_atmaxinput
