@@ -303,7 +303,7 @@ Forthword_ RECX, 0, "recx"
   @ print unrecognized word
   do_ TYPE               @ ( ? )
     
-  slit_ " Unknown!"
+  slit_ "Unknown!"
   do_ THROW
 
 RECX_DONE:
