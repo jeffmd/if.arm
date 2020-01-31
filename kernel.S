@@ -14,14 +14,16 @@ Forthword_ ARGVADDR, 0, "argv#"
     
 @ ( -- a-addr )
 @ location of the cell containing the address of the next free ram location
-Forthword_ HEREADDR, 0, "here#"
+Forthword_ HERE_STR, 0, "here="
+  y_w_
   user_ USER_HERE
+  mw_y_
   end_
     
 @ ( -- a-addr )
 @ the address of the next free ram location
 Forthword_ HERE, 0, "here"
-  do_ HEREADDR
+  user_ USER_HERE
   mw_
   end_
 

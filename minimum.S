@@ -31,8 +31,6 @@ Forthword_ WIPE, 0, "WIPE"
   mw_y_
        
   lit32_ HERESTART
-  y_w_
-  do_ HEREADDR
-  mw_y_
+  do_ HERE_STR
 
   end_do_ ONLY    

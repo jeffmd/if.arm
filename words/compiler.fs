@@ -97,7 +97,7 @@
 \ jump resolve on stack and advances CP
 : markf ( -- start )
   cp d=          ( start start )
-  4 cp+=         ( start ? ) \ advance DP to allow branch/jmp
+  2 cp+=         ( start ? ) \ advance CP to allow branch/jmp
 ;
 
 \ resolve jump forward
@@ -122,7 +122,7 @@
   d0=
   y               \ ( start dest )
   gotos           \ ( ? )
-  4 cp+=          \ advance CP
+  2 cp+=          \ advance CP
 ;
 
 \ start conditional branch on zero flag set
@@ -203,8 +203,8 @@
 \ leaves the loop if true flag at runtime
 \ part of: begin...untilz
 : untilz
-    _ifz ,
-    rjmpb
+  _ifz ,
+  rjmpb
 ; :ic
 
 ( f -- ) ( C: dest -- )
@@ -213,8 +213,8 @@
 \ leaves the loop if true flag at runtime
 \ part of: begin...untilnz
 : untilnz
-    _ifnz ,
-    rjmpb
+  _ifnz ,
+  rjmpb
 ; :ic
 
 ( -- )
@@ -228,24 +228,24 @@
 
 \ allocate or release n bytes of memory in RAM
 : allot ( n -- )
-    y= here y+ here# @=y
+  y= here +y here=
 ;
 
 ( x -- ) ( C: x "<spaces>name" -- )
 \ create a constant in the dictionary
 : con
-    d= rword
-    =d
-    #,
-    _bxlr ,
-    clrcache
+  d= rword
+  =d
+  #,
+  _bxlr ,
+  clrcache
 ;
 
 
 \ create a dictionary entry for a variable and allocate 1 cell RAM
 : var ( cchar -- )
-    here con
-    dcell allot
+  here con
+  dcell allot
 ;
 
 ( cchar -- )
@@ -253,22 +253,22 @@
 \ create a dictionary entry for a character variable
 \ and allocate 1 byte RAM
 : cvar
-    here con
-    1 allot
+  here con
+  1 allot
 ;
 
 
 \ compiles a string from RAM to program RAM
 : s, ( addr len -- )
-    d= @cp=s
+  d= @cp=s
 ;
 
 ( C: addr len -- )
 \ String
 \ compiles a string to program RAM
 : slit
-    d= word:, (slit) =d     ( addr n)
-    s,
+  d= word:, (slit) =d     ( addr n)
+  s,
 ; immediate
 
 
@@ -277,11 +277,11 @@
 \ compiles a string to ram,
 \ at runtime leaves ( -- ram-addr count) on stack
 : s"
-    [char] " parse        ( addr n)
-    d= state ==0 =d
-    ifnz  \ skip if not in compile mode
-      [compile] slit
-    then
+  [char] " parse        ( addr n)
+  d= state ==0 =d
+  ifnz  \ skip if not in compile mode
+    [compile] slit
+  then
 ; immediate
 
 ( -- ) ( C: "ccc<quote>" -- )
@@ -290,11 +290,11 @@
 \ if comping then compiles string into
 \ dictionary to be printed at runtime
 : ."
-     [compile] s"             \ "
-     d= state ==0 =d
-     ifnz
-       word:, type
-     else
-       type
-     then
+   [compile] s"             \ "
+   d= state ==0 =d
+   ifnz
+     word:, type
+   else
+     type
+   then
 ; immediate
