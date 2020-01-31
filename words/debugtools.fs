@@ -1,6 +1,5 @@
 only
 
-\ Tools
 \ Amount of available RAM (incl. PAD)
 : unused ( -- n )
     here y= cp0 -y
@@ -19,7 +18,6 @@ only
   d-1 =d
 ;
 
-\ Tools
 \ print the contents at ram word addr
 : ? ( addr -- ) 
   @ .
@@ -48,7 +46,6 @@ only
   c@x &y y=d |y c@x=
 ;
 
-\ tools
 \ read register/ram byte contents and print in binary form
 : rb? ( reg -- )
   c@ x= bin x <# # # # # # # # # #> type space decimal
@@ -60,63 +57,87 @@ only
 ;
 
 \ setup fence which is the lowest address that we can forget words
-var fence
+var fence#
 
-\ set fence
-: fence= ( addr -- )
-  y= fence @=y
+: fence ( -- fence )
+  fence# @
 ;
 
-find r? fence= 
+\ set fence if word in context
+: fence= ( C:word -- )
+  find
+  ==0
+  ifnz
+    y= fence# @=y
+  else
+    ." word not found" cr
+  then
+;
 
-
-\ can only forget a name that is in the current definition
-: forget ( c: name -- )
+\ forget all words definned after wordname including wordname
+\ only works if wordname is in the current definition
+\ cp and dp get set to what the word used
+: forget ( c: wordname -- )
   pname             ( addr cnt )
-  d= cur@           ( addr cnt wid )
+  d= current        ( addr cnt wlid )
   findnfa           ( nfa )
   ==0
   ifnz
     \ nfa must be greater than fence
     d=              ( nfa nfa)
-    d= fence @      ( nfa nfa fence )
+    d= fence        ( nfa nfa fence )
     > ==0           ( nfa nfa>fence )
     =d              ( nfa )
     ifnz
       \ nfa is valid
       \ set dp to nfa
       dp=           ( dp# Y:nfa )
-      \ set context wid to lfa
-      y nfa>lfa     ( lfa )
-      @ y=          ( nfa Y:nfa)
-      cur@          ( wid )
-      @=y           ( wid )
+      \ set current wlid to lfa
+      y d=y nfa>lfa ( nfa lfa )
+      @             ( nfa wid )
+      current+      ( nfa wlid )
+      =d            ( nfa )
+      \ set cp to xt
+      nfa>xtf =d    ( xt )
+      cp=           ( cp# Y:xt )
+    else
+      ." can't forget, word behind fence" cr
     then
+  else
+    ." word not found" cr
   then
 ;
 
-find forget fence=
+fence= forget
 
 \ create a marker word
-\ when executed it will restore dp, here and current
+\ when executed it will restore dp, cp, here, and current
 \ back to when marker was created
 : marker  ( c: name -- )
-  \ copy current word list, current wid, dp, here
-  cur@ d=            ( wid wid )
-  @ d=               ( wid nfa nfa )
+  \ copy current word list, current wid, dp, cp, here
+  current d=         ( wlid wlid )
+  @ d=               ( wlid nfa nfa )
   dp d=              ( wid nfa dp dp )
+  cp d=              ( wid nfa dp cp )
   here d=            ( wid nfa dp here here )
   create             ( wid nfa dp here ? )
-  \ save here, dp, current wid, current word list
-  =d d, =d d, =d d, =d d,
+  \ save here, cp, dp, current wid, current word list
+  =d d, \ here
+  =d d, \ cp
+  =d d, \ dp
+  =d d, \ wid
+  =d d, \ wlid
 
   does> ( addr )
     \ restore here
-    x= y=@ here# @=y
+    x= @ here=
+    \ restore cp
+    x+4 @x cp=
     \ restore dp
     x+4 @x dp=
     \ restore current wid
-    x+4 @x y= 
+    x+4 @x y=
+    \ restore wordlist with wid as last entry 
     x+4 @x @=y
     \ only Forth and Root are safe vocabs
     [compile] only
