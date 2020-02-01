@@ -49,7 +49,7 @@
 
 \ pointer to current write position
 \ in the Pictured Numeric Output buffer
-var hld
+var: hld
 
 
 \ prepend character to pictured numeric output buffer

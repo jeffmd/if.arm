@@ -123,7 +123,7 @@
 \ made both specify vocabulary
 \ cccc.
 
-: def
+: def ( -- )
     context
     ==0 ifnz current= then
 ; immediate

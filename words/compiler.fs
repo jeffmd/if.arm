@@ -233,7 +233,7 @@
 
 ( x -- ) ( C: x "<spaces>name" -- )
 \ create a constant in the dictionary
-: con
+: con:
   d= rword
   =d
   #,
@@ -243,8 +243,8 @@
 
 
 \ create a dictionary entry for a variable and allocate 1 cell RAM
-: var ( cchar -- )
-  here con
+: var: ( cchar -- )
+  here con:
   dcell allot
 ;
 
@@ -252,8 +252,8 @@
 \ Compiler
 \ create a dictionary entry for a character variable
 \ and allocate 1 byte RAM
-: cvar
-  here con
+: cvar:
+  here con:
   1 allot
 ;
 

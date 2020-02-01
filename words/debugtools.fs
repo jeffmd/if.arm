@@ -57,7 +57,7 @@ only
 ;
 
 \ setup fence which is the lowest address that we can forget words
-var fence#
+var: fence#
 
 : fence ( -- fence )
   fence# @
