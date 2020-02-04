@@ -3,54 +3,44 @@
 @ ( flags path -- filedes )
 @ open a file
 @ path - address of path string null terminated
-@ option flags 
+@ flags: 0 read, 1 write, 2 read/write
 Forthword_ OPENF, 0, "open"
-  push {lr}
-  mov r0, wreg @ path
-  pop_
-  mov r1, wreg @ flags
-  bl open
-  mov wreg, r0
-  pop {pc}
+  push_lr_
+  ldmia dsp!, {r1} @ flags
+  do_ open
+  end_
 
 @ ( filedes -- )
-@ open a file
+@ close a file
 @ filedes - file descriptor
 Forthword_ CLOSEF, 0, "close"
-  push {lr}
-  mov r0, wreg @ filedes
-  pop_
-  bl close
-  pop {pc}
+  push_lr_
+  do_ close
+  end_
 
 @ (  filedes buffer length -- bytesread )
 @ fetch bytes from an open file using filedes
 @ number of bytes read left on wreg
 Forthword_ READF, 0, "read"
-  push {lr}
-  movs r2, wreg @ length
-  pop_
-  mov r1, wreg @ buffer
-  pop_
-  movs r0, wreg @ filedes
-  bl read 
-  mov wreg, r0
-  pop {pc}
+  push_lr_
+  x_w_             @ r2 = length
+  ldmia dsp!, {r1} @ r1 = buffer
+  w_d_             @ r0 = filedes
+  do_ read 
+  end_
 
-@ (  filedes buffer length -- bytesread )
+@ (  filedes buffer length -- byteswritten )
 @ write bytes to an open file using filedes
 @ number of bytes written left on wreg
 Forthword_ WRITEF, 0, "write"
-  push {lr}
-  movs r2, wreg @ length
-  pop_
-  mov r1, wreg @ buffer
-  pop_
-  movs r0, wreg @ filedes
-  bl write 
-  mov wreg, r0
-  pop {pc}
+  push_lr_
+  x_w_             @ r2 = length
+  ldmia dsp!, {r1} @ r1 = buffer
+  w_d_             @ r0 = filedes
+  do_ write 
+  end_
 
+.if 0
 @ ( mode path -- handle )
 @ open a dynamic linked library (*.so)
 @ path - address of path string null terminated
@@ -117,4 +107,4 @@ Forthword_ DLCALL1, 0, "dlcall1"
   mov wreg, r0
   pop {pc}
   
-
+.endif
