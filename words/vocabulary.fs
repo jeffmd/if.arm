@@ -129,10 +129,10 @@
 ; immediate
 
 \ A defining word used in the form:
-\     vocabulary cccc  
+\     voc: cccc  
 \ to create a vocabulary definition cccc. Subsequent use of cccc will
 \ make it the CONTEXT vocabulary which is searched first by INTERPRET.
-\ The sequence "cccc DEFINITIONS" will also make cccc the CURRENT
+\ The sequence "cccc def" will also make cccc the CURRENT
 \ vocabulary into which new definitions are placed.
 
 \ By convention, vocabulary names are automaticaly declared IMMEDIATE.
