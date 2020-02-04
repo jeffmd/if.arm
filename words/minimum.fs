@@ -69,6 +69,11 @@ var: hld
     d= pad y= hld @=y =d
 ;
 
+\ start null terminated buffer
+: <#_ ( -- )
+  <# 0 hold
+;
+
 \ pictured numeric output: convert one digit
 : # ( u1 -- u2 )
   d= base    ( u1 base )
@@ -98,7 +103,7 @@ var: hld
     1- d0= y=
     d1 +y c@ hold
   repeat
-  d-1    
+  d-2    
 ;
 
 \ Pictured Numeric Output: convert PNO buffer into an string
@@ -176,7 +181,7 @@ var: hld
 
 \ put a null at end of string
 : $_ ( addr len -- addr )
-  \ [addr + len-1] = 0
-  y=d x= y+ y-1 0 c@y= x
+  \ [addr + len] = 0
+  y=d x=0 +y c@=x y
 ;
 
