@@ -475,8 +475,8 @@ Forthword_ DIV, INLINE_OPT, "/"
 @ quot = n1/n2
 @ signed division with remainder
 Forthword_ DIVMOD, 0, "/mod"
-  ldr r1, [dsp]
-  mov r2, wreg 
+  x_d0_
+  y_w_ 
   d_w_
   dsp_
   do_ div

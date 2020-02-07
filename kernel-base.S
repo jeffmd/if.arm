@@ -58,8 +58,8 @@ Forthword_ PAUSE_CLR, 0, "pause.clr"
 @ ( val -- char )
 @ convert low byte of val to a printable hex character
 Forthword_ NHEX, 0, "#h"
-  movs r1, #0x0F
-  ands wreg, r1
+  movs tmp1, #0x0F
+  ands wreg, tmp1
   cmp wreg, #10
   blo.n NHEX_NEXT
   adds wreg, #7

@@ -13,8 +13,8 @@ Forthword_ POPRET, 0, "popret"
 @ ( n1 n2 -- flag )
 @ flag is true if wreg and NOS are equal
 Forthword_ EQUAL, 0, "=="
-  ldm dsp!, {r1}
-  subs wreg, r1
+  ldm dsp!, {tmp1}
+  subs wreg, tmp1
   oneminus_
   sbcs wreg, wreg
   end_
@@ -22,8 +22,8 @@ Forthword_ EQUAL, 0, "=="
 @ ( n1 n2 -- flag)
 @ flag is true if n1 is less than n2
 Forthword_ LESS, 0, "<"
-  ldm dsp!, {r1}
-  cmp r1, wreg
+  ldm dsp!, {tmp1}
+  cmp tmp1, wreg
   bge.n LESS_END
   true_
   exit_
@@ -35,8 +35,8 @@ LESS_END:
 @ ( n1 n2 -- flag )
 @ flag is true if n1 is greater than n2
 Forthword_ GREATER, 0, ">"
-  ldm dsp!, {r1}     @ Get x1 into a register.
-  cmp r1, wreg       @ Is x2 greater?
+  ldm dsp!, {tmp1}     @ Get x1 into a register.
+  cmp tmp1, wreg       @ Is x2 greater?
 GREATER_CHK:
   ble.n GREATER_END
   zero_

@@ -42,7 +42,7 @@ YLIT_C:
 
 @ ( -- )
 @ Select W register for literal
-Forthword_ WSET, IMMEDIATE_EN, "#"
+Forthword_ WSET, IMMEDIATE_EN, "w#"
   d_w_
   lit32_ WLIT_C
   d_w_
@@ -87,7 +87,7 @@ Forthword_ YSET, IMMEDIATE_EN, "y#"
 
 @ ( n -- )
 @ store n in WR
-Forthword_ WLIT_INTERP, IMMEDIATE_EN, "[#]"
+Forthword_ WLIT_INTERP, IMMEDIATE_EN, "[w#]"
   y_w_
   user_ WR
   mw_y_

@@ -158,8 +158,8 @@ ACCEPT_checkdelete:
   exit_
 
 ACCEPT_dodelete:
-  movs r1, #8
-  ands wreg, r1
+  movs tmp1, #8
+  ands wreg, tmp1
   d_w_                @ ( k k )
   do_ EMIT            @ ( k ? )
   bl_                 @ ( k bl )

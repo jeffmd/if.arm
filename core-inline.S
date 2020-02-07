@@ -74,8 +74,8 @@ Forthword_ R_W, INLINE_OPT, "r="
 @ get r0 and increment r0 by 4 on return stack
 Forthword_ R0PLUS, INLINE_OPT, "r0+"
   r0_
-  adds r1, wreg, #4
-  str r1, [sp]
+  adds tmp1, wreg, #4
+  str tmp1, [sp]
   end_
 
 @@@@@@@@@@@@@ Arithmatic @@@@@@@@@@@@@

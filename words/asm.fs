@@ -4,15 +4,15 @@ rword _w inlined
   ] 0 [
   _bxlr ,
 
-rword _t1 inlined
+rword _x inlined
   ] 1 [
   _bxlr ,
 
-rword _x inlined
+rword _y inlined
   ] 2 [
   _bxlr ,
 
-rword _y inlined
+rword _t1 inlined
   ] 3 [
   _bxlr ,
 

@@ -34,7 +34,7 @@ Forthword_ KEYFILE, 0, "keyfile"
 Forthword_ DOINCLUDE, 0, "(include)"
   push_lr_
   @ set file open mode to reading
-  movs r1, #0
+  x_0_
   do_ open             @ ( filedes )
   @ if file descriptor > 0 then open is success
   d_w_                 @ ( filedes filedes )

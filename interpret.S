@@ -41,14 +41,14 @@ MCMP_LOOP:
   @ program strings could be zero-padded at the last cell for 16bit alignment
   @ if count is even or > 1 then continue
   ifnz_ MCMP_CHECK
-    movs r1, #255
+    movs tmp1, #255
     @ count was at 1
     @ count in Y is now at zero so add 1 to prevent underflow
     @ so that loop can end properly
     y_plus1_                 @ ( 0:r-cc ) Y:Y+1
     @ length of string is odd 
     @ only allow low byte of W
-    ands wreg, r1            @ ( 0:r-cc )
+    ands wreg, tmp1            @ ( 0:r-cc )
 
   @ then
 MCMP_CHECK:
@@ -252,9 +252,9 @@ CHECK_IMMEDIATE:
   @ either compile or EXEC the XT
     @ check if word is immediate: bit 15 is clear if immediate
   @sbrs tosh, IMMEDIATE_EN_FB @ skip next instruction if bit 7 is set: not immediate word
-  movs r1, #IMMEDIATE_EN
-  lsls r1, #8
-  tst wreg, r1
+  movs tmp1, #IMMEDIATE_EN
+  lsls tmp1, #8
+  tst wreg, tmp1
   @ flag is 0: always EXEC
   ifz_ REC_WORD_EXECUTE
 

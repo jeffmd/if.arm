@@ -43,13 +43,13 @@ Forthword_ RELDST, 0, "reldst"
 @ reldist: relative distance as 2's compliment
 Forthword_ BRANCH, 0, "_b.n"
   @ 1110 0XXX XXXX XXXX
-  movs r1, #7
-  lsls r1, #8
-  adds r1, #0xFF
-  ands wreg, r1
-  movs r1, #0x07
-  lsls r1, #13
-  orrs wreg, r1
+  movs tmp1, #7
+  lsls tmp1, #8
+  adds tmp1, #0xFF
+  ands wreg, tmp1
+  movs tmp1, #0x07
+  lsls tmp1, #13
+  orrs wreg, tmp1
   end_
 
 @ compile assembler instruction unconditional branch
@@ -85,18 +85,18 @@ Forthword_ DOC, 0, "do,"
   @ get top 11 bits
   asrs wreg, #11           @ ( dist xxxdist )
   @ make high address bl instruction mask
-  movs r1, #0xF0
-  lsls r1, #8
-  orrs wreg, r1             @ ( dist 0xFxdist )
-  movs r1, #0x8
-  lsls r1,#8
-  bics wreg, r1             @ ( dist 0xF0dist )
-  do_ COMMA                 @ ( dist ?)
-  w_d_                      @ ( dist )
+  movs tmp1, #0xF0
+  lsls tmp1, #8
+  orrs wreg, tmp1          @ ( dist 0xFxdist )
+  movs tmp1, #0x8
+  lsls tmp1,#8
+  bics wreg, tmp1          @ ( dist 0xF0dist )
+  do_ COMMA                @ ( dist ?)
+  w_d_                     @ ( dist )
   @ make low address bl instruction mask
-  movs r1, #0xF8
-  lsls r1, #8
-  orrs wreg, r1             @ ( 0xF8dist )
+  movs tmp1, #0xF8
+  lsls tmp1, #8
+  orrs wreg, tmp1           @ ( 0xF8dist )
   end_do_ COMMA
 
 @ compile rcall to xt at the current dictionary position (DP) if relative distance is in range
@@ -104,9 +104,9 @@ Forthword_ DOC, 0, "do,"
 @ ( xt flags -- )
 Forthword_ XT_C, 0, "xt,"
   push_lr_
-  movs r1, #INLINE_OPT
-  lsls r1, #8
-  tst wreg, r1
+  movs tmp1, #INLINE_OPT
+  lsls tmp1, #8
+  tst wreg, tmp1
   @ if bit 0 of high byte flag is 0 then word is to be inlinned
   ifnz_ COMPILEXT_DO
     w_d_           @ ( xt )
@@ -126,14 +126,14 @@ Forthword_ MVI, 0, "mvi"
 @       reg    val
 @ 0010 0xxx xxxxxxxx 
   y_d_             @ ( reg Y:val)
-  movs r1, #255
-  ands yreg, r1    @ ( Y:bxxxxxxxx )
-  movs r1, #7
-  ands wreg, r1    @ ( b00000xxx )
-  movs r1, #0b00100000
-  orrs wreg, r1    @ ( b00100xxx )
-  movs r1, #8
-  lsls wreg, r1    @ ( b00100xxx00000000 )
+  movs tmp1, #255
+  ands yreg, tmp1  @ ( Y:bxxxxxxxx )
+  movs tmp1, #7
+  ands wreg, tmp1  @ ( b00000xxx )
+  movs tmp1, #0b00100000
+  orrs wreg, tmp1  @ ( b00100xxx )
+  movs tmp1, #8
+  lsls wreg, tmp1  @ ( b00100xxx00000000 )
   adds wreg, yreg  @ ( b00100xxxxxxxxxxx )
   end_
 
@@ -149,14 +149,14 @@ Forthword_ LDREQ, 0, "ldr="
 @ 0100 1xxx xxxxxxxx
   y_w_            @ ( reg offset Y:offset) 
   w_d_            @ ( reg )
-  movs r1, #7
-  ands wreg, r1   @ ( b00000xxx )
-  movs r1, #0b01001000
-  orrs wreg, r1   @ ( b01001xxx )
-  movs r1, #8
-  lsls wreg, r1   @ ( b01001xxx00000000 )
-  movs r1, #0xff
-  ands yreg, r1
+  movs tmp1, #7
+  ands wreg, tmp1 @ ( b00000xxx )
+  movs tmp1, #0b01001000
+  orrs wreg, tmp1 @ ( b01001xxx )
+  movs tmp1, #8
+  lsls wreg, tmp1   @ ( b01001xxx00000000 )
+  movs tmp1, #0xff
+  ands yreg, tmp1
   adds wreg, yreg @ ( b01001xxxxxxxxxxx )
   end_
 
@@ -213,18 +213,18 @@ Forthword_ WLIT_C, 0, "#,"
   zero_
   end_do_ LIT_C
 
-@ compile Y register load inlinned immediate 32 bit constant
-@ ( n -- )
-Forthword_ YLIT_C, 0, "y#,"
-  d_w_                     @ ( n n )
-  lit_ 3                   @ ( n yreg )
-  end_do_ LIT_C
-
 @ compile X register load inlinned immediate 32 bit constant
 @ ( n -- )
 Forthword_ XLIT_C, 0, "x#,"
   d_w_                     @ ( n n )
-  lit_ 2                   @ ( n xreg )
+  lit_ 1                   @ ( n xreg )
+  end_do_ LIT_C
+
+@ compile Y register load inlinned immediate 32 bit constant
+@ ( n -- )
+Forthword_ YLIT_C, 0, "y#,"
+  d_w_                     @ ( n n )
+  lit_ 2                   @ ( n yreg )
   end_do_ LIT_C
 
 @ compile A register load inlinned immediate 32 bit constant

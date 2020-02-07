@@ -72,8 +72,8 @@ Forthword_ CPPLUS, 0, "cp+="
 Forthword_ CPWA, 0, "cpwa"
   @if cp is not word aligned then add nop,
   do_ CP
-  movs r1, #3
-  ands wreg, r1
+  movs tmp1, #3
+  ands wreg, tmp1
   end_
 
 
@@ -100,7 +100,7 @@ TAILOPT_OPT:
 Forthword_ CLRCACHE, 0, "clrcache"
   @ r1 = end address
   do_ CP
-  mov r1, wreg
+  x_w_
   @ r0 = start address: will be current last word defined
   do_ CURRENT_ADDR
   mw_
@@ -175,14 +175,14 @@ COPYSTRING_LOOP:
   @ program strings could be zero-padded at the last cell for 16bit alignment
   @ if count is even or > 1 then continue
   ifnz_ COPYSTRING_DO
-    movs r1, #255
+    movs tmp1, #255
     @ count was at 1
     @ count in Y is now at zero so add 1 to prevent underflow
     @ so that loop can end properly
     y_plus1_         @ ( s-addr len len' c1 ) Y:len+1
     @ length of string is odd 
     @ only allow low byte of W
-    ands wreg, r1    @ ( s-addr len len' c1 )
+    ands wreg, tmp1    @ ( s-addr len len' c1 )
 
 COPYSTRING_DO:
   hmb_w_             @ [d-addr]=c2c1

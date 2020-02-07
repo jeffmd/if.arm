@@ -12,13 +12,13 @@
 
 @ use register load / store
 wreg .req r0 @ working register
-@ r1 is temp/scratch
-xreg .req r2 @ X register 
-yreg .req r3 @ Y register
+xreg .req r1 @ X register 
+yreg .req r2 @ Y register
+tmp1 .req r3 @ temp/scratch register
+sysvar .req r4 @ system variables base pointer
 areg .req r5 @ A register - non-volatile: user must preserve
 breg .req r6 @ B register - non-volatile: user must preserve
 dsp  .req r7 @ holds the Data stack pointer
-sysvar .req r4 @ system variables base pointer
 
 
 @ header flags
@@ -50,10 +50,11 @@ sysvar .req r4 @ system variables base pointer
 @ bit 2 : disable tail call optimization
 .set DIS_CALL_OPT_FB, 2
 
-
+.if 0
 .macro opdat op, reg, sym
-  \op \reg, [r1, #(\sym-Data)]
+  \op \reg, [tmp1, #(\sym-Data)]
 .endm
+.endif
 
 @ Inline macros
 
@@ -348,8 +349,8 @@ sysvar .req r4 @ system variables base pointer
 
 @ test with 8 bit constant
 .macro bittest_ v
-    movs r1, #\v
-    tst wreg, r1
+    movs tmp1, #\v
+    tst wreg, tmp1
 .endm
 
 .macro user_ sym
@@ -1718,8 +1719,8 @@ sysvar .req r4 @ system variables base pointer
 .if rpi2
   pop {lr}
 .else
-  pop {r1}
-  mov lr, r1
+  pop {tmp1}
+  mov lr, tmp1
 .endif
 .set PUSH_LR, 0
 .endm

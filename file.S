@@ -5,8 +5,7 @@
 @ path - address of path string null terminated
 @ flags: 0 read, 1 write, 2 read/write
 Forthword_ OPENF, 0, "open"
-  push_lr_
-  ldmia dsp!, {r1} @ flags
+  x_d_             @ r1=flags
   do_ open
   end_
 
@@ -14,29 +13,26 @@ Forthword_ OPENF, 0, "open"
 @ close a file
 @ filedes - file descriptor
 Forthword_ CLOSEF, 0, "close"
-  push_lr_
   do_ close
   end_
 
-@ (  filedes buffer length -- bytesread )
+@ (  filedes buffer length -- filedes buffer bytesread )
 @ fetch bytes from an open file using filedes
 @ number of bytes read left on wreg
 Forthword_ READF, 0, "read"
-  push_lr_
-  x_w_             @ r2 = length
-  ldmia dsp!, {r1} @ r1 = buffer
-  w_d_             @ r0 = filedes
+  y_w_             @ r2 = length
+  x_d0_            @ r1 = buffer
+  d1_              @ r0 = filedes
   do_ read 
   end_
 
-@ (  filedes buffer length -- byteswritten )
+@ (  filedes buffer length -- filedes byteswritten )
 @ write bytes to an open file using filedes
 @ number of bytes written left on wreg
 Forthword_ WRITEF, 0, "write"
-  push_lr_
-  x_w_             @ r2 = length
-  ldmia dsp!, {r1} @ r1 = buffer
-  w_d_             @ r0 = filedes
+  y_w_             @ r2 = length
+  x_d_             @ r1 = buffer
+  d0_              @ r0 = filedes
   do_ write 
   end_
 
@@ -49,7 +45,7 @@ Forthword_ DLOPEN, 0, "dlopen"
   push {lr}
   mov r0, wreg @ path
   pop_
-  mov r1, wreg @ mode
+  mov tmp1, wreg @ mode
   bl dlopen
   mov wreg, r0
   pop {pc}
@@ -62,7 +58,7 @@ Forthword_ DLSYM, 0, "dlsym"
   push {lr}
   mov r0, wreg @ handle
   pop_
-  mov r1, wreg @ symname
+  mov tmp1, wreg @ symname
   bl dlsym
   mov wreg, r0
   pop {pc}
@@ -100,10 +96,10 @@ Forthword_ DLCALL0, 0, "dlcall0"
 @ call a dl symbol with one call arguments  
 Forthword_ DLCALL1, 0, "dlcall1"
   push {lr}
-  mov r1, wreg @ call addr
+  mov tmp1, wreg @ call addr
   pop_
   mov r0, wreg @ arg1
-  blx r1
+  blx tmp1
   mov wreg, r0
   pop {pc}
   

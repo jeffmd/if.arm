@@ -58,7 +58,7 @@ Forthword_ TIME, 0, "time"
   d_w_               @ ( 0 0 )
   d_w_               @ ( 0 0 0 )
   dsp_               @ ( 0 0 DSP )
-  movs r1, #0
+  x_0_
   do_ gettimeofday   @ ( seconds usecs ? )
   w_d_               @ ( seconds usecs )
   end_

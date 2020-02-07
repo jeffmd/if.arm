@@ -70,8 +70,8 @@ var: hld
 ;
 
 \ start null terminated buffer
-: <#_ ( -- )
-  <# 0 hold
+: <#_ ( n -- n n )
+  <# d= 0 hold
 ;
 
 \ pictured numeric output: convert one digit
@@ -86,7 +86,7 @@ var: hld
 : #s ( u -- 0 )
   #
   begin
-  ==0
+    ==0
   whilenz
     #
   repeat
@@ -97,8 +97,8 @@ var: hld
 \ start at end of string
   d=        ( addr len len )
   begin
-  d0
-  ==0
+    d0
+    ==0
   whilenz
     1- d0= y=
     d1 +y c@ hold
@@ -108,7 +108,7 @@ var: hld
 
 \ Pictured Numeric Output: convert PNO buffer into an string
 : #> ( u1 -- addr count )
-  hld @ d= x=  ( addr addr Y:addr ) 
+  hld @ d= x=  ( addr addr X:addr ) 
   pad -x       ( addr count )
 ;
 

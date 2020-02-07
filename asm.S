@@ -10,13 +10,13 @@ Forthword_ OPRSRD, 0, "_oprsrd"
   lsls wreg, #6    @ ( Rd Rs op000000 )
   @ mask Rs with 7
   y_d_             @ ( Rd op000000 Y:Rs )
-  movs r1, #0x7
-  ands yreg, r1    @ ( Rd op000000 Y:00000xxx )
+  movs tmp1, #0x7
+  ands yreg, tmp1  @ ( Rd op000000 Y:00000xxx )
   lsls yreg, #3    @ ( Rd op000000 Y:00xxx000 )
   w_or_y_          @ ( Rd opxxx000 ) 
   x_d_             @ ( opxxx000 X:Rd )
-  movs r1, #0x7
-  ands xreg, r1    @ ( opxxx000 X:00000xxx )
+  movs tmp1, #0x7
+  ands xreg, tmp1  @ ( opxxx000 X:00000xxx )
   w_or_x_          @ ( opRsRd ) 
   end_
 
@@ -27,8 +27,8 @@ Forthword_ OPRSRD, 0, "_oprsrd"
 @ buil arm thumb assembler instruction    
 Forthword_ OPV5RSRD, 0, "_opv5rsrd"
   y_d_               @ ( Rd Rs op ) Y:val5
-  movs r1, #31
-  ands yreg, r1      @ ( Rd Rs op ) Y:val5&31
+  movs tmp1, #31
+  ands yreg, tmp1    @ ( Rd Rs op ) Y:val5&31
   lsls wreg, #5      @ ( Rd Rs op:00000 )
   w_or_y_            @ ( Rd Rs op|val5&31 )
   end_do_ OPRSRD
@@ -40,8 +40,8 @@ Forthword_ OPV5RSRD, 0, "_opv5rsrd"
 @ build arm thumb assembler instruction  
 Forthword_ OPVRRSRD, 0, "_opvrrsrd"
   y_d_             @ ( Rd Rs op ) Y:val3
-  movs r1, #7
-  ands yreg, r1    @ ( Rd Rs op ) Y:val3&7
+  movs tmp1, #7
+  ands yreg, tmp1  @ ( Rd Rs op ) Y:val3&7
   lsls wreg, #3    @ ( Rd Rs op:000 )
   w_or_y_          @ ( Rd Rs op:val3&7 )
   end_do_ OPRSRD
@@ -52,9 +52,9 @@ Forthword_ OPVRRSRD, 0, "_opvrrsrd"
 @  0  1  0  0  0  0|   op  |  Rs |  Rd |
 @ ALU operations: and, eor, lsl, lsr, asr, adc, sbc, ror, tst, rsbs
 Forthword_ ALUOP, 0, "_aluop"
-  movs r1, #64
-  lsls r1, #2
-  orrs wreg, r1
+  movs tmp1, #64
+  lsls tmp1, #2
+  orrs wreg, tmp1
   end_do_ OPRSRD
 
 @ ( Rd Rs Op -- )
@@ -63,8 +63,8 @@ Forthword_ ALUOP, 0, "_aluop"
 @  0  1  0  0  0  1|op |h1|h2|Rs/Hs|Rd/Hd|
 @ operations: add, cmp, mov, bx
 Forthword_ OPHIRSRD, 0, "_ophirsrd"
-  movs r1, #68
-  orrs wreg, r1
+  movs tmp1, #68
+  orrs wreg, tmp1
   lsls wreg, #2
   y_d0_
   x_d1_
@@ -94,12 +94,12 @@ Forthword_ OPRDV8, 0, "_oprdv8"
   lsls wreg, #3         @ ( val8 Rd op000 )
   @ mask val with 255
   x_d_                  @ ( Rd opxxx X:val8 )
-  movs r1, #0xFF
-  ands xreg, r1         @ ( Rd opxxx X:bxxxxxxxx )
+  movs tmp1, #0xFF
+  ands xreg, tmp1       @ ( Rd opxxx X:bxxxxxxxx )
   @ mask Rd with 7
   y_d_                  @ ( op Y:Rd )
-  movs r1, #0x7
-  ands yreg, r1         @ ( op Y:b00000xxx )
+  movs tmp1, #0x7
+  ands yreg, tmp1       @ ( op Y:b00000xxx )
   w_or_y_               @ ( opRd )
   lsls wreg, #8         @ ( opRd00000000 )
   w_or_x_               @ ( opRdval )
