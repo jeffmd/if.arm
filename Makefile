@@ -1,6 +1,6 @@
 # Makefile
 
-CFLAGS += -Os -g
+CFLAGS += -Og -g
 #LDFLAGS += 
 LDLIBS += -ldl -lm
 
