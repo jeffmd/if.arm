@@ -1,4 +1,4 @@
-\ minimum.fs Forth words that make up minimum forth vocabulary
+\ minimum.fs words that make up minimum forth vocabulary
 
 \ check if n is within min..max
 \ flag is 1 if min <= n <= max
@@ -129,7 +129,6 @@ var: hld
   -y      ( addr len spaces )
   spaces  ( addr len ? )
   =d type ( )
-  space
 ;
 
 \ unsigned PNO with single cell numbers
@@ -137,11 +136,21 @@ var: hld
   d= d= 0 ( n n 0 ) \ want unsigned
   d1=     ( 0 n 0 )
   .r
+  space
 ;
 
 
-\ singed PNO with single cell numbers
+\ signed PNO with single cell numbers
 : .  ( n -- )
+  d=       ( n n )
+  abs      ( n n' )
+  d= 0     ( n n' 0 ) \ not right aligned
+  .r
+  space
+;
+
+\ signed print with no space at end
+: ..  ( n -- )
   d=       ( n n )
   abs      ( n n' )
   d= 0     ( n n' 0 ) \ not right aligned
@@ -150,7 +159,7 @@ var: hld
 
 \ stack dump
 \ prints stack contents from bottom to top with
-\ working register printed las
+\ working register printed last
 : .s  ( -- )
   d=          ( ? ? )
   dsp         ( ? limit ) \ setup limit
