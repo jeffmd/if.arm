@@ -14,7 +14,7 @@ Forthword_ BASESTORE, 0, "base="
   hmw_y_
   end_
 
-@ ( n -- )
+@ ( -- n )
 @ load base
 Forthword_ BASEFETCH, 0, "base"
   user_ USER_BASE
@@ -39,6 +39,80 @@ Forthword_ DECIMAL, 0, "decimal"
 Forthword_ HEX, 0, "hex"
   lit_ 16
   end_do_ BASESTORE
+
+@ ( -- n )
+@ load decimal point
+Forthword_ DECPNT, 0, "decpnt"
+  user_ USER_DECPNT
+  mw_
+  end_
+
+@ ( -- )
+@ start decimal point
+Forthword_ DECPNT_SET, 0, "decpnt.set"
+  user_ USER_DECPNT
+  lit_y_ 1
+  mw_y_
+  end_
+
+@ ( -- )
+@ start decimal point
+Forthword_ DECPNT_CLR, 0, "decpnt.clr"
+  user_ USER_DECPNT
+  y_0_
+  mw_y_
+  end_
+
+@ ( -- )
+@ update decimal point
+Forthword_ DECPNTPLUS, 0, "decpnt+"
+  user_ USER_DECPNT
+  x_w_
+  mw_
+  iszero_
+  ifz_ DECPNTPLUS_END
+    lit_y_ 10
+    w_mul_y_
+    mx_w_
+
+DECPNTPLUS_END:
+  end_
+
+@ ( c -- c|0 )
+@ if c is . then decpnt is set and c becomes 0
+Forthword_ DECPNT_CHK, 0, "decpnt?"
+  push_lr_
+  cmp wreg, #'.
+  ifnz_ DECPNTCHK_END
+    do_ DECPNT_SET
+    zero_
+DECPNTCHK_END:
+  end_
+
+@ ( n decpnt -- f )
+@ convert scaler int to float using vfp
+Forthword_ ITOF, 0, "itof"
+  do_ WIF
+  x_w_
+  w_d_
+  do_ WIF
+  do_ FDIV  
+  end_
+
+@ ( n decpnt -- n|f )
+@ decpnt is divisor for digits to right of decimal point
+@ if decpnt is 1000 then there will be 3 digits to right of decimal point
+@ convert n to a float if decpnt > 0
+Forthword_ ITOF_CHK, 0, "itof?"
+  push_lr_
+  iszero_
+  ifz_ DECPNTF_END
+    do_ ITOF
+    exit_
+
+DECPNTF_END:
+  w_d_
+  end_
 
 @ ( c -- (number|) flag )
 @ tries to convert a character to a number, set flag accordingly
@@ -133,13 +207,18 @@ NUMBERSIGN_HASSIGN:
 @ convert a string to a number  c-addr2/u2 is the unconverted string
 Forthword_ TO_NUMBER, 0, ">num"
   push_lr_
-
+  d_w_
+  do_ DECPNT_CLR
+  w_d_
 TO_NUMBER_AGAIN:
   iszero_
   ifz_ TO_NUMBER_END
     d_w_                 @ ( u addr len len )
     d1_                  @ ( u addr len addr )
     cmw_                 @ ( u addr len char )
+    do_ DECPNT_CHK       @ ( u addr len char )
+    iszero_
+    ifz_ TO_NUMBER_CONT
     do_ DIGITQ           @ ( u adr len digit flag)
     iszero_
     w_d_                 @ ( u adr len [digit] )
@@ -154,6 +233,9 @@ TO_NUMBER_CONV:
   muls wreg, yreg        @ ( u adr len u*base )
   w_plus_x_              @ ( u adr len u'' )
   d2_w_                  @ ( u'' adr len u'' )
+  do_ DECPNTPLUS
+
+TO_NUMBER_CONT:
   lit_ 1                 @ ( u'' adr len 1 )
   do_ SLASHSTRING        @ ( u'' adr' len' )
   goto_ TO_NUMBER_AGAIN
@@ -206,6 +288,9 @@ PFA_NUMBER_SIGN:
   d0_w_                   @ ( -n -n )
 
 PFA_NUMBER_TRUE:
+  do_ DECPNT              @ ( n decpnt )
+  do_ ITOF_CHK            @ ( n|f )
+  d_w_                    @ ( n|f n )
   true_                   @ ( n true ) (R: base )
 
 PFA_NUMBER_DONE:

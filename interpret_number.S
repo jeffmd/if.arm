@@ -145,12 +145,12 @@ Forthword_ REC_NUM, 0, "rec@"
       goto_ REC_NUMBER_DONE
 
 REC_NUMBER_OK:
-      do_ LIT_INTERP
+    do_ LIT_INTERP
       
 REC_NUMBER_DONE:
-      do_ WSET
-      true_               @ ( true ) (R: )
-      exit_
+    do_ WSET
+    true_               @ ( true ) (R: )
+    exit_
 
 REC_NONUMBER:
   y_r_                    @ ( 0 Y:addr ) (R: retaddr len )

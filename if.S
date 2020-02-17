@@ -56,6 +56,7 @@ USER_ARGC: .space 4
 USER_ARGV: .space 4
 USER_HERE: .space 4
 USER_IDLETIME: .space 4
+USER_DECPNT: .space 4
 ram_CURRENT: .space 4
 ram_CONTEXTidx: .space 2
 ram_CONTEXT: .space 4 * MAX_CONTEXTS @ 10 wordlists max

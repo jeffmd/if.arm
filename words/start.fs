@@ -5,7 +5,8 @@ include words/core.fs
 include words/asm.fs
 include words/core-inline.fs 
 include words/compiler.fs 
-include words/minimum.fs 
+include words/minimum.fs
+include words/float.fs 
 include words/vocabulary.fs
 include words/debugtools.fs 
 include words/tasker.fs
