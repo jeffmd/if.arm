@@ -10,4 +10,5 @@ include words/vocabulary.fs
 include words/debugtools.fs 
 include words/tasker.fs
 include words/gpio.fs
+only
 emit.on
