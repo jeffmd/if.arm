@@ -171,7 +171,7 @@ Forthword_ WARM, 0, "warm"
 .if BUILD_LEVEL > CORE_KERNEL
   do_ ONLY
 .if BUILD_LEVEL >= NUMBER_BASE
-  do_ DECIMAL           @ default to decimal base
+  do_ DEC           @ default to decimal base
 .endif
 .endif
 
@@ -214,7 +214,7 @@ Forthword_ RECOVER, 0, "recover"
 .if BUILD_LEVEL > CORE_KERNEL
   do_ ONLY
 .if BUILD_LEVEL >= NUMBER_BASE
-  do_ DECIMAL           @ default to decimal base
+  do_ DEC           @ default to decimal base
 .endif
 .endif
 

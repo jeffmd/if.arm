@@ -36,6 +36,26 @@ Forthword_ WFI, 0, "i"
   vmov r0, s0
   end_
 
+Forthword_ FPSCR, 0, "fpscr"
+  thumb_arm_
+  vmrs r0, fpscr
+  end_
+
+Forthword_ FPSID, 0, "fpsid"
+  thumb_arm_
+  vmrs r0, fpsid
+  end_
+
+Forthword_ MVFR0, 0, "mvfr0"
+  thumb_arm_
+  vmrs r0, mvfr0
+  end_
+
+Forthword_ MVFR1, 0, "mvfr1"
+  thumb_arm_
+  vmrs r0, mvfr1
+  end_
+
 Forthword_ S1X, 0, "s1=x"
   thumb_arm_
   vmov s1, r1
@@ -116,33 +136,36 @@ Forthword_ S1DIVS2, 0, "s1/s2"
 
 Forthword_ FADD, 0, "f+"
   thumb_arm_
-  vmov.f32 s0, r0
-  vmov.f32 s1, r1
+  vmov s0, s1, r0, r1
   vadd.f32 s0, s0, s1
   vmov.f32 r0, s0
   end_
 
 Forthword_ FSUB, 0, "f-"
   thumb_arm_
-  vmov.f32 s0, r0
-  vmov.f32 s1, r1
+  vmov s0, s1, r0, r1
   vsub.f32 s0, s0, s1
   vmov.f32 r0, s0
   end_
 
 Forthword_ FMUL, 0, "f*"
   thumb_arm_
-  vmov.f32 s0, r0
-  vmov.f32 s1, r1
+  vmov s0, s1, r0, r1
   vmul.f32 s0, s0, s1
   vmov.f32 r0, s0
   end_
 
 Forthword_ FDIV, 0, "f/"
   thumb_arm_
-  vmov.f32 s0, r0
-  vmov.f32 s1, r1
+  vmov s0, s1, r0, r1
   vdiv.f32 s0, s0, s1
+  vmov.f32 r0, s0
+  end_
+
+Forthword_ SQRT, 0, "sqrt"
+  thumb_arm_
+  vmov.f32 s0, r0
+  vsqrt.f32 s0, s0
   vmov.f32 r0, s0
   end_
 

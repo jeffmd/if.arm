@@ -27,10 +27,16 @@ Forthword_ BIN, 0, "bin"
   lit_ 2
   end_do_ BASESTORE
 
+@ ( -- )
+@ set base for numeric conversion to 8
+Forthword_ OCT, 0, "oct"
+  lit_ 8
+  end_do_ BASESTORE
+
 
 @ ( -- )
 @ set base for numeric conversion to 10
-Forthword_ DECIMAL, 0, "decimal"
+Forthword_ DEC, 0, "dec"
   lit_ 10
   end_do_ BASESTORE
 
@@ -66,12 +72,13 @@ Forthword_ DECPNT_CLR, 0, "decpnt.clr"
 @ ( -- )
 @ update decimal point
 Forthword_ DECPNTPLUS, 0, "decpnt+"
+  do_ BASEFETCH
+  y_w_
   user_ USER_DECPNT
   x_w_
   mw_
   iszero_
   ifz_ DECPNTPLUS_END
-    lit_y_ 10
     w_mul_y_
     mx_w_
 
@@ -146,21 +153,32 @@ PFA_DIGITQ_DONE:
 @ R( -- )
 @ set the BASE value depending on the character
 forthword_ SETBASE, 0, "setbase"
+  push_lr_
+  do_ DECPNT_CHK
+  ifnz_ PFA_SETBASE_DEC
+  exit_
+
+PFA_SETBASE_DEC:
+  cmp wreg, #'#
+  ifnz_ PFA_SETBASE_HEX
+  exit_do_ DEC
+
+PFA_SETBASE_HEX:
   cmp wreg, #'$
-  ifnz_ PFA_SETBASE0
+  ifnz_ PFA_SETBASE_BIN
   exit_do_ HEX
 
-PFA_SETBASE0:
+PFA_SETBASE_BIN:
   cmp wreg, #'%
-  ifnz_ PFA_SETBASE1
+  ifnz_ PFA_SETBASE_OCT
   exit_do_ BIN
 
-PFA_SETBASE1:
+PFA_SETBASE_OCT:
   cmp wreg, #'&
-  ifnz_ PFA_SETBASE2
-  exit_do_ DECIMAL
+  ifnz_ PFA_SETBASE_BAD
+  exit_do_ OCT
 
-PFA_SETBASE2:        @ ( error)
+PFA_SETBASE_BAD:        @ ( error)
   do_ EMIT
   slit_ " Bad Base!"
   do_ THROW
@@ -207,9 +225,6 @@ NUMBERSIGN_HASSIGN:
 @ convert a string to a number  c-addr2/u2 is the unconverted string
 Forthword_ TO_NUMBER, 0, ">num"
   push_lr_
-  d_w_
-  do_ DECPNT_CLR
-  w_d_
 TO_NUMBER_AGAIN:
   iszero_
   ifz_ TO_NUMBER_END
@@ -230,7 +245,7 @@ TO_NUMBER_CONV:
   y_d2_                  @ ( u adr len digit ) Y: u
   x_w_                   @ ( u adr len digit ) X: digit
   do_ BASEFETCH          @ ( u adr len base)
-  muls wreg, yreg        @ ( u adr len u*base )
+  w_mul_y_               @ ( u adr len u*base )
   w_plus_x_              @ ( u adr len u'' )
   d2_w_                  @ ( u'' adr len u'' )
   do_ DECPNTPLUS
@@ -248,6 +263,7 @@ TO_NUMBER_END:
 Forthword_ NUMBER, 0, "num"
   push_lr_
   d_w_                    @ ( addr len len )
+  do_ DECPNT_CLR
   do_ BASEFETCH           @ ( addr len base )
   r_w_                    @ ( addr len base ) (R: base)
   w_d_                    @ ( addr len )

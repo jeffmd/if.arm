@@ -48,7 +48,7 @@ only
 
 \ read register/ram byte contents and print in binary form
 : rb? ( reg -- )
-  c@ x= bin x <# # # # # # # # # #> type space decimal
+  c@ x= bin x <# # # # # # # # # #> type space dec
 ;
 
 \ read register/ram byte contents and print in hex form

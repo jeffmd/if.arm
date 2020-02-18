@@ -9,7 +9,7 @@
   d1 f-          ( f i f-nf )
   d= 10000 f x=  ( f i fr 10000.0f X:10000.0f )
   =d f* i        ( f i fr*10000.0f )
-  .              ( f i ? )
+  abs .          ( f i ? )
   d-2            ( ? )
 ;
 
