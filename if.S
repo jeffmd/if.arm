@@ -110,6 +110,7 @@ CPSTART:
 
 .if BUILD_LEVEL >= MATH_ADV
   .include "floatvfp.S"
+  .include "mathtrig.S"
 .endif
 
 .if BUILD_LEVEL >= ASM
