@@ -1828,3 +1828,11 @@ VE_\lbl:
 .text
 \lbl:
 .endm
+
+.macro thumb_arm_
+.thumb
+  bx pc
+  nop
+.arm
+.endm
+

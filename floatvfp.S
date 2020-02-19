@@ -2,13 +2,6 @@
 
 .syntax unified
 
-.macro thumb_arm_
-.thumb
-  bx pc
-  nop
-.arm
-.endm
-
 .balign 4
 
 Forthword_ S0W, 0, "s0="
@@ -166,6 +159,13 @@ Forthword_ SQRT, 0, "sqrt"
   thumb_arm_
   vmov.f32 s0, r0
   vsqrt.f32 s0, s0
+  vmov.f32 r0, s0
+  end_
+
+Forthword_ FABS, 0, "fabs"
+  thumb_arm_
+  vmov.f32 s0, r0
+  vabs.f32 s0, s0
   vmov.f32 r0, s0
   end_
 
