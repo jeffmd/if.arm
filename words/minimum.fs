@@ -114,28 +114,60 @@ var: hld
 
 \ place a - in HLD if n is negative
 : sign ( n -- )
-    <0 ==0 ifnz [char] - hold then
+  <0 ==0 
+  ifnz
+   [char] - hold
+  then
 ;
 
+\ convert base to prefix character
+: prefix ( base -- c )
+\ if base not dec then determine corresponding prefix character
+\ base character
+\  10    space
+\  16     $
+\   8     &
+\   2     %
+  d=          ( base base )
+  x# 16 -x
+  ifz
+    [char] $ 
+  else
+    d0 x# 8 -x
+    ifz
+      [char] &
+    else
+      d0 x# 2 -x
+      ifz
+        [char] %
+      else
+        bl
+      then
+    then
+  then
+
+  d-1
+;
 
 \ singed PNO with cell numbers, right aligned in width w
-: .r ( wantsign n w -- )
+: rn$ ( wantsign n w -- addr len )
   r= =d   ( wantsign n ) ( R: w )
   <# #s   ( wantsign 0 )
-  =d sign ( ? )
+     =d sign ( ? )
+     base prefix hold
   #>      ( addr len )
   d= =r   ( addr len w )  ( R: )
   y=d0    ( addr len w Y:len )
   -y      ( addr len spaces )
   spaces  ( addr len ? )
-  =d type ( )
+  =d      ( addr len )
 ;
 
 \ unsigned PNO with single cell numbers
-: u. ( u -- )
+: .u ( u -- )
   d= d= 0 ( n n 0 ) \ want unsigned
   d1=     ( 0 n 0 )
-  .r
+  rn$ type
   space
 ;
 
@@ -145,7 +177,7 @@ var: hld
   d=       ( n n )
   abs      ( n n' )
   d= 0     ( n n' 0 ) \ not right aligned
-  .r
+  rn$ type
   space
 ;
 
@@ -154,7 +186,7 @@ var: hld
   d=       ( n n )
   abs      ( n n' )
   d= 0     ( n n' 0 ) \ not right aligned
-  .r
+  rn$ type
 ;
 
 \ stack dump
