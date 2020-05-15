@@ -782,20 +782,20 @@ rword 0-x inlined
 ( Y:n -- Y:-n )
 \ 2-compliment of Y
 \ y = 0-y
-rword =-y inlined
+rword 0-y inlined
   _y d= _y _rsbs ,
   _bxlr ,
 
 ( A:n -- A:-n )
 \ 2-compliment of A
 \ a = 0-a
-rword -a inlined
+rword 0-a inlined
   _a d= _a _rsbs ,
   _bxlr ,
 
 ( B:n -- B:-n )
 \ 2-compliment of B
-\ b = -b
+\ b = 0-b
 rword 0-b inlined
   _b d= _b _rsbs ,
   _bxlr ,
