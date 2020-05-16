@@ -33,6 +33,10 @@ $(DEPFILES):
 lst: if
 	objdump -D -S if > lst.txt
 
+-include $(DEPFILES)
+
+.PHONY: clean
+
 clean:
 	@for i in $(OBJS); do (if test -e "$$i"; then ( rm -vf $$i ); fi ); done
 	@rm -vf $(BIN)
