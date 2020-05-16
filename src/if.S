@@ -109,7 +109,8 @@ CPSTART:
 .set VE_HEAD, 0
 
 .if BUILD_LEVEL >= MATH_ADV
-  .include "floatvfp.S"
+  @.include "matrix_vfp.S"
+  .include "float_vfp.S"
   .include "mathtrig.S"
 .endif
 
