@@ -257,6 +257,35 @@
   1 allot
 ;
 
+: struct{
+  0 d= 1
+;
+
+: }struct:
+  =d con:
+;
+
+: field:
+  *y y=d0 +y
+  d0= y con:
+  1
+;
+
+: char:
+  y# 1 field:
+;
+
+: int:
+  y# 4 field:
+;
+
+: short:
+  y# 2 field:
+;
+
+: float:
+  y# 4 field:
+;
 
 \ compiles a string from RAM to program RAM
 : s, ( addr len -- )
