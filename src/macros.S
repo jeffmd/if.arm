@@ -3,10 +3,10 @@
 @
 @ data stack       registers      return stack
 @ d0               w              r0
-@ d1               a              r1
-@ d2               b              r2
-@                  x
-@                  y
+@ d1               x              r1
+@ d2               y              r2
+@                  a
+@                  b
 @                  dsp
 @                  rsp
 
@@ -105,32 +105,32 @@ dsp  .req r7 @ holds the Data stack pointer
 @ push registers on return stack
 
 @ r=
-.macro r_w_ @ put copy of w on return stack
+.macro r_w_ @ push copy of w on return stack
     push {wreg}
 .endm
 
 @ r=a
-.macro r_a_ @ put copy of A on return stack
+.macro r_a_ @ push copy of A on return stack
     push {areg}
 .endm
 
 @ r=b
-.macro r_b_ @ put copy of B on return stack
+.macro r_b_ @ push copy of B on return stack
     push {breg}
 .endm
 
 @ r=x
-.macro r_x_ @ put copy of X on return stack
+.macro r_x_ @ push copy of X on return stack
     push {xreg}
 .endm
 
 @ r=y
-.macro r_y_ @ put copy of Y on return stack
+.macro r_y_ @ push copy of Y on return stack
     push {yreg}
 .endm
 
 @ r=dsp
-.macro r_dsp_ @ put copy of data stack pointer on return stack
+.macro r_dsp_ @ push copy of data stack pointer on return stack
     push {dsp}
 .endm
 
