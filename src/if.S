@@ -109,6 +109,9 @@ CPSTART:
 .set VE_HEAD, 0
 
 .if BUILD_LEVEL >= MATH_ADV
+  .include "mathadv.S"
+  .include "file.S"
+  @ .include "defer.S"
   @.include "matrix_vfp.S"
   .include "float_vfp.S"
   .include "mathtrig.S"
@@ -140,12 +143,6 @@ CPSTART:
 
 .if BUILD_LEVEL >= INCLUDE
   .include "include.S"
-.endif
-
-.if BUILD_LEVEL >= MATH_ADV
-  .include "mathadv.S"
-  @ .include "defer.S"
-  .include "file.S"
 .endif
 
 .include "core-base.S"
