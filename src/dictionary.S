@@ -28,7 +28,7 @@ Forthword_ NFA2LFA, 0, "nfa>lfa"
   @ mask out flags in len, allow up to 31 characters
   movs tmp1, #31
   y_d_                        @ ( len+flags ) Y:nfa+2
-  ands wreg, tmp1               @ ( len )
+  ands wreg, tmp1             @ ( len )
   w_plus_y_                   @ ( nfa+2+len )
   @ align to half word boundry
   end_do_ HALIGN
@@ -85,7 +85,7 @@ FINDNFA_BEGIN1:
   d_x_                        @ ( c-addr len c-addr len nfa )
   do_ STRINGLEN               @ ( c-addr len c-addr len f-addr len )
   movs tmp1, #31
-  ands wreg, tmp1               @ ( c-addr len c-addr len f-addr 0:len )
+  ands wreg, tmp1             @ ( c-addr len c-addr len f-addr 0:len )
   do_ MCMP                    @ ( c-addr len flag )
 
   iszero_

@@ -94,5 +94,5 @@ pname (create) d= current# @ header \ ( nfa )
   \ change to interpret mode and override to compile [
   [ pname [ findw nfa>xtf xt, ]
   \ back in compile mode
-    ;opt uwid
+  ;opt uwid
 [ ;opt uwid immediate
