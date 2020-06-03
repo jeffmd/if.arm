@@ -287,6 +287,10 @@
   y# 4 field:
 ;
 
+: pointer:
+  y# 4 field:
+;
+
 \ compiles a string from RAM to program RAM
 : s, ( addr len -- )
   d= @cp=s

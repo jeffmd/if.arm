@@ -32,7 +32,7 @@
 
 \ get a valid wlid from the context
 \ tries to get the top vocabulary
-\ if no valid entries then defaults to Forth wlid
+\ if no valid entries then defaults to root Forth wlid
 : wlid ( -- wlid )
   context
   ==0
@@ -43,32 +43,32 @@
   then
 ;
 
+
 \ wordlist record fields:
-\ [0] word:dcell: address to nfa of most recent word
-\     added to this wordlist
-\ [1] Name:dcell: address to nfa of vocabulary name 
-\ [2] link:dcell: address to previous sibling wordlist to form
-\     vocabulary linked list
-\ [3] child:dcell: address to head of child wordlist
+ struct{
+   \ address to nfa of most recent word added to this wordlist
+   pointer: wlid.word
+   \ address to nfa of vocabulary name 
+   pointer: wlid.nfa
+   \ address to previous sibling wordlist
+   pointer: wlid.sibling
+   \ address to head of child wordlist
+   pointer: wlid.child
+ }struct: wlid.size
 
-\ add link field offset
-: wlid:link ( wlid -- wlid:link) dcell+ dcell+ ;
-\ add child field offset
-: wlid:child ( wlid -- wlid:child ) y= 3 dcell* +y ;
-
-\ initialize wid fields of definitions vocabulary
+\ initialize wlid fields of definitions vocabulary
 : wlidinit ( wlid -- wlid )
   x=          ( wlid X:wlid )
   \ wlid.word = 0
   y=0 @=y     ( wlid )
   \ parent wid child field is in current->child
-  current     ( parentwlid )
-  wlid:child  ( parentwlid.child )
+  current y=  ( parentwlid )
+  wlid.child +y ( parentwlid.child )
   d=          ( parentwlid.child parentwlid.child )
   y=@         ( parentwlid.child parentwlid.child Y:childLink )
-  x wlid:link ( parentwid.child wid.link )
-  \ wlid.link = childLink
-  @=y         ( parentwlid.child wid.link )
+  wlid.sibling +x ( parentwid.child wlid.sibling )
+  \ wlid.sibling = childLink
+  @=y         ( parentwlid.child wlid.sibling )
   \ wlid.child = 0
   dcell+ y=0
   @=y         ( parentwlid.child wlid.child )
@@ -82,8 +82,8 @@
 : wordlist ( -- wlid )
   \ get next available ram from here and use as wid
   here                  ( wlid )   
-  \ allocate  4 data cells in ram for the 4 fields
-  d= 4 dcell* allot  =d ( wlid )
+  \ allocate  ram for the wlid fields
+  d= wlid.size allot  =d ( wlid )
 
   wlidinit ( wlid )
 ;
@@ -254,10 +254,10 @@ dcell+ y=0 @=y   ( )
     \ increase spaces for indenting child vocabularies
     d1 +4 d=             ( spaces linkwlid.name spaces+4 spaces+4 )
     \ get link field
-    d1 dcell+ d1=        ( spaces linkwlid.link spaces+4 linkwid.link )
+    d1 dcell+ d1=        ( spaces linkwlid.sibling spaces+4 linkwid.sibling )
     \ get child link and recurse: print child vocabularies
-    dcell+ @             ( spaces linkwlid.link spaces+4 childwlid )
-    recurse              ( spaces linkwid.link )
+    dcell+ @             ( spaces linkwlid.sibling spaces+4 childwlid )
+    recurse              ( spaces linkwid.sibling )
     \ get link for next sibling
     @
   repeat
@@ -276,6 +276,8 @@ dcell+ y=0 @=y   ( )
   d= dcell+     ( ? 2 wlid wlid.name )
   @ .nf cr =d   ( ? 2 wlid )
   \ get child link of linked list
-  wlid:child @   ( ? 2 childwlid )
+  y= 
+  wlid.child +y ( ? 2 wlid.child )
+  @             ( ? 2 childwlid )
   .childvocs cr ( ? )
 ;
