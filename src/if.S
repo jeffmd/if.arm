@@ -44,6 +44,7 @@ sysvar_base:
 
 .globl USER_ARGC
 .globl  USER_ARGV
+.globl CPSTART
 
 NEW_WORD: .space 4
 state: .space 2
@@ -89,7 +90,7 @@ EE_FORTHWORDLIST:
 
 DICTIONARY_START:
   .space 4
-  @ start of user program area
+  @ start of user dictionary area
 DPSTART:
   .space 0xffff
 
@@ -97,7 +98,9 @@ DPSTART:
 HERESTART:
    .space 0xffff
 
-  # start of user code area
+@ must start on page boundary - assume 4K page size
+.balign 4096
+  @ start of user code area
 CPSTART:
    .space 0xffff
 
