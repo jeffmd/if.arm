@@ -88,11 +88,11 @@ PHEX_BEGIN:
   d0_       @ ( n n )
   rshifta_  @ ( n n>>cnt )
   do_ PNIB  @ ( n ? )
-  a_minus4_
+  a_sub_4_
   ifnz_ PHEX_BEGIN
 
   a_r_      @ ( n ? ) (R: )
-  w_d_      @ ( n )
+  d_        @ ( n )
   do_ PNIB
   lit_ 32   @ ( 32 )
   end_do_ EMIT
@@ -104,7 +104,7 @@ Forthword_ BYE, 0, "bye"
   x_w_
   lit_y_ 1 
   hmx_
-  w_or_y_
+  or_y_
   hmx_w_
   end_
 

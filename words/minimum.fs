@@ -24,7 +24,7 @@
 
 \ divide n1 by n2 giving the remainder n3
 : mod ( n1 n2 -- n3 )
-  /mod =d
+  /mod d
 ;
 
 \ emits a space (bl)
@@ -66,7 +66,7 @@ var: hld
 
 \ initialize the pictured numeric output conversion process
 : <# ( -- )
-    d= pad y= hld @=y =d
+    d= pad y= hld @=y d
 ;
 
 \ start null terminated buffer
@@ -79,7 +79,7 @@ var: hld
   d= base    ( u1 base )
   /mod       ( rem u2 )
   y=d0 d0= y ( u2 rem )
-  #h hold =d ( u2 )
+  #h hold d ( u2 )
 ;
 
 \ pictured numeric output: convert all digits until 0 (zero) is reached
@@ -151,16 +151,16 @@ var: hld
 
 \ singed PNO with cell numbers, right aligned in width w
 : rn$ ( wantsign n w -- addr len )
-  r= =d   ( wantsign n ) ( R: w )
+  r= d    ( wantsign n ) ( R: w )
   <# #s   ( wantsign 0 )
-     =d sign ( ? )
-     base prefix hold
+    d sign ( ? )
+    base prefix hold
   #>      ( addr len )
-  d= =r   ( addr len w )  ( R: )
+  d= r    ( addr len w )  ( R: )
   y=d0    ( addr len w Y:len )
   -y      ( addr len spaces )
   spaces  ( addr len ? )
-  =d      ( addr len )
+  d       ( addr len )
 ;
 
 \ unsigned PNO with single cell numbers
@@ -206,9 +206,9 @@ var: hld
   whilenz
     d0        ( ? limit counter-4 counter-4 )
     @         ( ? limit counter-4 val )
-    . =d      ( ? limit counter-4 )
+    . d       ( ? limit counter-4 )
   repeat
-  d-2 =d
+  d-2 d
 ;
 
 \ 1 millisecond delay

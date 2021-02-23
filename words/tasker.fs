@@ -26,7 +26,7 @@ maxtask dcell* allot
   \ verify index is below 63
   d= d=       ( idx idx idx )
   maxtask >   ( idx flag )
-  ==0 =d      ( idx )
+  ==0 d       ( idx )
   ifnz
     \ greater than 62 so 0
     0 tidx=
@@ -96,7 +96,7 @@ maxtask dcell* allot
 \ idx is the slot index range: 0 to 62
 \ addr is xt of word to be executed
 : task= ( idx addr -- )
-  x= =d task& @=x
+  x= d task& @=x
 ;
 
 \ store a task in a slot
@@ -150,7 +150,7 @@ var: exus#
   y= d0 -y d0=   ( timediff timediff Y:lastms )
   d= exus u>     ( timediff flag )
   ==0
-  =d             ( timediff )
+  d              ( timediff )
   ifnz
     lastus+=     ( lastms Y:timediff )
     taskex

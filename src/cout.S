@@ -70,8 +70,8 @@ Forthword_ TYPE, 0, "type"
 TYPE1:
   cma_
   do_ EMIT
-  a_plus1_
-  b_minus1_
+  a_plus_1_
+  b_sub_1_
 
 TYPE2:
   ifnz_ TYPE1

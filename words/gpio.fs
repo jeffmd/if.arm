@@ -19,7 +19,7 @@ GPIO def
 \ file open using null terminated buffer
 : #>Open ( mode straddr len -- fs flag )
   #$ root$ #$ #>    ( mode addr len )
-  =d open           ( fs )
+  d open            ( fs )
   d= >0             ( fs flag )
 ;
 
@@ -50,7 +50,7 @@ GPIO def
 : dirOpen ( pin -- fs flag )
     y# 1 d=y       ( 1 pin Y:1 )
     <#_ dir$ #$    ( 1 pin ? )
-    =d #s          ( 1 0 )
+    d #s           ( 1 0 )
     gpio$ #>Open   ( fs flag)
 ;
 
@@ -60,7 +60,7 @@ GPIO def
     d1           ( pin fs pin ) 
     dirOpen      ( pin fs fs2 flag )
     ==0
-    =d           ( pin fs fs2 )
+    d            ( pin fs fs2 )
   untilnz
   close          ( pin fs ? )
 ;
@@ -119,7 +119,7 @@ GPIO def
 : valOpen ( mode pin -- fs flag )
   \ open value file for writing
   <#_ value$ #$  ( mode pin ? )
-  =d #s          ( mode 0 )
+  d #s           ( mode 0 )
   gpio$ #>Open   ( fs flag)
 ;
 
@@ -150,7 +150,7 @@ GPIO def
     \ convert string val to integer
     1 num        ( fs val flag )
     d1 close     ( fs val ? )
-    =d           ( fs val )
+    d            ( fs val )
   else
     .fail ." value for reading!"
   then
@@ -164,7 +164,7 @@ GPIO def
 : pin ( pin direction -- )
   d= d1    ( pin direction pin ) 
   exp      ( pin direction ? )
-  =d dir   ( ? )
+  d dir    ( ? )
 ;
 
 \ set pin as output

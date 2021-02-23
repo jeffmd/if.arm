@@ -29,7 +29,7 @@ Forthword_ NFA2LFA, 0, "nfa>lfa"
   movs tmp1, #31
   y_d_                        @ ( len+flags ) Y:nfa+2
   ands wreg, tmp1             @ ( len )
-  w_plus_y_                   @ ( nfa+2+len )
+  plus_y_                     @ ( nfa+2+len )
   @ align to half word boundry
   end_do_ HALIGN
 
@@ -43,20 +43,20 @@ Forthword_ NFATOXTF, 0, "nfa>xtf"
   y_hmw_                      @ ( nfa Y:xtflags )
   r_y_                        @ ( nfa ) (R: xtflags)
   do_ NFA2LFA                 @ ( lfa )
-  fourplus_   @ lfa>xt        @ ( xtlink )
+  plus_4_     @ lfa>xt        @ ( xtlink )
   mw_                         @ ( xt )
   d_w_                        @ ( xt xt )
-  w_r_                        @ ( xt xtflags )
+  r_                          @ ( xt xtflags )
 
 NFATOXTF_EXIT:
   end_
 
 @ ( addr len idx -- 0 | nfa )
 FINDWI:
-  fourstar_          @ ( addr len idx*4)
+  mul_4_             @ ( addr len idx*4)
   y_w_               @ ( addr len idx*4 ) Y: idx*4
   do_ CONTEXT_ADDR   @ ( addr len context )
-  w_plus_y_          @ ( addr len context' )
+  plus_y_            @ ( addr len context' )
   mw_                @ ( addr len wid )
   end_next_
 
@@ -89,7 +89,7 @@ FINDNFA_BEGIN1:
   do_ MCMP                    @ ( c-addr len flag )
 
   iszero_
-  w_r_                        @ ( c-addr len nfa ) (R: )
+  r_                          @ ( c-addr len nfa ) (R: )
   @ match found if flag is > 0
   ifnz_ FINDNFA_END
     
@@ -100,7 +100,7 @@ FINDNFA_BEGIN1:
 
 FINDNFA_END:
   @ we found the string
-  d_m2_                       @ ( nfa )
+  d_sub_2_                    @ ( nfa )
   end_
 
 
@@ -158,17 +158,17 @@ FINDW_BEGIN:
 
   d0_                 @ ( addr len idx idx )
   @ decrement index
-  oneminus_           @ ( addr len idx idx-1 )
+  _1_sub_             @ ( addr len idx idx-1 )
   d0_w_               @ ( addr len idx-1 idx-1 )
   goto_ FINDW_BEGIN
 
 FINDW_LAST:
   d1_                 @ ( addr len idx len )
-  d_m2_               @ ( addr len )
+  d_sub_2_            @ ( addr len )
   exit_do_ FINDROOT
 
 FINDW_END:
-  d_m3_               @ ( nfa )
+  d_sub_3_            @ ( nfa )
   end_
 
 @ ( -- )
@@ -183,12 +183,12 @@ Forthword_ ONLY, IMMEDIATE_EN, "only"
   do_ CONTEXT_ADDR             @ ( CONTEXT )
   mw_y_                        @ ( CONTEXT )
   @ move index to slot 1
-  twominus_                    @ ( CONTEXT-2 )
+  _2_sub_                      @ ( CONTEXT-2 )
   lit_y_ 1                     @ ( CONTEXT-2 Y:1 )
   hmw_y_                       @ ( CONTEXT-2 )
   @ make second slot have no vocab
-  twoplus_                     @ ( CONTEXT )
+  plus_2_                      @ ( CONTEXT )
   y_0_
-  fourplus_                    @ ( CONTEXT+4 )
+  plus_4_                      @ ( CONTEXT+4 )
   mw_y_
   end_

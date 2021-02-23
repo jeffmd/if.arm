@@ -6,7 +6,7 @@ Forthword_ COMMENT, IMMEDIATE_EN, "\\"
   d_w_         @ ( ? ? )
   do_ WIB      @ ( ? wib )
   do_ RIB_STR  @ ( ? ? )
-  w_d_         @ ( ? )
+  d_           @ ( ? )
   end_
 
 @ ( r-addr r-len f-addr f-len --  f)
@@ -15,11 +15,11 @@ Forthword_ COMMENT, IMMEDIATE_EN, "\\"
 Forthword_ MCMP, 0, "mcmp"
   y_d1_                    @ ( r-addr r-len f-addr f-len )  Y: r-len
   @ check if strings are same length
-  w_xor_y_                 @ ( r-addr r-len f-addr flag )
+  xor_y_                   @ ( r-addr r-len f-addr flag )
   ifz_ MCMP_SAMELEN
 
   @ strings are not the same length
-  d_m3_                    @ ( ? )
+  d_sub_3_                 @ ( ? )
   zero_                    @ ( 0 )
   exit_
 
@@ -27,7 +27,7 @@ MCMP_SAMELEN:
   r_a_                     @ ( ? ) (R: a)
   r_b_                     @ ( ? ) (R: a b)
   a_d_                     @ ( r-addr r-len flag ) A: f-addr
-  d_m1_                    @ ( r-addr flag ) 
+  d_sub_1_                 @ ( r-addr flag ) 
   b_d_                     @ ( flag ) B:r-addr
 
 MCMP_LOOP:
@@ -37,7 +37,7 @@ MCMP_LOOP:
   hma_                     @ ( f-cc )
   x_w_                     @ ( f-cc ) X:f-cc 
   hmb_                     @ ( r-cc )
-  y_minus1_                @ ( f-cc ) Y:Y-1
+  y_sub_1_                 @ ( f-cc ) Y:Y-1
   @ program strings could be zero-padded at the last cell for 16bit alignment
   @ if count is even or > 1 then continue
   ifnz_ MCMP_CHECK
@@ -45,19 +45,19 @@ MCMP_LOOP:
     @ count was at 1
     @ count in Y is now at zero so add 1 to prevent underflow
     @ so that loop can end properly
-    y_plus1_                 @ ( 0:r-cc ) Y:Y+1
+    y_plus_1_              @ ( 0:r-cc ) Y:Y+1
     @ length of string is odd 
     @ only allow low byte of W
-    ands wreg, tmp1            @ ( 0:r-cc )
+    ands wreg, tmp1        @ ( 0:r-cc )
 
   @ then
 MCMP_CHECK:
-  w_xor_x_                 @ ( flag )
+  xor_x_                   @ ( flag )
   ifnz_ MCMP_NOMATCH
 
-  b_plus2_                 @ (  0 B:B+2 )
-  a_plus2_                 @ (  0 A:B+2 )
-  y_minus1_                @ (  0 Y:len-1 )
+  b_plus_2_                @ (  0 B:B+2 )
+  a_plus_2_                @ (  0 A:B+2 )
+  y_sub_1_                 @ (  0 Y:len-1 )
   goto_ MCMP_LOOP
 
 MCMP_NOMATCH:
@@ -84,15 +84,15 @@ Forthword_ CSKIP, 0, "cskip"
   d0_                    @ ( addr1 n1 n1 )
   y_w_                   @ ( addr1 n1 n1 ) Y: n1
   x_w_                   @ ( addr1 n1 n1 ) X: n1
-  d_m2_                  @ ( n1 )
+  d_sub_2_               @ ( n1 )
   goto_ CSKIP_CHECK
 
 CSKIP_LOOP:
   cma_                   @ ( c' )
-  a_plus1_
+  a_plus_1_
   cmp wreg, breg         @ ( c' )
   ifnz_ CSKIP_DONE
-  y_minus1_              @ ( c' ) Y-1
+  y_sub_1_               @ ( c' ) Y-1
 CSKIP_CHECK:
   y_iszero_              @ ( c' )
   ifnz_ CSKIP_LOOP
@@ -101,7 +101,7 @@ CSKIP_DONE:
   b_r_
   a_r_
   x_                     @ ( n1 )
-  w_minus_y_             @ ( n1-n' )
+  sub_y_                 @ ( n1-n' )
   end_
 
 @ ( addr1 n1 c -- addr1 n2 )
@@ -116,15 +116,15 @@ Forthword_ CSCAN, 0, "cscan"
   d0_                  @ ( addr1 n1 n1 )
   y_w_                 @ ( addr1 n1 n1 ) Y: n1 
   x_w_                 @ ( addr1 n1 n1 ) X: n1
-  d_m1_                @ ( addr1 n1 )
+  d_sub_1_             @ ( addr1 n1 )
   goto_ CSCAN_CHECK
 
 CSCAN_LOOP:
   cma_                 @ ( addr1 c' )
-  a_plus1_
+  a_plus_1_
   cmp wreg, breg       @ ( addr1 n1 n' c' )
   ifz_ CSCAN_DONE
-  y_minus1_            @ ( addr1 c' ) Y-1
+  y_sub_1_             @ ( addr1 c' ) Y-1
 
 CSCAN_CHECK:
   y_iszero_            @ ( addr1 c' )
@@ -134,7 +134,7 @@ CSCAN_DONE:
   b_r_
   a_r_
   x_                   @ ( addr1 n1 )
-  w_minus_y_           @ ( addr1 n1-n' )
+  sub_y_               @ ( addr1 n1-n' )
   end_
 
 @ ( -- srcaddr len  )
@@ -163,13 +163,13 @@ Forthword_ PARSE, 0, "parse"
   r_w_             @ ( c ) (R: c )
   do_ SRCIN        @ ( addr len )
   d_w_             @ ( addr len len )
-  w_r_             @ ( addr len c ) (R: )
+  r_               @ ( addr len c ) (R: )
   do_ CSCAN        @ ( addr' len'' )
   # skip terminating delimeter in input buffer
-  oneplus_         @ ( addr' len''+1 )
+  plus_1_          @ ( addr' len''+1 )
   do_ RIB_PLUS_STR
   y_               @ ( addr' len''+1)
-  oneminus_        @ ( addr' len'')
+  _1_sub_          @ ( addr' len'')
   end_
 
 
@@ -188,15 +188,15 @@ forthword_ REGL, 0, "regl"
   user_ WR             @ ( xt xt WR )
   y_mw_                @ ( xt xt WR ) Y:[WR]
   d1_y_                @ ( w xt WR )
-  fourplus_            @ ( w xt RA )
+  plus_4_              @ ( w xt RA )
   a_mw_                @ ( w xt RA ) A:[RA]
-  fourplus_            @ ( w xt RB )
+  plus_4_              @ ( w xt RB )
   b_mw_                @ ( w xt RB ) B:[RB]
-  fourplus_            @ ( w xt RX )
+  plus_4_              @ ( w xt RX )
   x_mw_                @ ( w xt RX ) X:[RX]
-  fourplus_            @ ( w xt RY )
+  plus_4_              @ ( w xt RY )
   y_mw_                @ ( w xt RY ) Y:[RY]
-  w_d_                 @ ( w xt )
+  d_                   @ ( w xt )
   end_
 
 @ save registers W, A, B, X, Y
@@ -206,13 +206,13 @@ forthword_ REGS, 0, "regs"
   y_w_                 @ ( y n ) Y:n
   user_ WR             @ ( y WR )
   mw_y_                @ [WR]=n
-  fourplus_            @ ( y RA )
+  plus_4_              @ ( y RA )
   mw_a_                @ [RA]=a
-  fourplus_            @ ( y RB )
+  plus_4_              @ ( y RB )
   mw_b_                @ [RB]=b
-  fourplus_            @ ( y RX )
+  plus_4_              @ ( y RX )
   mw_x_                @ [RB]=x
-  fourplus_            @ ( y RY )
+  plus_4_              @ ( y RY )
   y_d_                 @ ( RY )
   mw_y_                @ [RY]=y
   end_
@@ -234,8 +234,8 @@ Forthword_ REC_WORD, 0, "recw"
     exit_
 
 REC_WORD_FOUND:
-  r_m2_             @ ( nfa ) (R: retaddr )
-  do_ NFATOXTF      @ ( xt flag )
+  r_sub_2_            @ ( nfa ) (R: retaddr )
+  do_ NFATOXTF        @ ( xt flag )
   @ check if compile only word
   @sbrc tosh, COMPILE_ONLY_FB
   @    rjmp CHECK_IMMEDIATE
@@ -263,7 +263,7 @@ REC_WORD_CHECKSTATE:
     d_w_               @ ( xt flag flag )
     do_ STATE          @ ( xt flag state )
     iszero_
-    w_d_               @ ( xt flag )
+    d_                 @ ( xt flag )
     ifz_ REC_WORD_EXECUTE
 .if BUILD_LEVEL >= ASM_BASE
       @ in compile mode so compile xt
@@ -289,9 +289,9 @@ Forthword_ RECX, 0, "recx"
   iszero_                 @ ( [addr len] flag )
   ifnz_ RECX_DONE
 
-.if BUILD_LEVEL > 4
+.if BUILD_LEVEL >= INT_NUMBER
   @ test if its a number
-  w_d_                   @ ( addr len )
+  d_                     @ ( addr len )
   do_ REC_NUM            @ ( [addr len] flag )
   iszero_                @ ( [addr len] flag )
   ifnz_ RECX_DONE
@@ -299,7 +299,7 @@ Forthword_ RECX, 0, "recx"
 
   @ not recognized so throw
   do_ CR                 @ ( addr len ? )
-  w_d_                   @ ( addr len )
+  d_                     @ ( addr len )
   @ print unrecognized word
   do_ TYPE               @ ( ? )
     
@@ -329,7 +329,7 @@ INTERPRET_DO:
   goto_ INTERPRET_DO
 
 INTERPRET_END:
-  w_d_                @ ( addr )
+  d_                  @ ( addr )
   end_
 
 @ ( -- )

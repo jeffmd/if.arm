@@ -116,7 +116,6 @@ CPSTART:
   .include "file.S"
   @ .include "defer.S"
   @.include "matrix_vfp.S"
-  .include "float_vfp.S"
   .include "mathtrig.S"
 .endif
 
@@ -129,6 +128,7 @@ CPSTART:
 .endif
 
 .if BUILD_LEVEL >= NUMBER_BASE
+  .include "float_vfp.S"
   .include "number.S"
 .endif
 

@@ -136,8 +136,8 @@ dsp  .req r7 @ holds the Data stack pointer
 
 @ pop value from return stack into register
 
-@ =r
-.macro w_r_
+@ r
+.macro r_
   pop {wreg}
 .endm
 
@@ -167,17 +167,17 @@ dsp  .req r7 @ holds the Data stack pointer
 .endm
 
 @ r-1
-.macro r_m1_
+.macro r_sub_1_
     add sp, #4
 .endm
 
 @ r-2
-.macro r_m2_ 
+.macro r_sub_2_
     add sp, #8
 .endm
 
 @ r-3
-.macro r_m3_ 
+.macro r_sub_3_
     add sp, #12
 .endm
 
@@ -557,17 +557,17 @@ dsp  .req r7 @ holds the Data stack pointer
 @ make room on data stack
 
 @ d+1
-.macro d_p1_ @ move stack pointer down one cell
+.macro d_plus_1_ @ move stack pointer down one cell
    subs dsp, #4
 .endm
 
 @ d+2
-.macro d_p2_ @ move stack pointer down two cells
+.macro d_plus_2_ @ move stack pointer down two cells
    subs dsp, #8
 .endm
 
 @ d+3
-.macro d_p3_ @ move stack pointer down three cells
+.macro d_plus_3_ @ move stack pointer down three cells
    subs dsp, #12
 .endm
 
@@ -575,38 +575,38 @@ dsp  .req r7 @ holds the Data stack pointer
 
 @ d=
 .macro d_w_ 
-  d_p1_
+  d_plus_1_
   d0_w_
 .endm
 
 @ d=a
 .macro d_a_ 
-  d_p1_
+  d_plus_1_
   d0_a_
 .endm
 
 @ d=b
 .macro d_b_ 
-  d_p1_
+  d_plus_1_
   d0_b_
 .endm
 
 @ d=x
 .macro d_x_ 
-  d_p1_
+  d_plus_1_
   d0_x_
 .endm
 
 @ d=y
 .macro d_y_ 
-  d_p1_
+  d_plus_1_
   d0_y_
 .endm
 
 @ pop value from data stack into register
 
-@ =d
-.macro w_d_
+@ d
+.macro d_
   ldmia dsp!, {wreg}
 .endm
 
@@ -631,17 +631,17 @@ dsp  .req r7 @ holds the Data stack pointer
 .endm
 
 @ d-1
-.macro d_m1_
+.macro d_sub_1_
   adds dsp, #4
 .endm
 
 @ d-2
-.macro d_m2_
+.macro d_sub_2_
   adds dsp, #8
 .endm
 
 @ d-3
-.macro d_m3_
+.macro d_sub_3_
   adds dsp, #12
 .endm
 
@@ -658,27 +658,27 @@ dsp  .req r7 @ holds the Data stack pointer
 @ add register to register
 
 @ +a
-.macro w_plus_a_
+.macro plus_a_
   adds wreg, areg
 .endm
 
 @ +b
-.macro w_plus_b_
+.macro plus_b_
   adds wreg, breg
 .endm
 
 @ +x
-.macro w_plus_x_
+.macro plus_x_
   adds wreg, xreg
 .endm
 
 @ +y
-.macro w_plus_y_
+.macro plus_y_
   adds wreg, yreg
 .endm
 
 @ a+
-.macro a_plus_w_
+.macro a_plus_
   adds areg, wreg
 .endm
 
@@ -698,7 +698,7 @@ dsp  .req r7 @ holds the Data stack pointer
 .endm
 
 @ b+
-.macro b_plus_w_
+.macro b_plus_
   adds breg, wreg
 .endm
 
@@ -718,7 +718,7 @@ dsp  .req r7 @ holds the Data stack pointer
 .endm
 
 @ x+
-.macro x_plus_w_
+.macro x_plus_
   adds xreg, wreg
 .endm
 
@@ -738,7 +738,7 @@ dsp  .req r7 @ holds the Data stack pointer
 .endm
 
 @ y+
-.macro y_plus_w_
+.macro y_plus_
   adds yreg, wreg
 .endm
 
@@ -757,158 +757,158 @@ dsp  .req r7 @ holds the Data stack pointer
   adds yreg, xreg
 .endm
 
-@ -=a
-.macro w_minus_a_
+@ -a
+.macro sub_a_
   subs wreg, areg
 .endm
 
-@ -=b
-.macro w_minus_b_
+@ -b
+.macro sub_b_
   subs wreg, breg
 .endm
 
-@ -=x
-.macro w_minus_x_
+@ -x
+.macro sub_x_
   subs wreg, xreg
 .endm
 
-@ -=y
-.macro w_minus_y_
+@ -y
+.macro sub_y_
   subs wreg, yreg
 .endm
 
 @ a-
-.macro a_minus_w_
+.macro a_sub_
   subs areg, wreg
 .endm
 
 @ a-b
-.macro a_minus_b_
+.macro a_sub_b_
   subs areg, breg
 .endm
 
 @ a-x
-.macro a_minus_x_
+.macro a_sub_x_
   subs areg, xreg
 .endm
 
 @ a-y
-.macro a_minus_y_
+.macro a_sub_y_
   subs areg, yreg
 .endm
 
 @ b-w
-.macro b_minus_w_
+.macro b_sub_
   subs breg, wreg
 .endm
 
 @ b-a
-.macro b_minus_a_
+.macro b_sub_a_
   subs breg, areg
 .endm
 
 @ b-x
-.macro b_minus_x_
+.macro b_sub_x_
   subs breg, xreg
 .endm
 
 @ b-y
-.macro b_minus_y_
+.macro b_sub_y_
   subs breg, yreg
 .endm
 
 @ x-
-.macro x_minus_w_
+.macro x_sub_
   subs xreg, wreg
 .endm
 
 @ x-a
-.macro x_minus_a_
+.macro x_sub_a_
   subs xreg, areg
 .endm
 
 @ x-b
-.macro x_minus_b_
+.macro x_sub_b_
   subs xreg, breg
 .endm
 
 @ x-y
-.macro x_minus_y_
+.macro x_sub_y_
   subs xreg, yreg
 .endm
 
 @ y-
-.macro y_minus_w_
+.macro y_sub_
   subs yreg, wreg
 .endm
 
 @ y-a
-.macro y_minus_a_
+.macro y_sub_a_
   subs yreg, areg
 .endm
 
 @ y-b
-.macro y_minus_b_
+.macro y_sub_b_
   subs yreg, breg
 .endm
 
 @ y-x
-.macro y_minus_x_
+.macro y_sub_x_
   subs yreg, xreg
 .endm
 
 @ &a
-.macro w_and_a_
+.macro and_a_
   ands wreg, areg
 .endm
 
 @ a&
-.macro a_and_w_
+.macro a_and_
   ands areg, wreg
 .endm
 
 @ &b
-.macro w_and_b_
+.macro and_b_
   ands wreg, breg
 .endm
 
 @ b&
-.macro b_and_w_
+.macro b_and_
   ands breg, wreg
 .endm
 
 @ &x
-.macro w_and_x_
+.macro and_x_
   ands wreg, xreg
 .endm
 
 @ x&
-.macro x_and_w_
+.macro x_and_
   ands xreg, wreg
 .endm
 
 @ &y
-.macro w_and_y_
+.macro and_y_
   ands wreg, yreg
 .endm
 
 @ y&
-.macro y_and_w_
+.macro y_and_
   ands yreg, wreg
 .endm
 
 @ |a
-.macro w_or_a_
+.macro or_a_
   orrs wreg, areg
 .endm
 
 @ a|
-.macro a_or_w_
+.macro a_or_
   orrs areg, wreg
 .endm
 
 @ |b
-.macro w_or_b_
+.macro or_b_
   orrs wreg, breg
 .endm
 
@@ -918,62 +918,62 @@ dsp  .req r7 @ holds the Data stack pointer
 .endm
 
 @ |x
-.macro w_or_x_
+.macro or_x_
   orrs wreg, xreg
 .endm
 
 @ x|
-.macro x_or_w_
+.macro x_or_
   orrs xreg, wreg
 .endm
 
 @ |y
-.macro w_or_y_
+.macro or_y_
   orrs wreg, yreg
 .endm
 
 @ y|
-.macro y_or_w_
+.macro y_or_
   orrs yreg, wreg
 .endm
 
 @ ^a
-.macro w_xor_a_
+.macro xor_a_
   eors wreg, areg
 .endm
 
 @ a^
-.macro a_xor_w_
+.macro a_xor_
   eors areg, wreg
 .endm
 
 @ ^b
-.macro w_xor_b_
+.macro xor_b_
   eors wreg, breg
 .endm
 
 @ b^
-.macro b_xor_w_
+.macro b_xor_
   eors breg, wreg
 .endm
 
 @ ^x
-.macro w_xor_x_
+.macro xor_x_
   eors wreg, xreg
 .endm
 
 @ x^
-.macro x_xor_w_
+.macro x_xor_
   eors xreg, wreg
 .endm
 
 @ ^y
-.macro w_xor_y_
+.macro xor_y_
   eors wreg, yreg
 .endm
 
 @ y^
-.macro y_xor_w_
+.macro y_xor_
   eors yreg, wreg
 .endm
 
@@ -1027,173 +1027,173 @@ dsp  .req r7 @ holds the Data stack pointer
     rsbs yreg, yreg, #0
 .endm
 
-@ 1+ 
-.macro oneplus_
+@ +1
+.macro plus_1_
   adds wreg, #1
 .endm
 
 @ 1-
-.macro oneminus_
+.macro _1_sub_
   subs wreg, #1
 .endm
 
-@ 2+
-.macro twoplus_
+@ +2
+.macro plus_2_
   adds wreg, #2
 .endm
 
-@ 4+
-.macro fourplus_
+@ +4
+.macro plus_4_
   adds wreg, #4
 .endm
 
 @ 2-
-.macro twominus_
+.macro _2_sub_
   subs wreg, #2
 .endm
 
 @ 4-
-.macro fourminus_
+.macro _4_sub_
   subs wreg, #4
 .endm
 
-@ 2/
-.macro twoslash_
+@ /2
+.macro div_2_
     asrs wreg, #1
 .endm
 
-@ 4/
-.macro fourslash_
+@ /4
+.macro div_4_
     asrs wreg, #2
 .endm
 
-@ 2*
-.macro twostar_
+@ *2
+.macro mul_2_
     lsls wreg, #1
 .endm
 
-@ 4*
-.macro fourstar_
+@ *4
+.macro mul_4_
     lsls wreg, #2
 .endm
 
 @ x/2
-.macro x_twoslash_
+.macro x_div_2_
   asrs xreg, #1
 .endm
 
 @ x/4
-.macro x_fourslash_
+.macro x_div_4_
   asrs xreg, #2
 .endm
 
 @ x*2
-.macro x_twostar_
+.macro x_mul_2_
   lsls xreg, #1
 .endm
 
 @ x*4
-.macro x_fourstar_
+.macro x_mul_4_
   lsls xreg, #2
 .endm
 
 @ y/2
-.macro y_twoslash_
+.macro y_div_2_
   asrs yreg, #1
 .endm
 
 @ y/4
-.macro y_fourslash_
+.macro y_div_4_
   asrs yreg, #2
 .endm
 
 @ y*2
-.macro y_twostar_
+.macro y_mul_2_
   lsls yreg, #1
 .endm
 
 @ y*4
-.macro y_fourstar_
+.macro y_mul_4_
   lsls yreg, #2
 .endm
 
 @ a/2
-.macro a_twoslash_
+.macro a_div_2_
   asrs areg, #1
 .endm
 
 @ a/4
-.macro a_fourslash_
+.macro a_div_4_
   asrs areg, #2
 .endm
 
 @ a*2
-.macro a_twostar_
+.macro a_mul_2_
   lsls areg, #1
 .endm
 
 @ a*4
-.macro a_fourstar_
+.macro a_mul_4_
   lsls areg, #2
 .endm
 
 @ b/2
-.macro b_twoslash_
+.macro b_div_2_
   asrs breg, #1
 .endm
 
 @ b/4
-.macro b_fourslash_
+.macro b_div_4_
   asrs breg, #2
 .endm
 
 @ b*2
-.macro b_twostar_
+.macro b_mul_2_
   lsls breg, #1
 .endm
 
 @ b*4
-.macro b_fourstar_
+.macro b_mul_4_
   lsls breg, #2
 .endm
 
 @ *x
-.macro w_mul_x_
+.macro mul_x_
   muls wreg, xreg
 .endm
 
 @ *y
-.macro w_mul_y_
+.macro mul_y_
   muls wreg, yreg
 .endm
 
 @ *a
-.macro w_mul_a_
+.macro mul_a_
   muls wreg, areg
 .endm
 
 @ *b
-.macro w_mul_b_
+.macro mul_b_
   muls wreg, breg
 .endm
 
 @ x*
-.macro x_mul_w_
+.macro x_mul_
   muls xreg, wreg
 .endm
 
 @ y*
-.macro y_mul_w_
+.macro y_mul_
   muls yreg, wreg
 .endm
 
 @ a*
-.macro a_mul_w_
+.macro a_mul_
   muls areg, wreg
 .endm
 
 @ b*
-.macro b_mul_w_
+.macro b_mul_
   muls breg, wreg
 .endm
 
@@ -1571,132 +1571,132 @@ dsp  .req r7 @ holds the Data stack pointer
 @ add 4 to register
 
 @ a+4
-.macro a_plus4_
+.macro a_plus_4_
   adds areg, #4
 .endm
 
 @ b+4
-.macro b_plus4_
+.macro b_plus_4_
   adds breg, #4
 .endm
 
 @ x+4
-.macro x_plus4_
+.macro x_plus_4_
   adds xreg, #4
 .endm
 
 @ y+4
-.macro y_plus4_
+.macro y_plus_4_
   adds yreg, #4
 .endm
 
 @ subtract 4 from register
 
 @ a-4
-.macro a_minus4_
+.macro a_sub_4_
   subs areg, #4
 .endm
 
 @ b-4
-.macro b_minus4_
+.macro b_sub_4_
   subs breg, #4
 .endm
 
 @ x-4
-.macro x_minus4_
+.macro x_sub_4_
   subs xreg, #4
 .endm
 
 @ y-4
-.macro y_minus4_
+.macro y_sub_4_
   subs yreg, #4
 .endm
 
 @ add 2 to register
 
 @ a+2
-.macro a_plus2_
+.macro a_plus_2_
   adds areg, #2
 .endm
 
 @ b+2
-.macro b_plus2_
+.macro b_plus_2_
   adds breg, #2
 .endm
 
 @ x+2
-.macro x_plus2_
+.macro x_plus_2_
   adds xreg, #2
 .endm
 
 @ y+2
-.macro y_plus2_
+.macro y_plus_2_
   adds yreg, #2
 .endm
 
 @ subtract 2 from register
 
 @ a-2
-.macro a_minus2_
+.macro a_sub_2_
   subs areg, #2
 .endm
 
 @ b-2
-.macro b_minus2_
+.macro b_sub_2_
   subs breg, #2
 .endm
 
 @ x-2
-.macro x_minus2_
+.macro x_sub_2_
   subs xreg, #2
 .endm
 
 @ y-2
-.macro y_minus2_
+.macro y_sub_2_
   subs yreg, #2
 .endm
 
 @ add 1 to register
 
 @ a+1
-.macro a_plus1_
+.macro a_plus_1_
   adds areg, #1
 .endm
 
 @ b+1
-.macro b_plus1_
+.macro b_plus_1_
   adds breg, #1
 .endm
 
 @ x+1
-.macro x_plus1_
+.macro x_plus_1_
   adds xreg, #1
 .endm
 
 @ y+1
-.macro y_plus1_
+.macro y_plus_1_
   adds yreg, #1
 .endm
 
 @ subtract 1 from register
 
 @ a-1
-.macro a_minus1_
+.macro a_sub_1_
   subs areg, #1
 .endm
 
 @ b-1
-.macro b_minus1_
+.macro b_sub_1_
   subs breg, #1
 .endm
 
 @ x-1
-.macro x_minus1_
+.macro x_sub_1_
   subs xreg, #1
 .endm
 
 @ y-1
-.macro y_minus1_
+.macro y_sub_1_
   subs yreg, #1
 .endm
 

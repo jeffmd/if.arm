@@ -20,7 +20,7 @@ Forthword_ WIB_STR, 0, "wib="
 Forthword_ WIB_DEC, 0, "wib--"
   user_ ram_wib
   y_hmw_
-  y_minus1_
+  y_sub_1_
   hmw_y_
   end_
 
@@ -29,7 +29,7 @@ Forthword_ WIB_DEC, 0, "wib--"
 Forthword_ WIB_INC, 0, "wib++"
   user_ ram_wib
   y_hmw_
-  y_plus1_
+  y_plus_1_
   hmw_y_
   end_
 
@@ -74,9 +74,9 @@ Forthword_ TIB_STR, 0, "tib="
   do_ STIB             @ ( k tibaddr wib )
   y_d0_                @ ( k tibaddr wib ) Y:tibaddr
   x_d1_                @ ( k tibaddr wib ) X:k
-  w_plus_y_            @ ( k tibaddr tibaddr+wib )
+  plus_y_              @ ( k tibaddr tibaddr+wib )
   cmw_x_               @ ( k tibaddr tibaddr+wib )
-  d_m2_                @ ( tibaddr+wib )
+  d_sub_2_             @ ( tibaddr+wib )
 
   end_do_ WIB_INC      @ ( #tibaddr )
   
@@ -123,7 +123,7 @@ Forthword_ ACCEPT, 0, "accept"
   do_ KEY        @ ( k )
   iszero_
   bgt.n ACCEPT_checkeol
-  oneplus_
+  plus_1_
   exit_
 
 ACCEPT_checkeol:
@@ -151,7 +151,7 @@ ACCEPT_checkdelete:
   do_ WIB             @ ( k wib )
   @ <if>
   iszero_             @ ( k wib )
-  w_d_                @ ( k )
+  d_                  @ ( k )
   ifnz_ ACCEPT_dodelete
   @ at the beginning of the line, ignore this character
   zero_
@@ -164,7 +164,7 @@ ACCEPT_dodelete:
   do_ EMIT            @ ( k ? )
   bl_                 @ ( k bl )
   do_ EMIT            @ ( k ? )
-  w_d_                @ ( k )
+  d_                  @ ( k )
   do_ EMIT            @ ( ? )
   @ decrease cursor position by one
   do_ WIB_DEC         @ ( #tibaddr )
@@ -189,7 +189,7 @@ ACCEPT_checkmaxinput:
   do_ WIB              @ ( wib )
   y_w_                 @ ( wib Y:wib )
   lit_ TIBSIZE         @ ( tibsize )
-  w_minus_y_           @ ( tibsize-wib )
+  sub_y_               @ ( tibsize-wib )
   @ <if>
   iszero_              @ ( tibsize-#tib )
   ifz_ ACCEPT_atmaxinput
@@ -209,7 +209,7 @@ Forthword_ REFILLTIB, 0, "reftib"
     ifz_ REFILLTIB_exit
     d_w_
     do_ CR
-    w_d_
+    d_
     
 REFILLTIB_exit:
     end_

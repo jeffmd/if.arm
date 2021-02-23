@@ -1,4 +1,4 @@
-@ floatvfp.S - math functions for floating point values using vfpv2
+@ float_vfp.S - math functions for floating point values using vfpv2
 
 .syntax unified
 
@@ -39,12 +39,12 @@ Forthword_ FPSCR, 0, "fpscr"
 Forthword_ VFP_LEN_SET, 0, "vfplen="
   thumb_arm_
   lit_x_ 0b111
-  w_and_x_
+  and_x_
   y_w_
   mvn xreg, xreg, lsl #16
   vmrs r0, fpscr
-  w_and_x_
-  w_or_y_
+  and_x_
+  or_y_
   vmsr fpscr, r0
   end_
 
@@ -188,7 +188,7 @@ Forthword_ VLTEST, 0, "vltest"
   thumb_arm_
 VLT:
   vldm wreg, {s0-s3}
-  x_minus1_
+  x_sub_1_
   bne VLT 
   end_
 
@@ -200,7 +200,7 @@ SLT:
   vldr s1, [wreg, #4]
   vldr s2, [wreg, #8]
   vldr s3, [wreg, #12]
-  x_minus1_
+  x_sub_1_
   bne SLT 
   end_
 
@@ -209,7 +209,7 @@ Forthword_ VSTEST, 0, "vstest"
   thumb_arm_
 VST:
   vstmia wreg, {s0-s3}
-  x_minus1_
+  x_sub_1_
   bne VLT 
   end_
 
@@ -221,7 +221,7 @@ SST:
   vstr s1, [wreg, #4]
   vstr s2, [wreg, #8]
   vstr s3, [wreg, #12]
-  x_minus1_
+  x_sub_1_
   bne SLT 
   end_
 
@@ -249,7 +249,7 @@ VATL:
   vldr s0, [wreg, #16]
   vldm wreg, {s8-s11}
   vmla.f32 s12, s8, s0
-  x_minus1_
+  x_sub_1_
   bne VATL 
 
   vstr s0, [wreg]
@@ -276,7 +276,7 @@ VAT2L:
   vmla.f32 s16, s8, s0
   vldm wreg, {s12-s15}
   vmla.f32 s20, s12, s0
-  x_minus1_
+  x_sub_1_
   bne VAT2L 
 
   vstr s0, [wreg]
@@ -301,7 +301,7 @@ SADDT:
   vmla.f32 s5, s9, s0
   vmla.f32 s6, s10, s0
   vmla.f32 s7, s11, s0
-  x_minus1_
+  x_sub_1_
   bne SADDT 
 
   end_
@@ -329,7 +329,7 @@ SADDT2:
   vmla.f32 s21, s17, s0
   vmla.f32 s22, s18, s0
   vmla.f32 s23, s19, s0
-  x_minus1_
+  x_sub_1_
   bne SADDT2 
 
   end_
@@ -348,7 +348,7 @@ LSADDT:
   vmla.f32 s21, s13, s0
   vmla.f32 s22, s14, s0
   vmla.f32 s23, s15, s0
-  x_minus1_
+  x_sub_1_
   @vstr s16, [wreg]
   @vstr s17, [wreg, #4]
   @vstr s18, [wreg, #8]
@@ -373,7 +373,7 @@ ADT:
   vadd.f32 s4, s1, s0
   vadd.f32 s5, s2, s3
   vadd.f32 s6, s4, s5
-  x_minus1_
+  x_sub_1_
   bne ADT 
 
   vstr s0, [wreg]

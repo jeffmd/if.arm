@@ -37,7 +37,7 @@
 \ copy the first character of the next word onto the stack
 : char  ( "<spaces>name" -- c )
   pname
-  =d
+  d
   c@
 ;
 
@@ -56,7 +56,7 @@
   \ change call at XT to code after (does>)
   \ code at XT is 'bl POPRET'
   \ want to change POPRET address to return address
-  =r                        ( retaddr )
+  r                         ( retaddr )
   \ remove thumb flag - will be using for memory access
   1- d=                     ( retaddr-1 retaddr-1 )
   \ get address of bl POPRET
@@ -68,14 +68,14 @@
   \  skip over push {lr}    
   d0 icell+                 ( retaddr xt xt+2 )
   \ set cp to xt+2
-  cp= =d icell+             ( retaddr xt+2 )
+  cp= d icell+              ( retaddr xt+2 )
   \ modify the bl
   \ calc displacement
   reldst                    ( dst )
   \ compile a bl instruction
   do,                       ( ? )
   \ restore cp
-  =r cp=                    ( ? ) ( R: )
+  r cp=                     ( ? ) ( R: )
 ;
 
 \ organize the XT replacement to call other colon code
@@ -109,8 +109,8 @@
 ;
 
 \ place marker for destination of backward branch
-: markb ( -- dest )
-  cp d=            ( dest )
+: markb ( -- dest dest )
+  cp d=            ( dest dest )
 ;
 
 \ resolve jump backwards
@@ -234,8 +234,7 @@
 ( x -- ) ( C: x "<spaces>name" -- )
 \ create a constant in the dictionary
 : con:
-  d= rword
-  =d
+  d= rword d
   #,
   _bxlr ,
   clrcache
@@ -262,7 +261,7 @@
 ;
 
 : }struct:
-  =d con:
+  d con:
 ;
 
 : field:
@@ -300,7 +299,7 @@
 \ String
 \ compiles a string to program RAM
 : slit
-  d= word:, (slit) =d     ( addr n)
+  d= word:, (slit) d     ( addr n)
   s,
 ; immediate
 
@@ -311,7 +310,7 @@
 \ at runtime leaves ( -- ram-addr count) on stack
 : s"
   [char] " parse        ( addr n)
-  d= state ==0 =d
+  d= state ==0 d
   ifnz  \ skip if not in compile mode
     [compile] slit
   then
@@ -324,7 +323,7 @@
 \ dictionary to be printed at runtime
 : ."
    [compile] s"             \ "
-   d= state ==0 =d
+   d= state ==0 d
    ifnz
      word:, type
    else

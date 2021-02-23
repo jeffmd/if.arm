@@ -4,7 +4,7 @@
 @ get string address and length information out of a counted string
 Forthword_ STRINGLEN, 0, "$l"
   x_w_        @ ( addr ) X: addr
-  twoplus_    @ ( addr+2 )
+  plus_2_     @ ( addr+2 )
   d_w_        @ ( addr+2 addr+2 )
   hmx_        @ ( addr+2 len )
   end_
@@ -17,10 +17,10 @@ Forthword_ SLASHSTRING, 0, "/$"
   do_ MIN       @ ( addr1 u1 n|u1 )
   y_w_          @ ( addr1 u1 n ) Y: n
   d1_           @ ( addr1 u1 addr1 )
-  w_plus_y_     @ ( addr1 u1 addr2 )
+  plus_y_       @ ( addr1 u1 addr2 )
   d1_w_         @ ( addr2 u1 addr2 )
-  w_d_          @ ( addr2 u1 )
-  w_minus_y_    @ ( addr2 u2 )
+  d_            @ ( addr2 u1 )
+  sub_y_        @ ( addr2 u2 )
   end_
 
 @ ( -- addr len )
@@ -34,17 +34,16 @@ Forthword_ DOSLIT, 0, "(slit)"
   push_lr_
   y_r0_          @ ( Y:raddr )  (R: raddr -- )
   @ get the string length
-  y_minus1_      @ account for odd address number because using thumb instructions
+  y_sub_1_       @ account for odd address number because using thumb instructions
   hmy_           @ ( slength Y:raddr )
   @ calculate string address
-  y_plus2_       @ ( slength Y:straddr )
+  y_plus_2_      @ ( slength Y:straddr )
   @ calculate the number of words to skip over for return address
   d_y_           @ ( straddr slength )
   d_w_           @ ( straddr slength slength)
   bl HALIGN      @ ( straddr slength k )
-  y_plus_w_      @ ( straddr slength k Y:raddr+k )
-  w_d_           @ ( straddr slength )
-  y_plus1_       @ make sure return address is odd
+  y_plus_        @ ( straddr slength k Y:raddr+k )
+  d_             @ ( straddr slength )
+  y_plus_1_      @ make sure return address is odd
   r0_y_          @ ( straddr slength ) (R: straddr+k )
   end_
-

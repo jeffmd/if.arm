@@ -37,16 +37,16 @@ Forthword_ Y_D0, INLINE_OPT, "y=d0"
   end_
 
 @ ( n1 n2 -- n2)
-@ drop NOS, one before wreg.
-Forthword_ D_M1, INLINE_OPT, "d-1"
-  d_m1_
+@ drop top cell on stack.
+Forthword_ D_SUB_1, INLINE_OPT, "d-1"
+  d_sub_1_
   end_
 
 @ ( n1 n2 -- n1)
 @   d0 WR    WR
 @ pop top of data stack into WR
-Forthword_ W_D, INLINE_OPT, "=d"
-  w_d_
+Forthword_ W_D, INLINE_OPT, "d"
+  d_
   end_
 
 @ ( ? DSP:addr -- addr DSP:addr )
@@ -60,8 +60,8 @@ Forthword_ DSP, INLINE_OPT, "dsp"
 
 @ ( n1 -- n2 ) (R: n2 --)
 @ pop top of return stack into WR
-Forthword_ W_R, INLINE_OPT, "=r"
-  w_r_
+Forthword_ W_R, INLINE_OPT, "r"
+  r_
   end_
 
 @ ( n -- n ) (R: -- n )
@@ -82,165 +82,165 @@ Forthword_ R0PLUS, INLINE_OPT, "r0+"
 
 @ ( n1 -- n1+y )
 @ w = w + y
-Forthword_ W_PLUS_Y, INLINE_OPT, "+y"
-  w_plus_y_
+Forthword_ PLUS_Y, INLINE_OPT, "+y"
+  plus_y_
   end_
 
 @ ( n1 -- n1+x )
 @ w = w + x
-Forthword_ W_PLUS_X, INLINE_OPT, "+x"
-  w_plus_x_
+Forthword_ PLUS_X, INLINE_OPT, "+x"
+  plus_x_
   end_
 
 @ ( n1|u1 -- n1-y|u1-y )
 @ w = w - y
-Forthword_ W_MINUS_Y, INLINE_OPT, "-y"
-  w_minus_y_
+Forthword_ SUB_Y, INLINE_OPT, "-y"
+  sub_y_
   end_
 
 @ ( n1|u1 -- n1-x|u1-x )
 @ w = w - x
-Forthword_ W_MINUS_X, INLINE_OPT, "-x"
-  w_minus_x_
+Forthword_ SUB_X, INLINE_OPT, "-x"
+  sub_x_
   end_
 
 @ ( n1 -- n1 and Y )
 @ w = w and y
-Forthword_ W_AND_Y, INLINE_OPT, "&y"
-  w_and_y_
+Forthword_ AND_Y, INLINE_OPT, "&y"
+  and_y_
   end_
 
 @ ( n1 -- n1 and X )
 @ w = w and x
-Forthword_ W_AND_X, INLINE_OPT, "&x"
-  w_and_x_
+Forthword_ AND_X, INLINE_OPT, "&x"
+  and_x_
   end_
 
 @ ( n1 -- n1.or.Y )
 @ w = w or y
-Forthword_ W_OR_Y, INLINE_OPT, "|y"
-  w_or_y_
+Forthword_ OR_Y, INLINE_OPT, "|y"
+  or_y_
   end_
 
 @ ( n1 -- n1.or.X )
 @ w = w or x
-Forthword_ W_OR_X, INLINE_OPT, "|x"
-  w_or_x_
+Forthword_ OR_X, INLINE_OPT, "|x"
+  or_x_
   end_
 
 @ ( n1 n2 -- flag)
 @ flag is true if n1 is not equal to n2
 Forthword_ NOTEQUAL, INLINE_OPT, "!="
   y_d_
-  w_xor_y_
+  xor_y_
   end_
 
 @ ( n1 -- n1+1 ) 
 @ optimized increment
-Forthword_ ONEPLUS, INLINE_OPT, "+1"
-  oneplus_
+Forthword_ PLUS_1, INLINE_OPT, "+1"
+  plus_1_
   end_
 
 @ ( n1 -- n1-1 )
 @ optimized decrement
-Forthword_ ONEMINUS, INLINE_OPT, "1-"
-  oneminus_
+Forthword_ _1_SUB, INLINE_OPT, "1-"
+  _1_sub_
   end_
 
 @ ( n1 -- n1-2 )
 @ optimized decrement
-Forthword_ TWOMINUS, INLINE_OPT, "2-"
-  twominus_
+Forthword_ _2_SUB, INLINE_OPT, "2-"
+  _2_sub_
   end_
 
 @ ( n1 -- n1+2 )
 @ optimized decrement
-Forthword_ TWOPLUS, INLINE_OPT, "+2"
-  twoplus_
+Forthword_ PLUS_2, INLINE_OPT, "+2"
+  plus_2_
   end_
 
 @ ( n1 -- n1-4 )
 @ optimized decrement
-Forthword_ FOURMINUS, INLINE_OPT, "4-"
-  fourminus_
+Forthword_ _4_SUB, INLINE_OPT, "4-"
+  _4_sub_
   end_
 
 @ ( n1 -- n1+4 )
 @ optimized decrement
-Forthword_ FOURPLUS, INLINE_OPT, "+4"
-  fourplus_
+Forthword_ PLUS_4, INLINE_OPT, "+4"
+  plus_4_
   end_
 
 @ ( n1 -- n1/2 )
 @ optimized divide by 2
-Forthword_ TWOSLASH, INLINE_OPT, "/2"
-  twoslash_
+Forthword_ DIV_2, INLINE_OPT, "/2"
+  div_2_
   end_
 
 @ ( n1 -- n1*2 )
 @ optimized 2 multiply
-Forthword_ TWOSTAR, INLINE_OPT, "*2"
-  twostar_
+Forthword_ MUL_2, INLINE_OPT, "*2"
+  mul_2_
   end_
 
 @ ( n1 -- n1/4 )
 @ optimized divide by 4
-Forthword_ FOURSLASH, INLINE_OPT, "/4"
-  fourslash_
+Forthword_ DIV_4, INLINE_OPT, "/4"
+  div_4_
   end_
 
 @ ( n1 -- n*4 )
 @ optimized four multiply
-Forthword_ FOURSTAR, INLINE_OPT, "*4"
-  fourstar_
+Forthword_ MUL_4, INLINE_OPT, "*4"
+  mul_4_
   end_
 
 @ ( X:n1 -- X:n1/2 )
 @ optimized X divide by 2
-Forthword_ XTWOSLASH, INLINE_OPT, "x/2"
-  x_twoslash_
+Forthword_ X_DIV_2, INLINE_OPT, "x/2"
+  x_div_2_
   end_
 
 @ ( X:n1 -- X:n1*2 )
 @ optimized X 2 multiply
-Forthword_ XTWOSTAR, INLINE_OPT, "x*2"
-  x_twostar_
+Forthword_ X_MUL_2, INLINE_OPT, "x*2"
+  x_mul_2_
   end_
 
 @ ( X:n1 -- X:n1/4 )
 @ optimized X divide by 4
-Forthword_ XFOURSLASH, INLINE_OPT, "x/4"
-  x_fourslash_
+Forthword_ X_DIV_4, INLINE_OPT, "x/4"
+  x_div_4_
   end_
 
 @ ( X:n1 -- X:n*4 )
 @ optimized x four multiply
-Forthword_ XFOURSTAR, INLINE_OPT, "x*4"
-  x_fourstar_
+Forthword_ X_MUL_4, INLINE_OPT, "x*4"
+  x_mul_4_
   end_
 
 @ ( Y:n1 -- Y:n1/2 )
 @ optimized y divide by 2
-Forthword_ YTWOSLASH, INLINE_OPT, "y/2"
-  y_twoslash_
+Forthword_ Y_DIV_2, INLINE_OPT, "y/2"
+  y_div_2_
   end_
 
 @ ( Y:n1 -- Y:n1*2 )
 @ optimized y 2 multiply
-Forthword_ YTWOSTAR, INLINE_OPT, "y*2"
-  y_twostar_
+Forthword_ Y_MUL_2, INLINE_OPT, "y*2"
+  y_mul_2_
   end_
 
 @ ( Y:n1 -- Y:n1/4 )
 @ optimized y divide by 4
-Forthword_ YFOURSLASH, INLINE_OPT, "y/4"
-  y_fourslash_
+Forthword_ Y_DIV_4, INLINE_OPT, "y/4"
+  y_div_4_
   end_
 
 @ ( Y:n1 -- Y:n*4 )
 @ optimized y four multiply
-Forthword_ YFOURSTAR, INLINE_OPT, "y*4"
-  y_fourstar_
+Forthword_ Y_MUL_4, INLINE_OPT, "y*4"
+  y_mul_4_
   end_
 
 @ ( -- 0 ) 

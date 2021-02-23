@@ -20,9 +20,9 @@ Forthword_ KEYFILE, 0, "keyfile"
   do_ read               @ ( key count ) 
   @ was one key read from the file?
   cmp wreg, #1
-  w_d_                   @ ( key )
+  d_                     @ ( key )
   ifz_ KEYEND
-    oneminus_
+    _1_sub_
     exit_do_ BYE  
 
  KEYEND:
@@ -66,7 +66,7 @@ Forthword_ DOINCLUDE, 0, "(include)"
   x_w_
   mw_                  @ ( filedes KEYFILE ) (R: itime fflags KEY)
   r_w_                 @ ( filedes KEYFILE ) (R: itime fflags KEY KEYFILE)
-  w_d_                 @ ( filedes )
+  d_                   @ ( filedes )
   mx_w_                @ ( filedes )
 
 
@@ -92,11 +92,11 @@ Forthword_ DOINCLUDE, 0, "(include)"
   y_r_                 @ ( KEYADDR Y:fflags ) ( R: itime )
   do_ FFLAGS           @ ( FFLAGS )
   hmw_y_               @ ( FFLAGS )
-  w_r_                 @ ( itime ) ( R: )
+  r_                   @ ( itime ) ( R: )
   exit_do_ IDLETIME_STR
        
 DOINCLUDE_EXIT:
-  w_d_                 @ ( filedes )
+  d_                   @ ( filedes )
   type_ "File not found!"
   end_
 
@@ -108,7 +108,7 @@ Forthword_ INCLUDEF, 0, "include"
   @ add null to end of string
   y_d0_         @ ( addr len ) Y: addr
   x_0_
-  w_plus_y_     @ ( addr addr' )
+  plus_y_       @ ( addr addr' )
   cmw_x_        @ ( addr addr' )
-  w_d_          @ ( addr )
+  d_            @ ( addr )
   end_do_ DOINCLUDE

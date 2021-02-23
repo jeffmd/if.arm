@@ -79,7 +79,7 @@ Forthword_ DECPNTPLUS, 0, "decpnt+"
   mw_
   iszero_
   ifz_ DECPNTPLUS_END
-    w_mul_y_
+    mul_y_
     mx_w_
 
 DECPNTPLUS_END:
@@ -101,7 +101,7 @@ DECPNTCHK_END:
 Forthword_ ITOF, 0, "itof"
   do_ WIF
   x_w_
-  w_d_
+  d_
   do_ WIF
   do_ FDIV  
   end_
@@ -118,7 +118,7 @@ Forthword_ ITOF_CHK, 0, "itof?"
     exit_
 
 DECPNTF_END:
-  w_d_
+  d_
   end_
 
 @ ( c -- (number|) flag )
@@ -142,7 +142,7 @@ DIGITQ0:
   iszero_
   ifz_ PFA_DIGITQ_DONE
   zero_               @ ( n 0 )
-  d_m1_               @ ( 0 )
+  d_sub_1_            @ ( 0 )
   exit_
 
 PFA_DIGITQ_DONE:
@@ -193,7 +193,7 @@ forthword_ PRAEFIX, 0, "praefix"
   cmp wreg, #0x30
   blo.n PFA_PRAEFIX0
   @ no praefix
-  w_d_             @ ( addr len )
+  d_               @ ( addr len )
   exit_
 
 PFA_PRAEFIX0:
@@ -218,7 +218,7 @@ NUMBERSIGN_HASSIGN:
   lit_ 1           @ ( addr len 1 )
   do_ SLASHSTRING  @ ( addr len )
   d_w_             @ ( addr len len )
-  w_r_             @ ( addr len char ) (R: retaddr )
+  r_               @ ( addr len char ) (R: retaddr )
   end_
 
 @ ( u1 c-addr1 len1 -- u2 c-addr2 len2 )
@@ -236,7 +236,7 @@ TO_NUMBER_AGAIN:
     ifz_ TO_NUMBER_CONT
     do_ DIGITQ           @ ( u adr len digit flag)
     iszero_
-    w_d_                 @ ( u adr len [digit] )
+    d_                   @ ( u adr len [digit] )
     ifnz_ TO_NUMBER_CONV
       @ character is not a recognized number
       exit_
@@ -245,8 +245,8 @@ TO_NUMBER_CONV:
   y_d2_                  @ ( u adr len digit ) Y: u
   x_w_                   @ ( u adr len digit ) X: digit
   do_ BASEFETCH          @ ( u adr len base)
-  w_mul_y_               @ ( u adr len u*base )
-  w_plus_x_              @ ( u adr len u'' )
+  mul_y_                 @ ( u adr len u*base )
+  plus_x_                @ ( u adr len u'' )
   d2_w_                  @ ( u'' adr len u'' )
   do_ DECPNTPLUS
 
@@ -266,14 +266,14 @@ Forthword_ NUMBER, 0, "num"
   do_ DECPNT_CLR
   do_ BASEFETCH           @ ( addr len base )
   r_w_                    @ ( addr len base ) (R: base)
-  w_d_                    @ ( addr len )
+  d_                      @ ( addr len )
   do_ NUMBERSIGN          @ ( addr len flag )
   r_w_                    @ ( addr len flag ) (R: base flagsign)
-  w_d_                    @ ( addr len )
+  d_                      @ ( addr len )
   do_ PRAEFIX             @ ( addr' len' )
   do_ NUMBERSIGN          @ ( addr len flagsign2 )
   y_r0_                   @ ( addr len flagsign2 Y:flagsign ) (R: base flagsign)
-  w_or_y_                 @ ( addr len flagsign' )
+  or_y_                   @ ( addr len flagsign' )
   r0_w_                   @ ( addr len flagsign' ) (R: base flagsign')
   x_d0_                   @ ( addr len flagsign' ) X: len
   y_d1_                   @ ( addr len flagsign' ) Y: addr
@@ -285,18 +285,18 @@ Forthword_ NUMBER, 0, "num"
   @ check length of the remaining string.
   @ if zero: a single cell number is entered
   iszero_
-  w_d_                    @ ( n addr' )
+  d_                      @ ( n addr' )
   ifz_ PFA_NUMBER_SIGN
 
   @ error in string to number conversion
-  d_m1_                   @ ( addr' )  (R: base flagsign' )
-  r_m1_                   @ ( addr' ) (R: base )
+  d_sub_1_                @ ( addr' )  (R: base flagsign' )
+  r_sub_1_                @ ( addr' ) (R: base )
   zero_                   @ ( 0 ) (R: base )
   goto_ PFA_NUMBER_DONE
 
 PFA_NUMBER_SIGN:
   @ incorporate sign into number
-  w_r_                    @ ( n flagsign' ) (R: base )
+  r_                      @ ( n flagsign' ) (R: base )
   iszero_
   ifz_ PFA_NUMBER_TRUE
   d0_                     @ ( n n )
@@ -311,7 +311,7 @@ PFA_NUMBER_TRUE:
 
 PFA_NUMBER_DONE:
   d_w_                    @ ( n flag flag )
-  w_r_                    @ ( n flag base ) (R: )
+  r_                      @ ( n flag base ) (R: )
   do_ BASESTORE           @ ( n flag ? )
-  w_d_                    @ ( n flag )
+  d_                      @ ( n flag )
   end_

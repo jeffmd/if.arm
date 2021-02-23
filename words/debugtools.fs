@@ -15,7 +15,7 @@ only
     d1 @ .$
     d1 dcell+ d1=
   repeat
-  d-1 =d
+  d-1 d
 ;
 
 \ print the contents at ram word addr
@@ -87,7 +87,7 @@ var: fence#
     d=              ( nfa nfa)
     d= fence        ( nfa nfa fence )
     > ==0           ( nfa nfa>fence )
-    =d              ( nfa )
+    d               ( nfa )
     ifnz
       \ nfa is valid
       \ set dp to nfa
@@ -96,9 +96,9 @@ var: fence#
       y d=y nfa>lfa ( nfa lfa )
       @             ( nfa wid )
       current+      ( nfa wlid )
-      =d            ( nfa )
+      d             ( nfa )
       \ set cp to xt
-      nfa>xtf =d    ( xt )
+      nfa>xtf d     ( xt )
       cp=           ( cp# Y:xt )
     else
       ." can't forget, word behind fence" cr
@@ -122,11 +122,11 @@ fence= forget
   here d=            ( wid nfa dp here here )
   create             ( wid nfa dp here ? )
   \ save here, cp, dp, current wid, current word list
-  =d d, \ here
-  =d d, \ cp
-  =d d, \ dp
-  =d d, \ wid
-  =d d, \ wlid
+  d d, \ here
+  d d, \ cp
+  d d, \ dp
+  d d, \ wid
+  d d, \ wlid
 
   does> ( addr )
     \ restore here

@@ -13,11 +13,11 @@ Forthword_ OPRSRD, 0, "_oprsrd"
   movs tmp1, #0x7
   ands yreg, tmp1  @ ( Rd op000000 Y:00000xxx )
   lsls yreg, #3    @ ( Rd op000000 Y:00xxx000 )
-  w_or_y_          @ ( Rd opxxx000 ) 
+  or_y_            @ ( Rd opxxx000 ) 
   x_d_             @ ( opxxx000 X:Rd )
   movs tmp1, #0x7
   ands xreg, tmp1  @ ( opxxx000 X:00000xxx )
-  w_or_x_          @ ( opRsRd ) 
+  or_x_            @ ( opRsRd ) 
   end_
 
 @ ( Rd Rs val5 op -- )
@@ -30,7 +30,7 @@ Forthword_ OPV5RSRD, 0, "_opv5rsrd"
   movs tmp1, #31
   ands yreg, tmp1    @ ( Rd Rs op ) Y:val5&31
   lsls wreg, #5      @ ( Rd Rs op:00000 )
-  w_or_y_            @ ( Rd Rs op|val5&31 )
+  or_y_              @ ( Rd Rs op|val5&31 )
   end_do_ OPRSRD
 
 @ ( Rd Rs val3 op -- )
@@ -43,7 +43,7 @@ Forthword_ OPVRRSRD, 0, "_opvrrsrd"
   movs tmp1, #7
   ands yreg, tmp1  @ ( Rd Rs op ) Y:val3&7
   lsls wreg, #3    @ ( Rd Rs op:000 )
-  w_or_y_          @ ( Rd Rs op:val3&7 )
+  or_y_            @ ( Rd Rs op:val3&7 )
   end_do_ OPRSRD
 
 @ ( Rd Rs Op -- )
@@ -100,7 +100,7 @@ Forthword_ OPRDV8, 0, "_oprdv8"
   y_d_                  @ ( op Y:Rd )
   movs tmp1, #0x7
   ands yreg, tmp1       @ ( op Y:b00000xxx )
-  w_or_y_               @ ( opRd )
+  or_y_                 @ ( opRd )
   lsls wreg, #8         @ ( opRd00000000 )
-  w_or_x_               @ ( opRdval )
+  or_x_                 @ ( opRdval )
   end_

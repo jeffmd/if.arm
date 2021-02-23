@@ -7,7 +7,7 @@
 @ used if data in program mem and need an address to it
 Forthword_ POPRET, 0, "popret"
   mov wreg, lr
-  oneminus_
+  _1_sub_
   pop {pc}
 
 @ ( n1 n2 -- flag )
@@ -15,7 +15,7 @@ Forthword_ POPRET, 0, "popret"
 Forthword_ EQUAL, 0, "=="
   ldm dsp!, {tmp1}
   subs wreg, tmp1
-  oneminus_
+  _1_sub_
   sbcs wreg, wreg
   end_
 
@@ -62,10 +62,10 @@ forthword_ LESSZERO, INLINE_OPT, "<0"
 @ convert byte length to word length plus remainder
 Forthword_ BTOW, 0, "btow"
   y_w_        @ ( len Y:len )
-  y_twoslash_ @ ( len Y:len/2 )
+  y_div_2_    @ ( len Y:len/2 )
   d_y_        @ ( len/2 len )
-  y_twostar_  @ ( len/2 len Y:len' )
-  w_minus_y_  @ ( len/2 rem )
+  y_mul_2_    @ ( len/2 len Y:len' )
+  sub_y_      @ ( len/2 rem )
   end_
 
 @ (start dest count -- )
@@ -81,10 +81,10 @@ MCPY_LOOP:
   y_iszero_         @ ( count )
   ifz_ MCPY_END
   hmx_              @ ( val )
-  x_plus2_          @ ( val A:A+2 )
+  x_plus_2_          @ ( val A:A+2 )
   hmb_w_            @ ( val )
-  y_minus2_         @ ( val Y:Y-2 )
-  b_plus2_          @ ( val B:B+2 )
+  y_sub_2_         @ ( val Y:Y-2 )
+  b_plus_2_          @ ( val B:B+2 )
   goto_ MCPY_LOOP
 
 MCPY_END:

@@ -11,7 +11,7 @@
   d= base x=
   *x *x *x *x *x *x f
   x=             ( f i fr  X:10000000.0f )
-  =d f* i        ( f i fr*10000000.0f )
+  d f* i         ( f i fr*10000000.0f )
   abs            ( f i n )
   <# # # # # # # # #>
   type space

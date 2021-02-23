@@ -6,7 +6,7 @@
 : (
     d=            \ ( ?  ? )
     $29 parse     \ ( ?  addr u )
-    d-1 =d        \ ( ? )
+    d-1 d         \ ( ? )
 ; immediate
 
 
@@ -102,7 +102,7 @@ rword dcell* inlined
 \ search dictionary for name, returns XT
 : '  ( "<spaces>name" -- XT )
     'f  ( XT XTflags )
-    =d  ( XT )
+    d   ( XT )
 ;
 
 ( -- ) ( C: "<space>name" -- )
@@ -126,7 +126,7 @@ rword dcell* inlined
     \ compile literal of 'f push
     [ 'f d= d= d1 #, ]
     d=
-    [ d0 #, d-1 =d ]
+    [ d0 #, d-1 d ]
     xt,
-    d0 #, d-1 =d
+    d0 #, d-1 d
 ; :ic

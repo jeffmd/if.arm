@@ -41,7 +41,7 @@ Forthword_ DOCMDARG, 0, "docmdarg"
 
   do_ ARGVADDR         @ ( ARGVADDR )
   mw_                  @ ( ARGV )
-  fourplus_            @ ( ARGV+4 )
+  plus_4_              @ ( ARGV+4 )
   mw_                  @ ( ptr )
 .if BUILD_LEVEL >= INCLUDE
   exit_do_ DOINCLUDE 
@@ -60,7 +60,7 @@ Forthword_ TIME, 0, "time"
   dsp_               @ ( 0 0 DSP )
   x_0_
   do_ gettimeofday   @ ( seconds usecs ? )
-  w_d_               @ ( seconds usecs )
+  d_                 @ ( seconds usecs )
   end_
     
 @ ( -- n )
@@ -68,7 +68,7 @@ Forthword_ TIME, 0, "time"
 Forthword_ DEPTH, 0, "depth"
   do_ DSP0           @ ( DSP0 )
   subs wreg, dsp     @ ( DSP0-dsp )
-  fourslash_         @ ( (DSP0-dsp)/4 )
+  div_4_             @ ( (DSP0-dsp)/4 )
   end_
 
 @ ( --  )
@@ -102,13 +102,13 @@ Forthword_ CATCH, 0, "catch"
   rsp_                @ ( xt RSP ) (R: callerret DSP hxt)
   @ @haddr = rsp
   my_w_               @ ( xt RSP )
-  w_d_                @ ( xt )
+  d_                  @ ( xt )
   do_ EXEC
   @ restore handler
   y_r_                @ ( ? Y:hxt) (R: callerret DSP )
   do_ HANDLER         @ ( haddr )
   mw_y_               @ ( haddr )
-  r_m1_               @ ( haddr ) (R: callerret)
+  r_sub_1_            @ ( haddr ) (R: callerret)
   zero_               @ ( 0 )
   end_
 
@@ -118,13 +118,13 @@ Forthword_ CATCH, 0, "catch"
 Forthword_ THROW, 0, "throw"
   d_w_
   do_ RESET
-  w_d_
+  d_
   do_ TYPE           @ ( ? )
   do_ HANDLER        @ ( haddr )
   x_w_               @ ( haddr X:haddr )
   mw_                @ ( RP_handler )
   rsp_w_             @ ( RP_handler ) (R: callerret DSP hxt)
-  w_r_               @ ( hxt ) (R: callerret DSP )
+  r_                 @ ( hxt ) (R: callerret DSP )
   mx_w_              @ ( hxt )
   dsp_r_             @ ( DSP )(R: callerret )
   lit_ 1             @ ( 1 )

@@ -27,7 +27,7 @@ Forthword_ REGSET, IMMEDIATE_EN, "regset"
   user_ Lit_Compile
   mw_y_
   d1_
-  d_m2_
+  d_sub_2_
   y_r_
   end_
 
@@ -136,10 +136,10 @@ Forthword_ REC_NUM, 0, "rec@"
   do_ NUMBER             @ ( [n] f )
   iszero_
   ifz_ REC_NONUMBER
-    r_m2_                @ ( n f ) (R: retaddr )
+    r_sub_2_             @ ( n f ) (R: retaddr )
     do_ STATE            @ ( n state )
     iszero_
-    w_d_                 @ ( n )
+    d_                   @ ( n )
     ifz_ REC_NUMBER_OK
       do_ LIT_COMP
       goto_ REC_NUMBER_DONE

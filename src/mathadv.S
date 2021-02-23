@@ -480,10 +480,10 @@ Forthword_ DIVMOD, 0, "/mod"
   d_w_
   dsp_
   do_ div
-  w_d_
+  d_
   end_
 
 Forthword_ DIV, 0, "/" 
   do_ DIVMOD
-  d_m1_
+  d_sub_1_
   end_

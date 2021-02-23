@@ -73,7 +73,7 @@
   dcell+ y=0
   @=y         ( parentwlid.child wlid.child )
   \ parentwlid.child = wlid
-  =d          ( parentwlid.child )
+  d           ( parentwlid.child )
   @=x x       ( wlid )
 ;
 
@@ -83,7 +83,7 @@
   \ get next available ram from here and use as wid
   here                  ( wlid )   
   \ allocate  ram for the wlid fields
-  d= wlid.size allot  =d ( wlid )
+  d= wlid.size allot d ( wlid )
 
   wlidinit ( wlid )
 ;
@@ -94,7 +94,7 @@
 : also ( -- )
   context d=
   \ increment index
-  contidx++ =d
+  contidx++ d
   context=  
 ; immediate
 
@@ -145,7 +145,7 @@
   d,             ( wlid ? )
   \ wlid.name = vocabulary.nfa  
   current @      ( wlid wid )
-  y= =d          ( wlid Y:voc.nfa )
+  y= d           ( wlid Y:voc.nfa )
   dcell+ @=y     ( wlid.name )
 
   does>
@@ -233,7 +233,7 @@ dcell+ y=0 @=y   ( )
     \ decrement index
     d0 1- d0=
   repeat
-  =d
+  d
   ." Forth Root" cr
   ." definitions: "
   current dcell+ @ .nf cr
@@ -261,7 +261,7 @@ dcell+ y=0 @=y   ( )
     \ get link for next sibling
     @
   repeat
-  d-1 =d
+  d-1 d
 ;
 
 \ list context vocabulary and all child vocabularies
@@ -274,7 +274,7 @@ dcell+ y=0 @=y   ( )
   d= wlid       ( ? 2 wlid )
   \ print context vocabulary
   d= dcell+     ( ? 2 wlid wlid.name )
-  @ .nf cr =d   ( ? 2 wlid )
+  @ .nf cr d    ( ? 2 wlid )
   \ get child link of linked list
   y= 
   wlid.child +y ( ? 2 wlid.child )

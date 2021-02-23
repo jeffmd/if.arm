@@ -81,7 +81,7 @@ Forthword_ DLCALL, 0, "dlcall"
   push_lr_
   r_a_
   a_w_
-  w_d_
+  d_
   blx areg
   a_r_
   end_

@@ -31,11 +31,11 @@ Forthword_ RELDST, 0, "reldst"
   @ calculate relative distance in half words from start to dest
   @ rel dist = dest - start
   @ account for 3 stage pipeline
-  fourplus_            @ ( dest start+4 )
+  plus_4_              @ ( dest start+4 )
   y_w_                 @ ( dest start+4 ) Y:start+4
-  w_d_                 @ ( dest )
-  w_minus_y_           @ ( dest-start+4 ) 
-  twoslash_            @ ( dist/2 )
+  d_                   @ ( dest )
+  sub_y_               @ ( dest-start+4 ) 
+  div_2_               @ ( dist/2 )
   end_
 
 @ build assembler instruction b - unconditional short branch
@@ -92,7 +92,7 @@ Forthword_ DOC, 0, "do,"
   lsls tmp1,#8
   bics wreg, tmp1          @ ( dist 0xF0dist )
   do_ COMMA                @ ( dist ?)
-  w_d_                     @ ( dist )
+  d_                       @ ( dist )
   @ make low address bl instruction mask
   movs tmp1, #0xF8
   lsls tmp1, #8
@@ -109,7 +109,7 @@ Forthword_ XT_C, 0, "xt,"
   tst wreg, tmp1
   @ if bit 0 of high byte flag is 0 then word is to be inlinned
   ifnz_ COMPILEXT_DO
-    w_d_           @ ( xt )
+    d_             @ ( xt )
     exit_do_ INLINE
 
 COMPILEXT_DO:
@@ -148,7 +148,7 @@ Forthword_ LDREQ, 0, "ldr="
 @       reg  offset
 @ 0100 1xxx xxxxxxxx
   y_w_            @ ( reg offset Y:offset) 
-  w_d_            @ ( reg )
+  d_              @ ( reg )
   movs tmp1, #7
   ands wreg, tmp1 @ ( b00000xxx )
   movs tmp1, #0b01001000
@@ -176,7 +176,7 @@ LIT_C_LDR:
   do_ COMMA      @ ( n ? )
   lit_ 1         @ ( n 1 )
   do_ GOTOC      @ ( n ? )
-  w_d_           @ ( n )
+  d_             @ ( n )
 LIT_C_END:
   end_do_ DCOMMA
 

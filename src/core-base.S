@@ -6,7 +6,7 @@ Forthword_ EXEC, 0, "exec"
   movs tmp1, #1
   @ make sure its a thumb address mode
   orrs tmp1, wreg
-  w_d_
+  d_
   bx tmp1
 
 @ ( xx -- xx)
@@ -19,7 +19,7 @@ Forthword_ NOOP, INLINE_OPT, "noop"
 @ flag is true if u1 > u2 (unsigned)
 Forthword_ UGREATER, 0, "u>"
   y_d_
-  w_minus_y_
+  sub_y_
   sbcs wreg, wreg
   end_
 
@@ -36,7 +36,7 @@ Forthword_ ULESS, 0, "u<"
 @ convert byte length to half word align length
 @ round number up to even value
 Forthword_ HALIGN, 0, "h_"
-  oneplus_
+  plus_1_
   movs tmp1, #1
   mvns tmp1, tmp1
   ands wreg, tmp1
