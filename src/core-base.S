@@ -36,7 +36,7 @@ Forthword_ ULESS, 0, "u<"
 @ convert byte length to half word align length
 @ round number up to even value
 Forthword_ HALIGN, 0, "h_"
-  plus_1_
+  add_1_
   movs tmp1, #1
   mvns tmp1, tmp1
   ands wreg, tmp1

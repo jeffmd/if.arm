@@ -72,7 +72,7 @@ Forthword_ R_W, INLINE_OPT, "r="
 
 @ ( -- r0 ) (R: n -- n+1 )
 @ get r0 and increment r0 by 4 on return stack
-Forthword_ R0PLUS, INLINE_OPT, "r0+"
+Forthword_ R0ADD, INLINE_OPT, "r0+"
   r0_
   adds tmp1, wreg, #4
   str tmp1, [sp]
@@ -82,14 +82,14 @@ Forthword_ R0PLUS, INLINE_OPT, "r0+"
 
 @ ( n1 -- n1+y )
 @ w = w + y
-Forthword_ PLUS_Y, INLINE_OPT, "+y"
-  plus_y_
+Forthword_ ADD_Y, INLINE_OPT, "+y"
+  add_y_
   end_
 
 @ ( n1 -- n1+x )
 @ w = w + x
-Forthword_ PLUS_X, INLINE_OPT, "+x"
-  plus_x_
+Forthword_ ADD_X, INLINE_OPT, "+x"
+  add_x_
   end_
 
 @ ( n1|u1 -- n1-y|u1-y )
@@ -137,8 +137,8 @@ Forthword_ NOTEQUAL, INLINE_OPT, "!="
 
 @ ( n1 -- n1+1 ) 
 @ optimized increment
-Forthword_ PLUS_1, INLINE_OPT, "+1"
-  plus_1_
+Forthword_ ADD_1, INLINE_OPT, "+1"
+  add_1_
   end_
 
 @ ( n1 -- n1-1 )
@@ -155,8 +155,8 @@ Forthword_ _2_SUB, INLINE_OPT, "2-"
 
 @ ( n1 -- n1+2 )
 @ optimized decrement
-Forthword_ PLUS_2, INLINE_OPT, "+2"
-  plus_2_
+Forthword_ ADD_2, INLINE_OPT, "+2"
+  add_2_
   end_
 
 @ ( n1 -- n1-4 )
@@ -167,8 +167,8 @@ Forthword_ _4_SUB, INLINE_OPT, "4-"
 
 @ ( n1 -- n1+4 )
 @ optimized decrement
-Forthword_ PLUS_4, INLINE_OPT, "+4"
-  plus_4_
+Forthword_ ADD_4, INLINE_OPT, "+4"
+  add_4_
   end_
 
 @ ( n1 -- n1/2 )

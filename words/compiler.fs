@@ -12,7 +12,7 @@
   r0+      ( raddr ) ( R: raddr+1 )
   1-       \ account for thumb address
   @        ( nfa )
-  nfa>xtf  ( xt xtflags )
+  wid.xtf  ( xt xtflags )
   xt,
 ;
 
@@ -61,14 +61,14 @@
   1- d=                     ( retaddr-1 retaddr-1 )
   \ get address of bl POPRET
   \ get current word and then get its XT being compiled
-  current @                 ( retaddr nfa )
-  nfa>xtf                   ( retaddr xt flags )
+  current @                 ( retaddr wid )
+  wid.xtf                   ( retaddr xt flags )
   \ temp save cp on return stack
   cp r=                     ( retaddr xt flags ) ( R: cp )
   \  skip over push {lr}    
-  d0 icell+                 ( retaddr xt xt+2 )
+  d0 +icell                 ( retaddr xt xt+2 )
   \ set cp to xt+2
-  cp= d icell+              ( retaddr xt+2 )
+  cp= d +icell              ( retaddr xt+2 )
   \ modify the bl
   \ calc displacement
   reldst                    ( dst )
@@ -97,7 +97,7 @@
 \ jump resolve on stack and advances CP
 : markf ( -- start )
   cp d=          ( start start )
-  2 cp+=         ( start ? ) \ advance CP to allow branch/jmp
+  cp++           ( start ? ) \ advance CP to allow branch/jmp
 ;
 
 \ resolve jump forward
@@ -122,7 +122,7 @@
   d0=
   y               \ ( start dest )
   gotos           \ ( ? )
-  2 cp+=          \ advance CP
+  cp++            \ advance CP
 ;
 
 \ start conditional branch on zero flag set
@@ -223,7 +223,7 @@
 \ compile the XT of the word currently
 \ being defined into the dictionary
 : recurse
-  nword nfa>xtf xt,  
+  nword wid.xtf xt,  
 ; :ic
 
 \ allocate or release n bytes of memory in RAM

@@ -108,7 +108,7 @@ Forthword_ INCLUDEF, 0, "include"
   @ add null to end of string
   y_d0_         @ ( addr len ) Y: addr
   x_0_
-  plus_y_       @ ( addr addr' )
+  add_y_        @ ( addr addr' )
   cmw_x_        @ ( addr addr' )
   d_            @ ( addr )
   end_do_ DOINCLUDE

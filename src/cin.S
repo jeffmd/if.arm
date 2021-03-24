@@ -29,7 +29,7 @@ Forthword_ WIB_DEC, 0, "wib--"
 Forthword_ WIB_INC, 0, "wib++"
   user_ ram_wib
   y_hmw_
-  y_plus_1_
+  y_add_1_
   hmw_y_
   end_
 
@@ -64,7 +64,7 @@ Forthword_ RIB_PLUS_STR, 0, "rib+="
   y_w_
   user_ ram_rib
   x_hmw_
-  x_plus_y_
+  x_add_y_
   hmw_x_
   end_
 
@@ -74,7 +74,7 @@ Forthword_ TIB_STR, 0, "tib="
   do_ STIB             @ ( k tibaddr wib )
   y_d0_                @ ( k tibaddr wib ) Y:tibaddr
   x_d1_                @ ( k tibaddr wib ) X:k
-  plus_y_              @ ( k tibaddr tibaddr+wib )
+  add_y_              @ ( k tibaddr tibaddr+wib )
   cmw_x_               @ ( k tibaddr tibaddr+wib )
   d_sub_2_             @ ( tibaddr+wib )
 
@@ -123,7 +123,7 @@ Forthword_ ACCEPT, 0, "accept"
   do_ KEY        @ ( k )
   iszero_
   bgt.n ACCEPT_checkeol
-  plus_1_
+  add_1_
   exit_
 
 ACCEPT_checkeol:

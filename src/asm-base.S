@@ -31,7 +31,7 @@ Forthword_ RELDST, 0, "reldst"
   @ calculate relative distance in half words from start to dest
   @ rel dist = dest - start
   @ account for 3 stage pipeline
-  plus_4_              @ ( dest start+4 )
+  add_4_               @ ( dest start+4 )
   y_w_                 @ ( dest start+4 ) Y:start+4
   d_                   @ ( dest )
   sub_y_               @ ( dest-start+4 ) 

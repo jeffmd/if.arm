@@ -13,7 +13,7 @@ only
   whilenz
     1- d0= 
     d1 @ .$
-    d1 dcell+ d1=
+    d1 +dcell d1=
   repeat
   d-1 d
 ;
@@ -79,7 +79,7 @@ var: fence#
 \ cp and dp get set to what the word used
 : forget ( c: wordname -- )
   pname             ( addr cnt )
-  d= current        ( addr cnt wlid )
+  d= current        ( addr cnt wlist )
   findnfa           ( nfa )
   ==0
   ifnz
@@ -93,12 +93,12 @@ var: fence#
       \ set dp to nfa
       dp=           ( dp# Y:nfa )
       \ set current wlid to lfa
-      y d=y nfa>lfa ( nfa lfa )
+      y d=y wid.lfa ( nfa lfa )
       @             ( nfa wid )
       current+      ( nfa wlid )
       d             ( nfa )
       \ set cp to xt
-      nfa>xtf d     ( xt )
+      wid.xtf d     ( xt )
       cp=           ( cp# Y:xt )
     else
       ." can't forget, word behind fence" cr

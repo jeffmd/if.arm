@@ -45,7 +45,7 @@ MCMP_LOOP:
     @ count was at 1
     @ count in Y is now at zero so add 1 to prevent underflow
     @ so that loop can end properly
-    y_plus_1_              @ ( 0:r-cc ) Y:Y+1
+    y_add_1_               @ ( 0:r-cc ) Y:Y+1
     @ length of string is odd 
     @ only allow low byte of W
     ands wreg, tmp1        @ ( 0:r-cc )
@@ -55,8 +55,8 @@ MCMP_CHECK:
   xor_x_                   @ ( flag )
   ifnz_ MCMP_NOMATCH
 
-  b_plus_2_                @ (  0 B:B+2 )
-  a_plus_2_                @ (  0 A:B+2 )
+  b_add_2_                 @ (  0 B:B+2 )
+  a_add_2_                 @ (  0 A:B+2 )
   y_sub_1_                 @ (  0 Y:len-1 )
   goto_ MCMP_LOOP
 
@@ -89,7 +89,7 @@ Forthword_ CSKIP, 0, "cskip"
 
 CSKIP_LOOP:
   cma_                   @ ( c' )
-  a_plus_1_
+  a_add_1_
   cmp wreg, breg         @ ( c' )
   ifnz_ CSKIP_DONE
   y_sub_1_               @ ( c' ) Y-1
@@ -121,7 +121,7 @@ Forthword_ CSCAN, 0, "cscan"
 
 CSCAN_LOOP:
   cma_                 @ ( addr1 c' )
-  a_plus_1_
+  a_add_1_
   cmp wreg, breg       @ ( addr1 n1 n' c' )
   ifz_ CSCAN_DONE
   y_sub_1_             @ ( addr1 c' ) Y-1
@@ -166,7 +166,7 @@ Forthword_ PARSE, 0, "parse"
   r_               @ ( addr len c ) (R: )
   do_ CSCAN        @ ( addr' len'' )
   # skip terminating delimeter in input buffer
-  plus_1_          @ ( addr' len''+1 )
+  add_1_           @ ( addr' len''+1 )
   do_ RIB_PLUS_STR
   y_               @ ( addr' len''+1)
   _1_sub_          @ ( addr' len'')
@@ -188,13 +188,13 @@ forthword_ REGL, 0, "regl"
   user_ WR             @ ( xt xt WR )
   y_mw_                @ ( xt xt WR ) Y:[WR]
   d1_y_                @ ( w xt WR )
-  plus_4_              @ ( w xt RA )
+  add_4_               @ ( w xt RA )
   a_mw_                @ ( w xt RA ) A:[RA]
-  plus_4_              @ ( w xt RB )
+  add_4_               @ ( w xt RB )
   b_mw_                @ ( w xt RB ) B:[RB]
-  plus_4_              @ ( w xt RX )
+  add_4_               @ ( w xt RX )
   x_mw_                @ ( w xt RX ) X:[RX]
-  plus_4_              @ ( w xt RY )
+  add_4_               @ ( w xt RY )
   y_mw_                @ ( w xt RY ) Y:[RY]
   d_                   @ ( w xt )
   end_
@@ -206,13 +206,13 @@ forthword_ REGS, 0, "regs"
   y_w_                 @ ( y n ) Y:n
   user_ WR             @ ( y WR )
   mw_y_                @ [WR]=n
-  plus_4_              @ ( y RA )
+  add_4_               @ ( y RA )
   mw_a_                @ [RA]=a
-  plus_4_              @ ( y RB )
+  add_4_               @ ( y RB )
   mw_b_                @ [RB]=b
-  plus_4_              @ ( y RX )
+  add_4_               @ ( y RX )
   mw_x_                @ [RB]=x
-  plus_4_              @ ( y RY )
+  add_4_               @ ( y RY )
   y_d_                 @ ( RY )
   mw_y_                @ [RY]=y
   end_
@@ -235,7 +235,7 @@ Forthword_ REC_WORD, 0, "recw"
 
 REC_WORD_FOUND:
   r_sub_2_            @ ( nfa ) (R: retaddr )
-  do_ NFATOXTF        @ ( xt flag )
+  do_ WID_XTF         @ ( xt flag )
   @ check if compile only word
   @sbrc tosh, COMPILE_ONLY_FB
   @    rjmp CHECK_IMMEDIATE

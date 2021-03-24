@@ -3,7 +3,7 @@
 @ word in dictionary structure:
 @ NFA: flags | length : half word: highbyte is flags, lowbyte is string length
 @ NAME: string is variable length
-@ LINK: 32 bit pointer to previousely defined WID/word
+@ LINK: 32 bit pointer to previousely defined WID
 @ CODE: 32 bit pointer to executable code
 
 @ ( -- addr )
@@ -20,30 +20,30 @@ Forthword_ CONTEXT_ADDR, 0, "context#"
   user_ ram_CONTEXT
   end_
 
-@ ( nfa -- lfa )
-@ get the link field address from the name field address
-Forthword_ NFA2LFA, 0, "nfa>lfa"
+@ ( wid -- lfa )
+@ get the link field address from a wid structure
+Forthword_ WID_LFA, 0, "wid.lfa"
                               @ ( nfa )
   do_ STRINGLEN               @ ( nfa+2 len+flags )
   @ mask out flags in len, allow up to 31 characters
   movs tmp1, #31
   y_d_                        @ ( len+flags ) Y:nfa+2
   ands wreg, tmp1             @ ( len )
-  plus_y_                     @ ( nfa+2+len )
+  add_y_                      @ ( nfa+2+len )
   @ align to half word boundry
   end_do_ HALIGN
 
-@ ( nfa -- [ 0 ] | [ xt xtflags] )
-@ convert name field address to xt and xtflags
-Forthword_ NFATOXTF, 0, "nfa>xtf"
+@ ( wid -- [ 0 ] | [ xt xtflags] )
+@ convert wid structure address to xt and xtflags
+Forthword_ WID_XTF, 0, "wid.xtf"
   push_lr_
   iszero_                     @ ( n )
   ifz_ NFATOXTF_EXIT
 
   y_hmw_                      @ ( nfa Y:xtflags )
   r_y_                        @ ( nfa ) (R: xtflags)
-  do_ NFA2LFA                 @ ( lfa )
-  plus_4_     @ lfa>xt        @ ( xtlink )
+  do_ WID_LFA                 @ ( lfa )
+  add_4_     @ wid.xt         @ ( xtlink )
   mw_                         @ ( xt )
   d_w_                        @ ( xt xt )
   r_                          @ ( xt xtflags )
@@ -56,7 +56,7 @@ FINDWI:
   mul_4_             @ ( addr len idx*4)
   y_w_               @ ( addr len idx*4 ) Y: idx*4
   do_ CONTEXT_ADDR   @ ( addr len context )
-  plus_y_            @ ( addr len context' )
+  add_y_             @ ( addr len context' )
   mw_                @ ( addr len wid )
   end_next_
 
@@ -94,7 +94,7 @@ FINDNFA_BEGIN1:
   ifnz_ FINDNFA_END
     
   @ next try
-  do_ NFA2LFA                 @ ( c-addr len lfa )
+  do_ WID_LFA                 @ ( c-addr len lfa )
   @ <repeat>
   goto_ FINDNFA_BEGIN
 
@@ -187,8 +187,8 @@ Forthword_ ONLY, IMMEDIATE_EN, "only"
   lit_y_ 1                     @ ( CONTEXT-2 Y:1 )
   hmw_y_                       @ ( CONTEXT-2 )
   @ make second slot have no vocab
-  plus_2_                      @ ( CONTEXT )
+  add_2_                       @ ( CONTEXT )
   y_0_
-  plus_4_                      @ ( CONTEXT+4 )
+  add_4_                       @ ( CONTEXT+4 )
   mw_y_
   end_

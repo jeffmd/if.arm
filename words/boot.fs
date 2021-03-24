@@ -92,7 +92,7 @@ pname (create) d= current# @ header \ ( nfa )
 \ define ; which is used when finishing the compiling of a word
 : ;
   \ change to interpret mode and override to compile [
-  [ pname [ findw nfa>xtf xt, ]
+  [ pname [ findw wid.xtf xt, ]
   \ back in compile mode
   ;opt uwid
 [ ;opt uwid immediate

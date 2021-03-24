@@ -81,10 +81,10 @@ MCPY_LOOP:
   y_iszero_         @ ( count )
   ifz_ MCPY_END
   hmx_              @ ( val )
-  x_plus_2_          @ ( val A:A+2 )
+  x_add_2_          @ ( val A:A+2 )
   hmb_w_            @ ( val )
-  y_sub_2_         @ ( val Y:Y-2 )
-  b_plus_2_          @ ( val B:B+2 )
+  y_sub_2_          @ ( val Y:Y-2 )
+  b_add_2_          @ ( val B:B+2 )
   goto_ MCPY_LOOP
 
 MCPY_END:

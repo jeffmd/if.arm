@@ -41,7 +41,7 @@ Forthword_ DOCMDARG, 0, "docmdarg"
 
   do_ ARGVADDR         @ ( ARGVADDR )
   mw_                  @ ( ARGV )
-  plus_4_              @ ( ARGV+4 )
+  add_4_               @ ( ARGV+4 )
   mw_                  @ ( ptr )
 .if BUILD_LEVEL >= INCLUDE
   exit_do_ DOINCLUDE 

@@ -15,25 +15,25 @@
   y= contidx# h@=y 
 ;
 
-\ get context array address using context index
-: context[] ( -- addr )
-  context# d= contidx y=d dcell* +y
+\ get context array address using index
+: context[]# ( idx -- addr )
+  *dcell y= context# +y
 ;
 
 \ get a wordlist id from context array
-: context ( -- wlid )
-  context[] @
+: context ( -- wlist )
+  contidx context[]# @
 ;
 
 \ save wordlist id in context array at context index
-: context= ( wlid -- addr )
-  d= context[] y=d @=y
+: context= ( wlist -- addr )
+  d= contidx context[]# y=d @=y
 ;
 
-\ get a valid wlid from the context
+\ get a valid wlist from the context
 \ tries to get the top vocabulary
 \ if no valid entries then defaults to root Forth wlid
-: wlid ( -- wlid )
+: wlist ( -- wlist )
   context
   ==0
   ifz
@@ -47,45 +47,45 @@
 \ wordlist record fields:
  struct{
    \ address to nfa of most recent word added to this wordlist
-   pointer: wlid.word
+   pointer: wlist.word
    \ address to nfa of vocabulary name 
-   pointer: wlid.nfa
+   pointer: wlist.nfa
    \ address to previous sibling wordlist
-   pointer: wlid.sibling
+   pointer: wlist.sibling
    \ address to head of child wordlist
-   pointer: wlid.child
- }struct: wlid.size
+   pointer: wlist.child
+ }struct: wlist.size
 
-\ initialize wlid fields of definitions vocabulary
-: wlidinit ( wlid -- wlid )
-  x=          ( wlid X:wlid )
-  \ wlid.word = 0
-  y=0 @=y     ( wlid )
+\ initialize wlist fields of definitions vocabulary
+: wlist.init ( wlist -- wlist )
+  x=          ( wlist X:wlist )
+  \ wlist.word = 0
+  y=0 @=y     ( wlist )
   \ parent wid child field is in current->child
-  current y=  ( parentwlid )
-  wlid.child +y ( parentwlid.child )
-  d=          ( parentwlid.child parentwlid.child )
-  y=@         ( parentwlid.child parentwlid.child Y:childLink )
-  wlid.sibling +x ( parentwid.child wlid.sibling )
-  \ wlid.sibling = childLink
-  @=y         ( parentwlid.child wlid.sibling )
-  \ wlid.child = 0
-  dcell+ y=0
-  @=y         ( parentwlid.child wlid.child )
-  \ parentwlid.child = wlid
-  d           ( parentwlid.child )
-  @=x x       ( wlid )
+  current y=  ( parentwlist )
+  wlist.child +y ( parentwlist.child )
+  d=          ( parentwlist.child parentwlist.child )
+  y=@         ( parentwlist.child parentwlist.child Y:childLink )
+  wlist.sibling +x ( parentwlist.child wlist.sibling )
+  \ wlist.sibling = childLink
+  @=y         ( parentwlist.child wlist.sibling )
+  \ wlist.child = 0
+  +dcell y=0
+  @=y         ( parentwlist.child wlist.child )
+  \ parentwlist.child = wlist
+  d           ( parentwlist.child )
+  @=x x       ( wlist )
 ;
 
 \ make a wordlist record in data ram
 \ and initialize the fields
-: wordlist ( -- wlid )
+: wlist.create ( -- wlist )
   \ get next available ram from here and use as wid
-  here                  ( wlid )   
-  \ allocate  ram for the wlid fields
-  d= wlid.size allot d ( wlid )
+  here                  ( wlist )   
+  \ allocate  ram for the wlist fields
+  d= wlist.size allot d ( wlist )
 
-  wlidinit ( wlid )
+  wlist.init            ( wlist )
 ;
 
 \ duplicate current wordlist in vocabulary search list
@@ -141,12 +141,12 @@
   create
   immediate
   \ allocate space in ram for head and tail of vocab word list
-  wordlist d=    ( wlid wlid )
-  d,             ( wlid ? )
-  \ wlid.name = vocabulary.nfa  
-  current @      ( wlid wid )
-  y= d           ( wlid Y:voc.nfa )
-  dcell+ @=y     ( wlid.name )
+  wlist.create d= ( wlid wlid )
+  d,              ( wlid ? )
+  \ wlist.name = vocabulary.nfa  
+  current @       ( wlid wid )
+  y= d            ( wlid Y:voc.nfa )
+  +dcell @=y      ( wlid.name )
 
   does>
     @ \ get header address
@@ -164,13 +164,13 @@
 current @ d= ( nfa nfa )
 \ get the forth wid, initialize it and set name field
 \ forthwlid.word is already initialized
-context# @ dcell+ ( nfa forthwid.name )
+context# @ +dcell ( nfa forthwid.name )
 \ forthwlid.name = nfa
 y=d @=y          ( forthwid.name )
 \ forthwlid.link = 0
-dcell+ y=0 @=y   ( forthwid.link )
++dcell y=0 @=y   ( forthwid.link )
 \ forthwlid.child = 0
-dcell+ y=0 @=y   ( )
++dcell y=0 @=y   ( )
 
 \ print name field
 : .nf ( nfa -- )
@@ -178,17 +178,17 @@ dcell+ y=0 @=y   ( )
       type space     ( ? )
 ;
  
-\ list words starting at a name field address
-: lwords ( nfa -- )
-  d= 0 d=                  ( nfa 0 0 )
-  d1                       ( nfa cnt nfa )
+\ list words starting at a wid address
+: lwords ( wid -- )
+  d= 0 d=                  ( wid 0 0 )
+  d1                       ( wid cnt wid )
   begin
     ==0
-  whilenz                  ( nfa cnt nfa ) \ is nfa = counted string
-    .nf                    ( nfa cnt ? )
-    d0 +1 d0=              ( nfa' cnt+1 cnt+1 )
-    d1 nfa>lfa             ( nfa cnt lfa )
-    @ d1=                  ( nfa' cnt addr )
+  whilenz                  ( wid cnt wid ) \ is nfa = counted string
+    .nf                    ( wid cnt ? )
+    d0 +1 d0=              ( wid' cnt+1 cnt+1 )
+    d1 wid.lfa             ( wid cnt lfa )
+    @ d1=                  ( wid' cnt addr )
   repeat 
   cr ." count: " d0 .
   d-2
@@ -198,8 +198,8 @@ dcell+ y=0 @=y   ( )
 \ Does not list other linked vocabularies.
 \ Use words to see all words in the top context search.
 : words ( -- )
-    wlid ( wlid )
-    @    ( nfa )
+    wlist ( wlist )
+    @     ( nfa )
     lwords
 ;
 
@@ -218,14 +218,14 @@ dcell+ y=0 @=y   ( )
   \ iterate through vocab array and print out vocab names
     ==0
   whilenz
-    dcell* y= context# +y     ( idx context' )
-    \ get context wlid
-    @                        ( idx wlid )
+    context[]#               ( idx context' )
+    \ get context wlist
+    @                        ( idx wlist )
     \ if not zero then print vocab name 
     ==0
     ifnz
       \ next cell has name field address 
-      dcell+ @               ( idx nfa )
+      +dcell @               ( idx nfa )
       .nf                    ( idx ? )
     else
       ." [] "
@@ -236,28 +236,28 @@ dcell+ y=0 @=y   ( )
   d
   ." Forth Root" cr
   ." definitions: "
-  current dcell+ @ .nf cr
+  current +dcell @ .nf cr
 ;
 
 \ print child vocabularies
-: .childvocs ( spaces wid -- )
+: .childvocs ( spaces wlist -- )
   begin
   \ while link is not zero
   ==0
-  whilenz  ( spaces linkwlid )
+  whilenz                ( spaces linkwlist )
     \ print indent
-    d= d1 spaces ." |- " ( spaces linkwlid ? )
+    d= d1 spaces ." |- " ( spaces linkwlist ? )
     \ get name from name field
-    d0 dcell+ d0= @      ( spaces linkwlid.name name )
+    d0 +dcell d0= @      ( spaces linkwlist.name name )
     \ print name and line feed
     .nf cr               ( spaces link.name ? )
     \ increase spaces for indenting child vocabularies
-    d1 +4 d=             ( spaces linkwlid.name spaces+4 spaces+4 )
+    d1 +4 d=             ( spaces linkwlist.name spaces+4 spaces+4 )
     \ get link field
-    d1 dcell+ d1=        ( spaces linkwlid.sibling spaces+4 linkwid.sibling )
+    d1 +dcell d1=        ( spaces linkwlist.sibling spaces+4 linkwlist.sibling )
     \ get child link and recurse: print child vocabularies
-    dcell+ @             ( spaces linkwlid.sibling spaces+4 childwlid )
-    recurse              ( spaces linkwid.sibling )
+    +dcell @             ( spaces linkwlist.sibling spaces+4 childwlist )
+    recurse              ( spaces linkwlist.sibling )
     \ get link for next sibling
     @
   repeat
@@ -268,16 +268,16 @@ dcell+ y=0 @=y   ( )
 \ order is newest to oldest
 : vocs ( -- )
   \ start spaces at 2
-  d= 2          ( ? 2 )
+  d= 2           ( ? 2 )
   \ get top search vocabulary address
   \ it is the head of the vocabulary linked list
-  d= wlid       ( ? 2 wlid )
+  d= wlist       ( ? 2 wlist )
   \ print context vocabulary
-  d= dcell+     ( ? 2 wlid wlid.name )
-  @ .nf cr d    ( ? 2 wlid )
+  d= +dcell      ( ? 2 wlist wlist.name )
+  @ .nf cr d     ( ? 2 wlist )
   \ get child link of linked list
   y= 
-  wlid.child +y ( ? 2 wlid.child )
-  @             ( ? 2 childwlid )
-  .childvocs cr ( ? )
+  wlist.child +y ( ? 2 wlist.child )
+  @              ( ? 2 childwlist )
+  .childvocs cr  ( ? )
 ;

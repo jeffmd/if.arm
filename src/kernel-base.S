@@ -86,7 +86,7 @@ Forthword_ PHEX, 0, ".$"
 
 PHEX_BEGIN:
   d0_       @ ( n n )
-  rshifta_  @ ( n n>>cnt )
+  rshift_a_ @ ( n n>>cnt )
   do_ PNIB  @ ( n ? )
   a_sub_4_
   ifnz_ PHEX_BEGIN

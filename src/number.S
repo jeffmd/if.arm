@@ -246,7 +246,7 @@ TO_NUMBER_CONV:
   x_w_                   @ ( u adr len digit ) X: digit
   do_ BASEFETCH          @ ( u adr len base)
   mul_y_                 @ ( u adr len u*base )
-  plus_x_                @ ( u adr len u'' )
+  add_x_                @ ( u adr len u'' )
   d2_w_                  @ ( u'' adr len u'' )
   do_ DECPNTPLUS
 

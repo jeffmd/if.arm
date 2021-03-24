@@ -45,19 +45,19 @@ rword icell inlined
 
 ( n -- n+icell )
 \ add instruction stack cell size to n
-rword icell+ inlined
+rword +icell inlined
     ] +2 [
     _bxlr ,
   
 ( n -- n-icell )
 \ subtract instruction stack cell size from n
-rword icell- inlined
+rword -icell inlined
     ] 2- [
     _bxlr ,
 
 ( n -- n*icell )
 \ multiply n by instruction stack cell size 
-rword icell* inlined
+rword *icell inlined
     ] *2 [
     _bxlr ,
 
@@ -69,19 +69,19 @@ rword dcell inlined
 
 ( n -- n+dcell )
 \ add data stack cell size to n
-rword dcell+ inlined
+rword +dcell inlined
     ] +4 [
     _bxlr ,
 
 ( n -- n-dcell )
 \ subtract data stack cell size from n
-rword dcell- inlined
+rword -dcell inlined
     ] 4- [
     _bxlr ,
 
 ( n -- n*dcell )
 \ multiply n by data stack cell size 
-rword dcell* inlined
+rword *dcell inlined
     ] *4 [
     _bxlr ,
 
@@ -95,7 +95,7 @@ rword dcell* inlined
 \ search dictionary for name, returns XT or 0
 : 'f  ( "<spaces>name" -- XT XTflags )
     find
-    nfa>xtf
+    wid.xtf
 ;
 
 

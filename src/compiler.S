@@ -37,7 +37,7 @@ Forthword_ DPPLUS, 0, "dp+="
   y_w_
   user_ ram_dp
   x_mw_
-  x_plus_y_
+  x_add_y_
   mw_x_
   end_
 
@@ -57,12 +57,21 @@ Forthword_ CP_STR, 0, "cp="
   end_
 
 @ ( offset -- cp#)
+@ increment CP by one instruction length
+Forthword_ CP_PLUS_PLUS, 0, "cp++"
+  user_ ram_cp
+  x_mw_
+  x_add_2_
+  mw_x_
+  end_
+
+@ ( offset -- cp#)
 @ add offset to (code pointer) CP
 Forthword_ CPPLUS, 0, "cp+="
   y_w_
   user_ ram_cp
   x_mw_
-  x_plus_y_
+  x_add_y_
   mw_x_
   end_
 
@@ -167,7 +176,7 @@ Forthword_ COPYSTRING, 0, "copy$"
   x_d2_              @ ( s-addr len len' len' ) X:s-addr
 
 COPYSTRING_LOOP:
-  b_plus_2_            @ ( s-addr len len' len' ) B:d-addr+2
+  b_add_2_           @ ( s-addr len len' len' ) B:d-addr+2
   y_iszero_          @ len == 0 ?
   ifz_ COPYSTRING_DONE
   hmx_               @ ( s-addr len len' c2c1 )
@@ -179,14 +188,14 @@ COPYSTRING_LOOP:
     @ count was at 1
     @ count in Y is now at zero so add 1 to prevent underflow
     @ so that loop can end properly
-    y_plus_1_        @ ( s-addr len len' c1 ) Y:len+1
+    y_add_1_        @ ( s-addr len len' c1 ) Y:len+1
     @ length of string is odd 
     @ only allow low byte of W
     ands wreg, tmp1    @ ( s-addr len len' c1 )
 
 COPYSTRING_DO:
   hmb_w_             @ [d-addr]=c2c1
-  x_plus_2_          @ ( s-addr len len' c2c1 ) X:s-addr+2
+  x_add_2_           @ ( s-addr len len' c2c1 ) X:s-addr+2
   y_sub_1_           @ ( s-addr len len' c2c1 ) Y:len-1 
   goto_ COPYSTRING_LOOP
 
@@ -231,12 +240,12 @@ Forthword_ COPY_HWORD_UNTIL, 0, "copy.hword.until"
   @ begin
 CBU_BEGIN:
   hmy_               @ ( source destination val16 )
-  y_plus_2_          @ ( source destination val16 ) Y:Y+2
+  y_add_2_           @ ( source destination val16 ) Y:Y+2
   cmp wreg, xreg    
   @ until
   ifz_ CBU_DONE
   hmb_w_             @ ( source destination val16 ) [B]:val16
-  b_plus_2_          @ ( source destination val16 ) B:B+2
+  b_add_2_           @ ( source destination val16 ) B:B+2
   goto_ CBU_BEGIN
 
 CBU_DONE:

@@ -27,7 +27,7 @@ Forthword_ WIPE, 0, "WIPE"
   lit32_ EE_FORTHWORDLIST
   y_0_
   mw_y_
-  plus_4_
+  add_4_
   mw_y_
        
   lit32_ HERESTART

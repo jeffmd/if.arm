@@ -12,7 +12,7 @@ cvar: tidx#
 \ count register for each task
 \ is an array 
 var: tcnt
-maxtask dcell* allot
+maxtask *dcell allot
 
 \ set task index
 : tidx= ( n -- tidx# Y:n )
@@ -37,7 +37,7 @@ maxtask dcell* allot
 \ get cnt address for a slot
 \ idx: index of slot
 : cnt& ( idx -- cntaddr Y:offset)
-  dcell* y= tcnt +y
+  *dcell y= tcnt +y
 ;
 
 \ get count for a slot
@@ -70,7 +70,7 @@ maxtask dcell* allot
 \ 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30   1 s
 \ 31 -                                          62  2 s
 var: tasks
-maxtask dcell* allot
+maxtask *dcell allot
 
 \ increment task index to next task idx
 \ assume array flat layout and next idx = idx*2 + 1
@@ -84,7 +84,7 @@ maxtask dcell* allot
 
 \ get a task slot address at idx slot
 : task& ( idx -- task )
-  dcell* y= tasks +y 
+  *dcell y= tasks +y 
 ;
 
 \ get a task xt at idx slot

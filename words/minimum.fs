@@ -195,10 +195,10 @@ var: hld
 : .s  ( -- )
   d=          ( ? ? )
   dsp         ( ? limit ) \ setup limit
-  dcell-
+  -dcell
   d= dsp0     ( ? limit counter )
   begin
-    dcell-    ( ? limit counter-4 )
+    -dcell    ( ? limit counter-4 )
     y=d0 d=   ( ? limit counter-4 counter-4 Y:limit  )
     d=y       ( ? limit counter-4 limit counter-4 )
     !=        ( ? limit counter-4 flag )
