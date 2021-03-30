@@ -3,10 +3,10 @@
 @ ( -- )
 @ ignore remaining text to end of line
 Forthword_ COMMENT, IMMEDIATE_EN, "\\"
-  d_w_         @ ( ? ? )
-  do_ WIB      @ ( ? wib )
-  do_ RIB_STR  @ ( ? ? )
-  d_           @ ( ? )
+  d_w_            @ ( ? ? )
+  do_ TIB_W       @ ( ? wib )
+  do_ TIB_R_STR   @ ( ? ? )
+  d_              @ ( ? )
   end_
 
 @ ( r-addr r-len f-addr f-len --  f)
@@ -137,37 +137,28 @@ CSCAN_DONE:
   sub_y_               @ ( addr1 n1-n' )
   end_
 
-@ ( -- srcaddr len  )
-@ Adjust the source addr using rib.
-Forthword_ SRCIN, 0, "srcin"
-  do_ STIB             @ ( srcaddr len )
-  d_w_                 @ ( srcaddr len len)
-  do_ RIB              @ ( srcaddr len rib )
-  end_do_ SLASHSTRING  @ ( srcaddr' len' )
-
 @ ( -- )
 @ skip space in input source.
 Forthword_ SKIPBL, 0, "skipbl"
-  do_ SRCIN            @ ( srcaddr len )
+  do_ TIB_STRING       @ ( srcaddr len )
   d_w_                 @ ( srcaddr len len )
   bl_                  @ ( srcaddr len c )
   do_ CSKIP            @ ( n2 )
-
-  @ adjust >IN
-  end_do_ RIB_PLUS_STR
+  @ adjust tib.r
+  end_do_ TIB_R_ADD_STR
 
 @ ( char -- c-addr len ) "ccc<char>"
 @ in input buffer parse ccc delimited string by the delimiter char.
 Forthword_ PARSE, 0, "parse"
   push_lr_
   r_w_             @ ( c ) (R: c )
-  do_ SRCIN        @ ( addr len )
+  do_ TIB_STRING   @ ( addr len )
   d_w_             @ ( addr len len )
   r_               @ ( addr len c ) (R: )
   do_ CSCAN        @ ( addr' len'' )
   # skip terminating delimeter in input buffer
   add_1_           @ ( addr' len''+1 )
-  do_ RIB_PLUS_STR
+  do_ TIB_R_ADD_STR
   y_               @ ( addr' len''+1)
   _1_sub_          @ ( addr' len'')
   end_
@@ -351,5 +342,5 @@ Forthword_ DOINTERPRET, 0, "(interp)"
 DOINTERPRET_ok:
   @ make sure in buf pointer is not at zero
   lit_ 1
-  do_ RIB_PLUS_STR      @ ( ribaddr )
+  do_ TIB_R_ADD_STR      @ ( ribaddr )
   end_do_ PROMPTOK

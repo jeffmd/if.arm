@@ -146,21 +146,6 @@ QP_RD_exit:
   @ <then>
   end_do_ PROMPTCOMPILE
 
-
-@ ( -- flag )
-@ refill the input buffer
-@ flag is true if buffer needs processing ie full or enter pressed
-Forthword_ DOREFILL, 0, "(refill)"
-  @ if just starting new input line then check prompt and reset input position
-  do_ RIB                  @ ( rib )
-  iszero_                  @ ( )
-  ifz_ DOREFILL_do
-    do_ INRESET
-
-DOREFILL_do:
-  @ refill the input buffer
-  end_do_ REFILL           @ ( f )
-
 @ ( -- )
 @ Fetch pause vector and EXEC it. may make a context/task switch
 Forthword_ DOPAUSE, 0, "(pause)"
@@ -175,7 +160,7 @@ Forthword_ DOTASKS, 0, "(tasks)"
   @ <begin>
   push_lr_
 DOTASKS1:
-  do_ DOREFILL     @ ( flag )
+  do_ DO_CIN     @ ( flag )
   @ <if>
   iszero_
   ifz_ DOTASK_N1
@@ -248,7 +233,7 @@ Forthword_ RESET, 0, "reset"
 
   do_ EMIT_ON
   @ reset input buffer
-  do_ INRESET
+  do_ TIB_RST
   do_ SLEEPON
 
 .if BUILD_LEVEL >= INT_NUMBER

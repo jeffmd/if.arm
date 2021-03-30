@@ -78,8 +78,8 @@ Lit_Compile: .space 4
 
 rstack0: .space 4
 ram_handler: .space 4
-ram_rib: .space 2
-ram_wib: .space 2
+ram_tib_r: .space 2
+ram_tib_w: .space 2
 ram_tib: .space TIBSIZE
 
 EE_FORTHWORDLIST:

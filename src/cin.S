@@ -2,23 +2,23 @@
 
 @ ( -- n )
 @ the number of characters (write position) in TIB
-Forthword_ WIB, 0, "wib"
-  user_ ram_wib
+Forthword_ TIB_W, 0, "tib.w"
+  user_ ram_tib_w
   hmw_
   end_
 
 @ ( n -- Y:n )
 @ set write index to current write position in input buffer
-Forthword_ WIB_STR, 0, "wib="
+Forthword_ TIB_W_STR, 0, "tib.w="
   y_w_
-  user_ ram_wib
+  user_ ram_tib_w
   hmw_y_
   end_
 
 @ ( -- )
 @ decrement write index
-Forthword_ WIB_DEC, 0, "wib--"
-  user_ ram_wib
+Forthword_ TIB_W_DEC, 0, "tib.w--"
+  user_ ram_tib_w
   y_hmw_
   y_sub_1_
   hmw_y_
@@ -26,8 +26,8 @@ Forthword_ WIB_DEC, 0, "wib--"
 
 @ ( -- )
 @ increment write index
-Forthword_ WIB_INC, 0, "wib++"
-  user_ ram_wib
+Forthword_ TIB_W_INC, 0, "tib.w++"
+  user_ ram_tib_w
   y_hmw_
   y_add_1_
   hmw_y_
@@ -35,34 +35,34 @@ Forthword_ WIB_INC, 0, "wib++"
 
 @ ( -- addr len )
 @ address and current write position (length) in the input buffer
-Forthword_ STIB, 0, "stib"
+Forthword_ TIBW, 0, "tibw"
   user_  ram_tib
   d_w_
-  user_ ram_wib
+  user_ ram_tib_w
   hmw_
   end_
 
 @ ( -- idx )
 @ index to current read position in input buffer
 @ is half cell size
-Forthword_ RIB, 0, "rib"
-  user_ ram_rib
+Forthword_ TIB_R, 0, "tib.r"
+  user_ ram_tib_r
   hmw_
   end_
 
 @ ( n -- Y:n )
 @ set index to current read position in input buffer
-Forthword_ RIB_STR, 0, "rib="
+Forthword_ TIB_R_STR, 0, "tib.r="
   y_w_
-  user_ ram_rib
+  user_ ram_tib_r
   hmw_y_
   end_
 
 @ ( n -- ribaddr Y:n )
 @ add n to read index of input buffer
-Forthword_ RIB_PLUS_STR, 0, "rib+="
+Forthword_ TIB_R_ADD_STR, 0, "tib.r+="
   y_w_
-  user_ ram_rib
+  user_ ram_tib_r
   x_hmw_
   x_add_y_
   hmw_x_
@@ -71,14 +71,14 @@ Forthword_ RIB_PLUS_STR, 0, "rib+="
 @ ( k ? -- )
 @ put key character in input buffer
 Forthword_ TIB_STR, 0, "tib="
-  do_ STIB             @ ( k tibaddr wib )
+  do_ TIBW             @ ( k tibaddr wib )
   y_d0_                @ ( k tibaddr wib ) Y:tibaddr
   x_d1_                @ ( k tibaddr wib ) X:k
-  add_y_              @ ( k tibaddr tibaddr+wib )
+  add_y_               @ ( k tibaddr tibaddr+wib )
   cmw_x_               @ ( k tibaddr tibaddr+wib )
   d_sub_2_             @ ( tibaddr+wib )
 
-  end_do_ WIB_INC      @ ( #tibaddr )
+  end_do_ TIB_W_INC    @ ( #tibaddr )
   
 
 @ ( -- keyaddr )
@@ -105,59 +105,68 @@ Forthword_ KEY, 0, "key"
 
 @ ( -- )
 @ Reset the input buffer
-Forthword_ INRESET, 0, "in_"
+Forthword_ TIB_RST, 0, "tib.rst"
   zero_
   @ reset input buffer read position
-  do_ RIB_STR           @ ( rib_addr Y:0 )
+  do_ TIB_R_STR         @ ( rib_addr Y:0 )
   @ reset input buffer write position
   y_
-  do_ WIB_STR           @ ( #tibaddr )
+  do_ TIB_W_STR         @ ( #tibaddr )
   end_do_ QP_RD
 
+@ ( -- srcaddr len  )
+@ Adjust the TIB source addr using tib.r to get the next read location and length.
+Forthword_ TIB_STRING, 0, "tib.$"
+  do_ TIBW             @ ( srcaddr len )
+  d_w_                 @ ( srcaddr len len)
+  do_ TIB_R            @ ( srcaddr len tib.r )
+  end_do_ SLASHSTRING  @ ( srcaddr' len' )
+
 @ ( -- flag )
-@ receive a string of at most tibsize characters or cr/lf detected.
+@ get a key and edit buffer
+@ at most tibsize characters or cr/lf detected.
 @ flag will be true if input buffer needs to be processed ie interpreted
-@ flag will be false if more input needed
-Forthword_ ACCEPT, 0, "accept"
+@ flag will be false if more input can be handled
+Forthword_ TIB_EDIT, 0, "tib.edit"
   @ <begin>
   do_ KEY        @ ( k )
   iszero_
-  bgt.n ACCEPT_checkeol
+  bgt.n TIB_EDIT_checkeol
   add_1_
   exit_
 
-ACCEPT_checkeol:
+TIB_EDIT_checkeol:
   @ check for EOL
   cmp wreg, #10
   @ <if>
-  ifnz_ ACCEPT_checkreturn
+  ifnz_ TIB_EDIT_checkreturn
   exit_
 
-ACCEPT_checkreturn:
+TIB_EDIT_checkreturn:
   cmp wreg, #13     @ ( k k 13 )
   @ <if>
-  ifnz_ ACCEPT_checkdelete
+  ifnz_ TIB_EDIT_checkdelete
   exit_
 
-ACCEPT_checkdelete:
+TIB_EDIT_checkdelete:
   @ check delete
   cmp wreg, #127      @ ( k k 8 )
   @ <if>
-  ifnz_ ACCEPT_checkcontrol
+  ifnz_ TIB_EDIT_checkcontrol
   @ delete previous character
   @ check beginning of line
   @ if cursor is 0 then at begining of input
   d_w_
-  do_ WIB             @ ( k wib )
+  do_ TIB_W           @ ( k wib )
   @ <if>
   iszero_             @ ( k wib )
   d_                  @ ( k )
-  ifnz_ ACCEPT_dodelete
+  ifnz_ TIB_EDIT_dodelete
   @ at the beginning of the line, ignore this character
   zero_
   exit_
 
-ACCEPT_dodelete:
+TIB_EDIT_dodelete:
   movs tmp1, #8
   ands wreg, tmp1
   d_w_                @ ( k k )
@@ -167,55 +176,72 @@ ACCEPT_dodelete:
   d_                  @ ( k )
   do_ EMIT            @ ( ? )
   @ decrease cursor position by one
-  do_ WIB_DEC         @ ( #tibaddr )
-  goto_ ACCEPT_checkmaxinput
+  do_ TIB_W_DEC       @ ( #tibaddr )
+  goto_ TIB_EDIT_checkmaxinput
 
 
-ACCEPT_checkcontrol:
+TIB_EDIT_checkcontrol:
   @ check for remaining control characters, replace them with blank
-  cmp wreg, #32         @ ( k k bl )
-  bge.n ACCEPT_echo
+  cmp wreg, #32       @ ( k k bl )
+  bge.n TIB_EDIT_echo
   @ replace control key with a space
   bl_
 
-ACCEPT_echo:
+TIB_EDIT_echo:
   @ emit the key
-  d_w_                 @ ( k k )
-  do_ EMIT             @ ( k ? )
+  d_w_                @ ( k k )
+  do_ EMIT            @ ( k ? )
   @ now store the key in the input buffer
-  do_ TIB_STR          @ ( ? )
-ACCEPT_checkmaxinput:
+  do_ TIB_STR         @ ( ? )
+
+TIB_EDIT_checkmaxinput:
   @ check if max number of char input
-  do_ WIB              @ ( wib )
-  y_w_                 @ ( wib Y:wib )
-  lit_ TIBSIZE         @ ( tibsize )
-  sub_y_               @ ( tibsize-wib )
+  do_ TIB_W           @ ( wib )
+  y_w_                @ ( wib Y:wib )
+  lit_ TIBSIZE        @ ( tibsize )
+  sub_y_              @ ( tibsize-wib )
   @ <if>
-  iszero_              @ ( tibsize-#tib )
-  ifz_ ACCEPT_atmaxinput
+  iszero_             @ ( tibsize-#tib )
+  ifz_ TIB_EDIT_end
   zero_
   exit_
 
-ACCEPT_atmaxinput:
+TIB_EDIT_end:
   @ max number of characters in input buffer so have it processed
   true_
   end_
 
 @ ( -- f )
-@ refills the input buffer - flag is true if buffer has something
-Forthword_ REFILLTIB, 0, "reftib"
-    do_ ACCEPT           @ ( f )
+@ fills the input buffer - flag is true if buffer has something
+Forthword_ TIB_FILL, 0, "tib.fill"
+    do_ TIB_EDIT          @ ( f )
     iszero_              @ ( f )
-    ifz_ REFILLTIB_exit
+    ifz_ TIB_FILL_exit
     d_w_
     do_ CR
     d_
     
-REFILLTIB_exit:
+TIB_FILL_exit:
     end_
 
 @ ( -- f )
-@ refills the input buffer
-Forthword_ REFILL, 0, "refill"
-  end_do_ REFILLTIB
+@ fill the input buffer
+Forthword_ CIN, 0, "cin"
+  end_do_ TIB_FILL
+
+@ ( -- flag )
+@ refill the input buffer
+@ flag is true if buffer needs processing ie full or enter pressed
+Forthword_ DO_CIN, 0, "(cin)"
+  @ if just starting new input line then check prompt and reset input position
+  do_ TIB_R                @ ( rib )
+  iszero_                  @ ( )
+  ifz_ DO_CIN_do
+    do_ TIB_RST
+
+DO_CIN_do:
+  @ try to fill the input buffer
+  end_do_ CIN           @ ( f )
+
+
 
